@@ -57,3 +57,6 @@ typings/
 # dotenv environment variables file
 .env
 
+test/api/scripts/test-music/**/*.ogg
+test/api/scripts/test-music/**/*.mp3
+
