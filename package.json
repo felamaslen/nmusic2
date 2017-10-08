@@ -4,6 +4,11 @@
   "description": "Node music player",
   "main": "index.js",
   "scripts": {
+    "preinstall": "rm -rf ./node_modules",
+    "postinstall": "NODE_ENV=production ./node_modules/.bin/webpack",
+    "start": "NODE_ENV=production node ./api/index.js",
+    "dev:api": "NODE_ENV=development nodemon -w ./api ./api/index.js",
+    "dev:wds": "NODE_ENV=development ./node_modules/.bin/webpack-dev-server",
     "scan_music": "node ./scripts/scan-music.js",
     "test": "./test.sh"
   },
@@ -20,14 +25,31 @@
   "devDependencies": {
     "chai": "^4.1.2",
     "eslint": "^4.8.0",
-    "mocha": "^4.0.0"
+    "mocha": "^4.0.0",
+    "webpack-dev-server": "^2.9.1"
   },
   "dependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "body-parser": "^1.18.2",
     "colors": "^1.1.2",
     "dateformat": "^3.0.2",
     "dotenv": "^4.0.0",
+    "dotenv-webpack": "^1.5.4",
+    "ejs": "^2.5.7",
+    "express": "^4.16.1",
+    "extract-text-webpack-plugin": "^3.0.1",
     "mongodb": "^2.2.31",
+    "morgan": "^1.9.0",
     "music-metadata": "^0.8.6",
-    "progress": "^2.0.0"
+    "optimize-css-assets-webpack-plugin": "^3.2.0",
+    "progress": "^2.0.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "webpack": "^3.6.0"
   }
 }
