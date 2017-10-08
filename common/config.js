@@ -3,6 +3,7 @@ module.exports = {
     collections: {
         music: 'music'
     },
+    apiVersion: 1,
     scripts: {
         scanMusic: {
             filesPattern: /\.(ogg|mp3)$/,
