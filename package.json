@@ -4,6 +4,7 @@
   "description": "Node music player",
   "main": "index.js",
   "scripts": {
+    "scan_music": "node ./scripts/scan-music.js",
     "test": "./test.sh"
   },
   "repository": {
@@ -18,6 +19,15 @@
   "homepage": "https://github.com/felamaslen/nmusic2#readme",
   "devDependencies": {
     "chai": "^4.1.2",
+    "eslint": "^4.8.0",
     "mocha": "^4.0.0"
+  },
+  "dependencies": {
+    "colors": "^1.1.2",
+    "dateformat": "^3.0.2",
+    "dotenv": "^4.0.0",
+    "mongodb": "^2.2.31",
+    "music-metadata": "^0.8.6",
+    "progress": "^2.0.0"
   }
 }
