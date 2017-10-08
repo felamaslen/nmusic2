@@ -17,12 +17,12 @@ function setupClient(app) {
 function init() {
     const app = express();
 
-    setupApi(app);
-    setupClient(app);
-
     if (process.env.NODE_ENV === 'development') {
         app.use(requestLogger('dev'));
     }
+
+    setupApi(app);
+    setupClient(app);
 
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
