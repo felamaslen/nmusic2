@@ -22,7 +22,7 @@ export class SongList extends ImmutableComponent {
                 onDoubleClick={() => this.props.playSong(song)}>
 
                 <span className="title">{song.get('title')}</span>
-                <span className="duration">{song.get('duration')}</span>
+                <span className="duration">{song.get('durationFormatted')}</span>
                 <span className="artist">{song.get('artist')}</span>
                 <span className="album">{song.get('album')}</span>
             </span>
