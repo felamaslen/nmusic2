@@ -3,18 +3,12 @@
  * with possible side effects
  */
 
-function buildMessage(type, payload) {
-    return { type, payload };
-}
+const buildMessage = (type, payload) => ({ type, payload });
 
-export default (type, payload) => effect => {
-    if (effect) {
-        return {
-            ...buildMessage(type, payload),
-            effect: buildMessage(effect, payload)
-        };
-    }
+export const buildEffectAction = (type, payload) => effect => ({
+    ...buildMessage(type, payload),
+    effect: buildMessage(effect, payload)
+});
 
-    return buildMessage(type, payload);
-};
+export default buildMessage;
 

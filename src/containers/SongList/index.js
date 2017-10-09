@@ -1,39 +1,50 @@
+import { List as list } from 'immutable';
 import { connect } from 'react-redux';
 
-import { songListRequested } from '../../actions/song-list.actions';
+import { API_PREFIX } from '../../constants/misc';
 
-import React, { PureComponent } from 'react';
+import { songListRequested } from '../../actions/song-list.actions';
+import { audioFileLoaded } from '../../actions/audio-player.actions';
+
+import React from 'react';
+import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 
 import './style.scss';
 
-export class SongList extends PureComponent {
+export class SongList extends ImmutableComponent {
     componentDidMount() {
         this.props.requestList();
     }
     render() {
-        const list = this.props.songs.map(song => <span key={song.id} className="song">
-            <span className="title">{song.title}</span>
-            <span className="duration">{song.duration}</span>
-            <span className="artist">{song.artist}</span>
-            <span className="album">{song.album}</span>
-        </span>);
+        const songList = this.props.songs.map(song => (
+            <span key={song.get('id')} className="song"
+                onDoubleClick={() => this.props.playSong(song)}>
 
-        return <div className="song-list">{list}</div>;
+                <span className="title">{song.get('title')}</span>
+                <span className="duration">{song.get('duration')}</span>
+                <span className="artist">{song.get('artist')}</span>
+                <span className="album">{song.get('album')}</span>
+            </span>
+        ));
+
+        return <div className="song-list">{songList}</div>;
     }
 }
 
 SongList.propTypes = {
-    songs: PropTypes.array.isRequired,
-    requestList: PropTypes.func.isRequired
+    songs: PropTypes.instanceOf(list).isRequired,
+    requestList: PropTypes.func.isRequired,
+    playSong: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    songs: state.global.songList.songs
+    songs: state.getIn(['global', 'songList', 'songs'])
 });
 
 const mapDispatchToProps = dispatch => ({
-    requestList: () => dispatch(songListRequested())
+    requestList: () => dispatch(songListRequested()),
+    playSong: song => dispatch(audioFileLoaded(`${API_PREFIX}play/${song.get('id')}`))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SongList);
