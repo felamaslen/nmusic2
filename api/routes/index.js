@@ -1,10 +1,12 @@
 const { Router } = require('express');
 const bodyParser = require('body-parser');
+const sendSeekable = require('send-seekable');
 
 const config = require('../../common/config');
 const Database = require('../../common/db');
 
 const { routeSongsList } = require('./songs-list');
+const { routePlay } = require('./play');
 
 async function dbMiddleware(req, res, next) {
     req.db = await Database.dbConnect(config.dbUri);
@@ -16,8 +18,10 @@ function apiRoutes() {
     const router = new Router();
 
     router.use(dbMiddleware);
+    router.use(sendSeekable);
 
     router.get('/songs', routeSongsList);
+    router.get('/play/:id', routePlay);
 
     return router;
 }
