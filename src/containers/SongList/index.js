@@ -5,6 +5,8 @@ import { songListRequested } from '../../actions/song-list.actions';
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
+import './style.scss';
+
 export class SongList extends PureComponent {
     componentDidMount() {
         this.props.requestList();
