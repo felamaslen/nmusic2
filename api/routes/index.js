@@ -19,15 +19,6 @@ function apiRoutes() {
 
     router.get('/songs', routeSongsList);
 
-    router.get('/', (req, res) => {
-        res
-            .status(400)
-            .json({
-                error: true,
-                status: 'API not implemented!'
-            });
-    });
-
     return router;
 }
 

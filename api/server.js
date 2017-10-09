@@ -24,6 +24,15 @@ function init() {
     setupApi(app);
     setupClient(app);
 
+    app.use((req, res) => {
+        res
+            .status(404)
+            .json({
+                error: true,
+                status: 'Not found'
+            });
+    });
+
     const port = process.env.PORT || 3000;
     app.listen(port, () => {
         logger('MSG', 'Server listening on port', port);
