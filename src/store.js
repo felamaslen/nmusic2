@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
-import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
+import { combineReducers } from 'redux-immutable';
 
 import globalReducer from './reducers';
 

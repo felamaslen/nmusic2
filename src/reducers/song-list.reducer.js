@@ -1,13 +1,13 @@
-export const startSongListRequest = state => ({
-    ...state,
-    songList: { ...state.songList, loading: true }
-});
+import { List as list, Map as map } from 'immutable';
+
+export const startSongListRequest = state => state
+    .setIn(['songList', 'loading'], true);
 
 export function insertSongList(state, { err, response }) {
-    let songs = [];
+    let songs = list.of();
 
     if (!err) {
-        songs = response.data.map(item => ({
+        songs = list(response.data).map(item => map({
             id: item[0],
             title: item[1],
             artist: item[2],
@@ -17,9 +17,8 @@ export function insertSongList(state, { err, response }) {
         }));
     }
 
-    return {
-        ...state,
-        songList: { loading: false, songs }
-    };
+    return state
+        .setIn(['songList', 'loading'], false)
+        .setIn(['songList', 'songs'], songs);
 }
 
