@@ -1,0 +1,11 @@
+.audio-player-outer {
+    .button-playpause {
+        &:after {
+            content: "Playing";
+        }
+        &.paused:after {
+            content: "Paused";
+        }
+    }
+}
+
