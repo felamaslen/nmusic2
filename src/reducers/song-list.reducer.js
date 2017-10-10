@@ -87,11 +87,7 @@ export function getNewOrderKeys(oldOrderKeys, orderKey) {
     }
 
     if (keyPosition === oldOrderKeys.size - 1) {
-        const currentItem = oldOrderKeys.get(keyPosition);
-
-        return oldOrderKeys
-            .slice(0, keyPosition)
-            .push(currentItem.set('order', -currentItem.get('order')));
+        return oldOrderKeys.setIn([keyPosition, 'order'], -oldOrderKeys.getIn([keyPosition, 'order']));
     }
 
     return list([map({ key: orderKey, order: 1 })]);
