@@ -1,104 +1,108 @@
-import { List as list } from 'immutable';
+import { List as list, Map as map } from 'immutable';
 import { expect } from 'chai';
 
 import state from '../../../src/initialState';
 
-import { selectItem } from '../../../src/reducers/song-list.reducer';
+import {
+    getNewlySelectedKeys, getNewlySelectedIds
+} from '../../../src/reducers/song-list.reducer';
 
 describe('Song list reducer', () => {
-    describe('selectItem', () => {
+    describe('getNewlySelectedKeys', () => {
         it('should select an item', () => {
-            const stateWithSelections = state
-                .setIn(['songList', 'lastClicked'], -1)
-                .setIn(['songList', 'selectedIndices'], list([0, 5]));
-
-            const result = selectItem(stateWithSelections, {
+            const result = getNewlySelectedKeys(list([0, 5]), -1, {
                 shift: false, ctrl: false, index: 3
             });
 
-            expect(result.getIn(['songList', 'selectedIndices']).toJS())
-                .to.deep.equal([3]);
-
-            expect(result.getIn(['songList', 'lastClicked']))
-                .to.equal(3);
+            expect(result.toJS()).to.deep.equal([3]);
         });
 
         it('should select or deselect multiple items with the ctrl key', () => {
-            const stateWithSelections = state
-                .setIn(['songList', 'selectedIndices'], list([0, 5]));
-
-            const resultAdd = selectItem(stateWithSelections, {
+            const resultAdd = getNewlySelectedKeys(list([0, 5]), -1, {
                 shift: false, ctrl: true, index: 3
             });
 
-            expect(resultAdd.getIn(['songList', 'selectedIndices']).toJS())
-                .to.deep.equal([0, 5, 3]);
+            expect(resultAdd.toJS()).to.have.same.members([0, 5, 3]);
 
-            const resultRemove = selectItem(stateWithSelections, {
+            const resultRemove = getNewlySelectedKeys(list([0, 5]), -1, {
                 shift: false, ctrl: true, index: 0
             });
 
-            expect(resultRemove.getIn(['songList', 'selectedIndices']).toJS())
-                .to.deep.equal([5]);
+            expect(resultRemove.toJS()).to.have.same.members([5]);
 
-            const resultRemoveFromAdd = selectItem(resultAdd, {
+            const resultRemoveFromAdd = getNewlySelectedKeys(list([0, 5, 3]), 0, {
                 shift: false, ctrl: true, index: 3
             });
 
-            expect(resultRemoveFromAdd.getIn(['songList', 'selectedIndices']).toJS())
-                .to.deep.equal([0, 5]);
+            expect(resultRemoveFromAdd.toJS()).to.have.same.members([0, 5]);
         });
 
         it('should select ranges with the shift key', () => {
-            const indices = currentState => currentState
-                .getIn(['songList', 'selectedIndices'])
-                .toJS();
-
-            const stateWithNoSelections = state;
-
-            let nextResult = selectItem(stateWithNoSelections, {
+            let nextResult = getNewlySelectedKeys(list([]), -1, {
                 shift: true, ctrl: false, index: 3
             });
 
             // shift-clicked with nothing selected
-            expect(indices(nextResult)).to.deep.equal([3]);
+            expect(nextResult.toJS()).to.deep.equal([3]);
 
-            nextResult = selectItem(nextResult, {
+            nextResult = getNewlySelectedKeys(nextResult, 3, {
                 shift: true, ctrl: false, index: 3
             });
 
             // shift-clicked again on same item; no change
-            expect(indices(nextResult)).to.deep.equal([3]);
+            expect(nextResult.toJS()).to.deep.equal([3]);
 
-            nextResult = selectItem(nextResult, {
+            nextResult = getNewlySelectedKeys(nextResult, 3, {
                 shift: true, ctrl: false, index: 6
             });
 
             // shift-clicked to select up to 6, from 3
-            expect(indices(nextResult)).to.have.same.members([3, 4, 5, 6]);
+            expect(nextResult.toJS()).to.have.same.members([3, 4, 5, 6]);
 
-            nextResult = selectItem(nextResult, {
+            nextResult = getNewlySelectedKeys(nextResult, 6, {
                 shift: true, ctrl: false, index: 1
             });
 
             // shift-clicked back down to 1
-            expect(indices(nextResult)).to.have.same.members([1, 2, 3, 4, 5, 6]);
+            expect(nextResult.toJS()).to.have.same.members([1, 2, 3, 4, 5, 6]);
 
-            nextResult = selectItem(nextResult, {
+            nextResult = getNewlySelectedKeys(nextResult, 1, {
                 shift: false, ctrl: true, index: 14
             });
 
             // ctrl-clicked to start a new range at 14
-            expect(indices(nextResult)).to.have.same.members([1, 2, 3, 4, 5, 6, 14]);
+            expect(nextResult.toJS()).to.have.same.members([1, 2, 3, 4, 5, 6, 14]);
 
-            nextResult = selectItem(nextResult, {
+            nextResult = getNewlySelectedKeys(nextResult, 14, {
                 shift: true, ctrl: false, index: 10
             });
 
             // shift-clicked to select the range from 14 to 10
-            expect(indices(nextResult)).to.have.same.members(
+            expect(nextResult.toJS()).to.have.same.members(
                 [1, 2, 3, 4, 5, 6, 10, 11, 12, 13, 14]
             );
+        });
+    });
+
+    describe('getNewlySelectedIds', () => {
+        it('should map keys to ids', () => {
+            const testSongs = list(['foo', 'bar', 'baz', 'bap', 'pad', 'wav', 'paz'])
+                .map(id => map({ id }));
+
+            const selectedIds = list(['foo', 'baz', 'bap']);
+
+            const testState = state
+                .setIn(['songList', 'songs'], testSongs)
+                .setIn(['songList', 'selectedIds'], selectedIds)
+                .setIn(['songList', 'lastClickedId'], 'bap');
+
+            const result1 = getNewlySelectedIds(testState, { index: 4 });
+
+            expect(result1.toJS()).to.have.same.members((['pad']));
+
+            const result2 = getNewlySelectedIds(testState, { index: 5, shift: true });
+
+            expect(result2.toJS()).to.have.same.members(['foo', 'baz', 'bap', 'pad', 'wav']);
         });
     });
 });
