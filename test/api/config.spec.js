@@ -1,8 +1,20 @@
 const { expect } = require('chai');
 
-const config = require('../../api/config');
+require('dotenv').config();
+
+const config = require('../../common/config');
 
 describe('Config', () => {
+    it('should define dbUri', () => expect(config.dbUri).to.be.a('string').lengthOf.greaterThan(0));
+
+    describe('collections', () => {
+        it('should be defined', () => expect(config.collections).to.be.an('object'));
+
+        it('should define music', () => expect(config.collections.music).to.be.a('string'));
+    });
+
+    it('should define apiVersion', () => expect(config.apiVersion).to.be.a('number'));
+
     describe('scripts', () => {
         it('should be defined', () => expect(config.scripts).to.be.an('object'));
         describe('scanMusic', () => {

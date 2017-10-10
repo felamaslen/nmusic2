@@ -1,4 +1,4 @@
-import buildAction from '../actionBuilder';
+import buildAction from '../messageBuilder';
 import {
     AUDIO_FILE_LOADED,
     AUDIO_DURATION_SET,
