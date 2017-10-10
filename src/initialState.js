@@ -6,7 +6,11 @@ export default fromJS({
         loading: false,
         selectedIds: [],
         lastClickedId: -1,
-        orderKeys: []
+        orderKeys: [
+            { key: 'title', order: 1 },
+            { key: 'album', order: 1 },
+            { key: 'artist', order: 1 }
+        ]
     },
     player: {
         paused: true,
