@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
+import SongListHead from './SongListHead';
 import SongListItem from './SongListItem';
 
 export class SongList extends ImmutableComponent {
@@ -20,7 +21,10 @@ export class SongList extends ImmutableComponent {
             key={song.get('id')} listKey={key} id={song.get('id')} />
         );
 
-        return <div className="song-list">{songList}</div>;
+        return <div className="song-list-outer">
+            <SongListHead />
+            <div className="song-list">{songList}</div>
+        </div>;
     }
 }
 

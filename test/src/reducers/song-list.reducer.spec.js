@@ -3,14 +3,12 @@ import { expect } from 'chai';
 
 import state from '../../../src/initialState';
 
-import {
-    getNewlySelectedKeys, getNewlySelectedIds
-} from '../../../src/reducers/song-list.reducer';
+import * as R from '../../../src/reducers/song-list.reducer';
 
 describe('Song list reducer', () => {
     describe('getNewlySelectedKeys', () => {
         it('should select an item', () => {
-            const result = getNewlySelectedKeys(list([0, 5]), -1, {
+            const result = R.getNewlySelectedKeys(list([0, 5]), -1, {
                 shift: false, ctrl: false, index: 3
             });
 
@@ -18,19 +16,19 @@ describe('Song list reducer', () => {
         });
 
         it('should select or deselect multiple items with the ctrl key', () => {
-            const resultAdd = getNewlySelectedKeys(list([0, 5]), -1, {
+            const resultAdd = R.getNewlySelectedKeys(list([0, 5]), -1, {
                 shift: false, ctrl: true, index: 3
             });
 
             expect(resultAdd.toJS()).to.have.same.members([0, 5, 3]);
 
-            const resultRemove = getNewlySelectedKeys(list([0, 5]), -1, {
+            const resultRemove = R.getNewlySelectedKeys(list([0, 5]), -1, {
                 shift: false, ctrl: true, index: 0
             });
 
             expect(resultRemove.toJS()).to.have.same.members([5]);
 
-            const resultRemoveFromAdd = getNewlySelectedKeys(list([0, 5, 3]), 0, {
+            const resultRemoveFromAdd = R.getNewlySelectedKeys(list([0, 5, 3]), 0, {
                 shift: false, ctrl: true, index: 3
             });
 
@@ -38,42 +36,42 @@ describe('Song list reducer', () => {
         });
 
         it('should select ranges with the shift key', () => {
-            let nextResult = getNewlySelectedKeys(list([]), -1, {
+            let nextResult = R.getNewlySelectedKeys(list([]), -1, {
                 shift: true, ctrl: false, index: 3
             });
 
             // shift-clicked with nothing selected
             expect(nextResult.toJS()).to.deep.equal([3]);
 
-            nextResult = getNewlySelectedKeys(nextResult, 3, {
+            nextResult = R.getNewlySelectedKeys(nextResult, 3, {
                 shift: true, ctrl: false, index: 3
             });
 
             // shift-clicked again on same item; no change
             expect(nextResult.toJS()).to.deep.equal([3]);
 
-            nextResult = getNewlySelectedKeys(nextResult, 3, {
+            nextResult = R.getNewlySelectedKeys(nextResult, 3, {
                 shift: true, ctrl: false, index: 6
             });
 
             // shift-clicked to select up to 6, from 3
             expect(nextResult.toJS()).to.have.same.members([3, 4, 5, 6]);
 
-            nextResult = getNewlySelectedKeys(nextResult, 6, {
+            nextResult = R.getNewlySelectedKeys(nextResult, 6, {
                 shift: true, ctrl: false, index: 1
             });
 
             // shift-clicked back down to 1
             expect(nextResult.toJS()).to.have.same.members([1, 2, 3, 4, 5, 6]);
 
-            nextResult = getNewlySelectedKeys(nextResult, 1, {
+            nextResult = R.getNewlySelectedKeys(nextResult, 1, {
                 shift: false, ctrl: true, index: 14
             });
 
             // ctrl-clicked to start a new range at 14
             expect(nextResult.toJS()).to.have.same.members([1, 2, 3, 4, 5, 6, 14]);
 
-            nextResult = getNewlySelectedKeys(nextResult, 14, {
+            nextResult = R.getNewlySelectedKeys(nextResult, 14, {
                 shift: true, ctrl: false, index: 10
             });
 
@@ -96,13 +94,79 @@ describe('Song list reducer', () => {
                 .setIn(['songList', 'selectedIds'], selectedIds)
                 .setIn(['songList', 'lastClickedId'], 'bap');
 
-            const result1 = getNewlySelectedIds(testState, { index: 4 });
+            const result1 = R.getNewlySelectedIds(testState, { index: 4 });
 
             expect(result1.toJS()).to.have.same.members((['pad']));
 
-            const result2 = getNewlySelectedIds(testState, { index: 5, shift: true });
+            const result2 = R.getNewlySelectedIds(testState, { index: 5, shift: true });
 
             expect(result2.toJS()).to.have.same.members(['foo', 'baz', 'bap', 'pad', 'wav']);
+        });
+    });
+
+    describe('getNewOrderKeys', () => {
+        it('should push the key to the top of the list if it doesn\'t already exist', () => {
+            expect(R.getNewOrderKeys(list([]), 'd').toJS())
+                .to.deep.equal([{ key: 'd', order: 1 }]);
+        });
+
+        it('should reverse the order of the selected key if it exists at the top', () => {
+            expect(R.getNewOrderKeys(list([map({ key: 'a', order: 1 })]), 'a').toJS())
+                .to.deep.equal([{ key: 'a', order: -1 }]);
+        });
+
+        it('should reset the list if it currently exists below the top', () => {
+            expect(R.getNewOrderKeys(list([
+                map({ key: 'b', order: 1 }),
+                map({ key: 'a', order: 1 })
+            ]), 'b').toJS())
+                .to.deep.equal([{ key: 'b', order: 1 }]);
+        });
+    });
+
+    describe('getOrderedSongList', () => {
+        it('should sort by an ordered list of keys', () => {
+            const testSongs = list([
+                map({ key1: 'foo', key2: 'zav' }),
+                map({ key1: 'foo', key2: 'bak' }),
+                map({ key1: 'aoz', key2: 'kek' }),
+                map({ key1: 'zef', key2: 'rak' })
+            ]);
+
+            const resultSimple = R.getOrderedSongList(testSongs, list([
+                map({ key: 'key1', order: 1 })
+            ]));
+
+            expect(resultSimple.toJS()).to.deep.equal([
+                { key1: 'aoz', key2: 'kek' },
+                { key1: 'foo', key2: 'zav' },
+                { key1: 'foo', key2: 'bak' },
+                { key1: 'zef', key2: 'rak' }
+            ]);
+
+            const resultTwo = R.getOrderedSongList(testSongs, list([
+                map({ key: 'key2', order: 1 }),
+                map({ key: 'key1', order: 1 })
+            ]));
+
+            expect(resultTwo.toJS()).to.deep.equal([
+                { key1: 'aoz', key2: 'kek' },
+                { key1: 'foo', key2: 'bak' },
+                { key1: 'foo', key2: 'zav' },
+                { key1: 'zef', key2: 'rak' }
+            ]);
+
+            const resultReverse = R.getOrderedSongList(testSongs, list([
+                map({ key: 'key1', order: -1 }),
+                map({ key: 'key2', order: 1 })
+            ]));
+
+            expect(resultReverse.toJS()).to.deep.equal([
+                { key1: 'foo', key2: 'bak' },
+                { key1: 'aoz', key2: 'kek' },
+                { key1: 'zef', key2: 'rak' },
+                { key1: 'foo', key2: 'zav' }
+            ]);
         });
     });
 });
