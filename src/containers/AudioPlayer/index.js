@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 
 import { audioPlayPaused } from '../../actions/audio-player.actions';
 
+import AudioVisualisation from './AudioVisualisation';
 import AudioPlayerCore from './AudioPlayerCore';
 
 import React from 'react';
@@ -24,6 +25,7 @@ export class AudioPlayer extends ImmutableComponent {
                 <button className={playPauseButtonClasses}
                     onClick={() => this.props.playPause()} />
             </div>
+            <AudioVisualisation />
             <AudioPlayerCore />
         </div>;
     }
