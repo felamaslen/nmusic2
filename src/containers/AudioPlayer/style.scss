@@ -1,10 +1,62 @@
 .audio-player-outer {
+    display: flex;
+    flex-flow: row;
+
+    .audio-player-controls-outer {
+        display: flex;
+        flex-flow: row;
+        flex-grow: 1;
+    }
+
     .button-playpause {
-        &:after {
-            content: "Playing";
+        width: 48px;
+        height: 48px;
+        margin: 10px;
+        position: relative;
+        background: beige;
+        border: none;
+        border-radius: 100%;
+        outline: none;
+
+        &:active {
+            background: #dedec3;
         }
-        &.paused:after {
-            content: "Paused";
+
+        @mixin playpause-icon {
+            display: block;
+            content: "";
+            position: absolute;
+        }
+
+        &.playing {
+            &:before, &:after {
+                @include playpause-icon;
+                background: #222;
+                width: 9px;
+                height: 24px;
+                top: 12px;
+            }
+            &:before {
+                left: 13px;
+            }
+            &:after {
+                right: 13px;
+            }
+        }
+
+        &.paused {
+            &:before {
+                @include playpause-icon;
+                width: 0;
+                height: 0;
+                border: solid transparent;
+                border-left-color: #222;
+                border-width: 12px 18px;
+                top: 50%;
+                left: 50%;
+                margin-left: -9px;
+                margin-top: -12px;
+            }
         }
     }
 }
