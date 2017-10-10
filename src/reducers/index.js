@@ -3,7 +3,8 @@ import { createReducer } from 'redux-create-reducer';
 import * as AC from '../constants/actions';
 
 import {
-    startSongListRequest, insertSongList, selectSongListItem
+    startSongListRequest, insertSongList, selectSongListItem,
+    sortSongList
 } from './song-list.reducer';
 
 import {
@@ -25,6 +26,7 @@ const reducers = createReducerObject([
     [AC.SONG_LIST_REQUESTED, startSongListRequest],
     [AC.SONG_LIST_RETRIEVED, insertSongList],
     [AC.SONG_LIST_ITEM_CLICKED, selectSongListItem],
+    [AC.SONG_LIST_SORTED, sortSongList],
 
     [AC.AUDIO_FILE_LOADED, loadAudioFile],
     [AC.AUDIO_DURATION_SET, setAudioDuration],

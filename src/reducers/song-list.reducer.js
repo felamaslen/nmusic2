@@ -79,3 +79,48 @@ export const selectSongListItem = (state, req) => state
     .setIn(['songList', 'selectedIds'], getNewlySelectedIds(state, req))
     .setIn(['songList', 'lastClickedId'], state.getIn(['songList', 'songs', req.index, 'id']));
 
+export function getNewOrderKeys(oldOrderKeys, orderKey) {
+    const keyPosition = oldOrderKeys.findIndex(item => item.get('key') === orderKey);
+
+    if (keyPosition === -1) {
+        return oldOrderKeys.push(map({ key: orderKey, order: 1 }));
+    }
+
+    if (keyPosition === oldOrderKeys.size - 1) {
+        const currentItem = oldOrderKeys.get(keyPosition);
+
+        return oldOrderKeys
+            .slice(0, keyPosition)
+            .push(currentItem.set('order', -currentItem.get('order')));
+    }
+
+    return list([map({ key: orderKey, order: 1 })]);
+}
+
+export function getOrderedSongList(songs, orderKeys) {
+    return orderKeys.reduce((songsList, item) => songsList.sort((prev, next) => {
+        const nextSorted = next.get(item.get('key')) < prev.get(item.get('key'));
+        if (nextSorted) {
+            return item.get('order');
+        }
+
+        const prevSorted = next.get(item.get('key')) > prev.get(item.get('key'));
+        if (prevSorted) {
+            return -item.get('order');
+        }
+
+        return 0;
+    }), songs);
+}
+
+export const sortSongList = (state, orderKey) => {
+    const oldOrderKeys = state.getIn(['songList', 'orderKeys']);
+    const newOrderKeys = getNewOrderKeys(oldOrderKeys, orderKey);
+
+    return state
+        .setIn(['songList', 'songs'], getOrderedSongList(
+            state.getIn(['songList', 'songs']), newOrderKeys
+        ))
+        .setIn(['songList', 'orderKeys'], newOrderKeys);
+}
+

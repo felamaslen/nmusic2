@@ -5,7 +5,8 @@ export default fromJS({
         songs: [],
         loading: false,
         selectedIds: [],
-        lastClickedId: -1
+        lastClickedId: -1,
+        orderKeys: []
     },
     player: {
         paused: true,
