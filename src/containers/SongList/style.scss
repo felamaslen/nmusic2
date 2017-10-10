@@ -1,8 +1,96 @@
+$border-color-head: #555;
+$bg-head: #666;
+$bg-head-selected: #565656;
+$color-head: white;
+$color-head-arrow: #333;
+
+$border-color-list: #ccc;
+$bg-list-zebra-1: #f9f9f9;
+$bg-list-zebra-2: #efefef;
+$color-list: black;
+
+$bg-list-selected: #09e;
+$color-list-selected: white;
+
+@mixin song-list-row {
+    span {
+        flex-basis: 0;
+        padding-left: 5px;
+        &:not(:last-child) {
+            border-right: 1px solid $border-color-list;
+        }
+    }
+    .title {
+        flex-grow: 6;
+    }
+    .duration {
+        flex-grow: 1;
+        padding-right: 10px;
+    }
+    .artist {
+        flex-grow: 4;
+    }
+    .album {
+        flex-grow: 4;
+    }
+}
+
+.song-list-head, .song-list {
+    user-select: none;
+    cursor: default;
+}
+
+.song-list-head {
+    display: flex;
+    flex-flow: row nowrap;
+
+    height: 22px;
+    line-height: 22px;
+    background: $bg-head;
+    color: $color-head;
+    font-weight: bold;
+
+    @include song-list-row;
+
+    .selected {
+        background: $bg-head-selected;
+    }
+
+    .sort-asc, .sort-desc {
+        display: flex;
+        flex-flow: column wrap;
+
+        &:after {
+            content: "";
+            display: block;
+            align-self: flex-end;
+            width: 0;
+            height: 0;
+            border-color: transparent;
+            border-width: 10px 6px;
+            border-style: solid;
+            margin-right: 5px;
+        }
+    }
+    .sort-asc:after {
+        border-bottom-color: $color-head-arrow;
+        margin-top: -5px;
+    }
+    .sort-desc:after {
+        border-top-color: $color-head-arrow;
+        margin-top: 5px;
+    }
+
+    span {
+        &:not(:last-child) {
+            border-color: $border-color-head;
+        }
+    }
+}
+
 .song-list {
     display: flex;
     flex-flow: column;
-
-    user-select: none;
 
     .song {
         display: flex;
@@ -11,38 +99,24 @@
         height: 24px;
         line-height: 24px;
 
-        cursor: default;
-        background-color: #f9f9f9;
+        background-color: $bg-list-zebra-1;
         color: black;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid $border-color-list;
 
         &:nth-child(2n) {
-            background-color: #efefef;
+            background-color: $bg-list-zebra-2;
         }
 
         &.selected {
-            background-color: #09e;
-            color: white;
+            background-color: $bg-list-selected;
+            color: $color-list-selected;
         }
 
-        span {
-            flex-basis: 0;
-        }
-    }
+        @include song-list-row;
 
-    .title {
-        flex-grow: 4;
-    }
-    .duration {
-        flex-grow: 0;
-        text-align: right;
-        padding-right: 10px;
-    }
-    .artist {
-        flex-grow: 3;
-    }
-    .album {
-        flex-grow: 3;
+        .duration {
+            text-align: right;
+        }
     }
 }
 
