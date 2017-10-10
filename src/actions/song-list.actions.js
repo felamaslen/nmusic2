@@ -1,4 +1,4 @@
-import buildAction, { buildEffectAction } from '../actionBuilder';
+import buildAction, { buildEffectAction } from '../messageBuilder';
 import {
     SONG_LIST_REQUESTED, SONG_LIST_RETRIEVED
 } from '../constants/actions';
