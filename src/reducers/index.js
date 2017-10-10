@@ -9,10 +9,12 @@ import {
 
 import {
     loadAudioFile, setAudioDuration, handleAudioEnded,
-    playPauseAudio, audioSeek, audioTimeUpdate
+    playPauseAudio, audioSeek, audioTimeUpdate, updateAudioAnalyser
 } from './audio-player.reducer';
 
 import initialState from '../initialState';
+
+import analyserState from '../analyserState';
 
 function createReducerObject(array) {
     return array.reduce((obj, item) => {
@@ -22,7 +24,11 @@ function createReducerObject(array) {
     }, {});
 }
 
-const reducers = createReducerObject([
+export const analyserReducer = createReducer(analyserState, createReducerObject([
+    [AC.AUDIO_ANALYSER_UPDATED, updateAudioAnalyser]
+]));
+
+export default createReducer(initialState, createReducerObject([
     [AC.SONG_LIST_REQUESTED, startSongListRequest],
     [AC.SONG_LIST_RETRIEVED, insertSongList],
     [AC.SONG_LIST_ITEM_CLICKED, selectSongListItem],
@@ -34,7 +40,5 @@ const reducers = createReducerObject([
     [AC.AUDIO_PLAY_PAUSED, playPauseAudio],
     [AC.AUDIO_SEEKED, audioSeek],
     [AC.AUDIO_TIME_UPDATED, audioTimeUpdate]
-]);
-
-export default createReducer(initialState, reducers);
+]));
 

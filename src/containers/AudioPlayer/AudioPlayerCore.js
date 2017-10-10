@@ -1,6 +1,8 @@
 import { connect } from 'react-redux';
 
-import { audioTimeUpdated, audioEnded } from '../../actions/audio-player.actions';
+import {
+    audioTimeUpdated, audioEnded, audioAnalyserUpdated
+} from '../../actions/audio-player.actions';
 
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
@@ -14,18 +16,13 @@ export class AudioPlayerCore extends ImmutableComponent {
         this.ctx = new AudioContext();
         this.source = null;
         this.analyser = null;
-        this.frequencyData = null;
-
-        this.analyserTimer = null;
     }
-    renderFrame() {
-        clearTimeout(this.analyserTimer);
+    updateAnalyser() {
+        const frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
 
-        this.analyser.getByteFrequencyData(this.frequencyData);
+        this.analyser.getByteFrequencyData(frequencyData);
 
-        console.log(this.frequencyData);
-
-        this.analyserTimer = setTimeout(() => this.renderFrame(), 1000);
+        this.props.updateAnalyser(frequencyData);
     }
     createAnalyser() {
         if (!this.source) {
@@ -33,20 +30,18 @@ export class AudioPlayerCore extends ImmutableComponent {
 
             this.analyser = this.ctx.createAnalyser();
 
-            this.frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
-
             this.source.connect(this.analyser);
             this.source.connect(this.ctx.destination);
         }
 
-        this.renderFrame();
+        this.updateAnalyser();
 
         this.audio.play();
     }
     pause() {
         this.audio.pause();
 
-        clearTimeout(this.analyserTimer);
+        this.props.updateAnalyser(null);
     }
     play() {
         this.createAnalyser();
@@ -96,7 +91,11 @@ export class AudioPlayerCore extends ImmutableComponent {
             this.audio = audio;
         };
 
-        const onTimeUpdate = () => this.props.onTimeUpdate(this.audio.currentTime);
+        const onTimeUpdate = () => {
+            this.updateAnalyser();
+
+            // this.props.onTimeUpdate(this.audio.currentTime); // TODO
+        };
 
         const onEnded = () => this.props.onEnded();
 
@@ -126,6 +125,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     onTimeUpdate: time => dispatch(audioTimeUpdated(time)),
+    updateAnalyser: data => dispatch(audioAnalyserUpdated(data)),
     onEnded: () => dispatch(audioEnded())
 });
 
