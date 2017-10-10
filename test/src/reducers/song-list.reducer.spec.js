@@ -105,14 +105,22 @@ describe('Song list reducer', () => {
     });
 
     describe('getNewOrderKeys', () => {
-        it('should move the key to the top of the list if it already exists', () => {
-            expect(R.getNewOrderKeys(list(['a', 'b', 'c']), 'b').toJS())
-                .to.deep.equal(['a', 'c', 'b']);
+        it('should push the key to the top of the list if it doesn\'t already exist', () => {
+            expect(R.getNewOrderKeys(list([]), 'd').toJS())
+                .to.deep.equal([{ key: 'd', order: 1 }]);
         });
 
-        it('should push the key to the top of the list if it doesn\'t already exist', () => {
-            expect(R.getNewOrderKeys(list(['a', 'b', 'c']), 'd').toJS())
-                .to.deep.equal(['a', 'b', 'c', 'd']);
+        it('should reverse the order of the selected key if it exists at the top', () => {
+            expect(R.getNewOrderKeys(list([map({ key: 'a', order: 1 })]), 'a').toJS())
+                .to.deep.equal([{ key: 'a', order: -1 }]);
+        });
+
+        it('should reset the list if it currently exists below the top', () => {
+            expect(R.getNewOrderKeys(list([
+                map({ key: 'b', order: 1 }),
+                map({ key: 'a', order: 1 })
+            ]), 'b').toJS())
+                .to.deep.equal([{ key: 'b', order: 1 }]);
         });
     });
 
@@ -120,36 +128,44 @@ describe('Song list reducer', () => {
         it('should sort by an ordered list of keys', () => {
             const testSongs = list([
                 map({ key1: 'foo', key2: 'zav' }),
-                map({ key1: 'baz', key2: 'bak' }),
-                map({ key1: 'foz', key2: 'kek' }),
+                map({ key1: 'foo', key2: 'bak' }),
+                map({ key1: 'aoz', key2: 'kek' }),
                 map({ key1: 'zef', key2: 'rak' })
             ]);
 
-            const resultSimple = R.getOrderedSongList(testSongs, list(['key1']));
+            const resultSimple = R.getOrderedSongList(testSongs, list([
+                map({ key: 'key1', order: 1 })
+            ]));
 
             expect(resultSimple.toJS()).to.deep.equal([
-                { key1: 'baz', key2: 'bak' },
+                { key1: 'aoz', key2: 'kek' },
                 { key1: 'foo', key2: 'zav' },
-                { key1: 'foz', key2: 'kek' },
+                { key1: 'foo', key2: 'bak' },
                 { key1: 'zef', key2: 'rak' }
             ]);
 
-            const resultTwo = R.getOrderedSongList(testSongs, list(['key1', 'key2']));
+            const resultTwo = R.getOrderedSongList(testSongs, list([
+                map({ key: 'key2', order: 1 }),
+                map({ key: 'key1', order: 1 })
+            ]));
 
             expect(resultTwo.toJS()).to.deep.equal([
-                { key1: 'baz', key2: 'bak' },
-                { key1: 'foz', key2: 'kek' },
-                { key1: 'zef', key2: 'rak' },
-                { key1: 'foo', key2: 'zav' }
+                { key1: 'aoz', key2: 'kek' },
+                { key1: 'foo', key2: 'bak' },
+                { key1: 'foo', key2: 'zav' },
+                { key1: 'zef', key2: 'rak' }
             ]);
 
-            const resultReverse = R.getOrderedSongList(testSongs, list(['key2', 'key1']));
+            const resultReverse = R.getOrderedSongList(testSongs, list([
+                map({ key: 'key1', order: -1 }),
+                map({ key: 'key2', order: 1 })
+            ]));
 
             expect(resultReverse.toJS()).to.deep.equal([
-                { key1: 'baz', key2: 'bak' },
-                { key1: 'foo', key2: 'zav' },
-                { key1: 'foz', key2: 'kek' },
-                { key1: 'zef', key2: 'rak' }
+                { key1: 'foo', key2: 'bak' },
+                { key1: 'aoz', key2: 'kek' },
+                { key1: 'zef', key2: 'rak' },
+                { key1: 'foo', key2: 'zav' }
             ]);
         });
     });
