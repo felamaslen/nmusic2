@@ -17,6 +17,9 @@ $color-list-selected: white;
     span {
         flex-basis: 0;
         padding-left: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         &:not(:last-child) {
             border-right: 1px solid $border-color-list;
         }
