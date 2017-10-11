@@ -23,6 +23,7 @@ export class SongListItem extends ImmutableComponent {
             onMouseDown={onMouseDown}
             onDoubleClick={() => this.props.playSong(this.props.song)}>
 
+            <span className="track">{this.props.song.get('trackNo')}</span>
             <span className="title">{this.props.song.get('title')}</span>
             <span className="duration">{this.props.song.get('durationFormatted')}</span>
             <span className="artist">{this.props.song.get('artist')}</span>

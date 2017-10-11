@@ -20,6 +20,10 @@ $color-list-selected: white;
             border-right: 1px solid $border-color-list;
         }
     }
+    .track {
+        flex-grow: 0;
+        flex-basis: 30px;
+    }
     .title {
         flex-grow: 6;
     }

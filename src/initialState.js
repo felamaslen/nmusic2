@@ -8,6 +8,7 @@ export default fromJS({
         lastClickedId: -1,
         orderKeys: [
             { key: 'title', order: 1 },
+            { key: 'track', order: 1 },
             { key: 'album', order: 1 },
             { key: 'artist', order: 1 }
         ]
