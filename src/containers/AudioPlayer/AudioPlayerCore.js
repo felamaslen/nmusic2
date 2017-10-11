@@ -8,6 +8,8 @@ import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 
+const ANALYSER_UPDATE_FREQUENCY = 100;
+
 export class AudioPlayerCore extends ImmutableComponent {
     constructor(props) {
         super(props);
@@ -16,19 +18,27 @@ export class AudioPlayerCore extends ImmutableComponent {
         this.ctx = new AudioContext();
         this.source = null;
         this.analyser = null;
+
+        this.analyserTimer = null;
+
     }
     updateAnalyser() {
+        clearTimeout(this.analyserTimer);
+
         const frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
 
         this.analyser.getByteFrequencyData(frequencyData);
 
         this.props.updateAnalyser(frequencyData);
+
+        this.analyserTimer = setTimeout(() => this.updateAnalyser(), ANALYSER_UPDATE_FREQUENCY);
     }
     createAnalyser() {
         if (!this.source) {
             this.source = this.ctx.createMediaElementSource(this.audio);
 
             this.analyser = this.ctx.createAnalyser();
+            this.analyser.fftSize = 128;
 
             this.source.connect(this.analyser);
             this.source.connect(this.ctx.destination);
@@ -41,6 +51,7 @@ export class AudioPlayerCore extends ImmutableComponent {
     pause() {
         this.audio.pause();
 
+        clearTimeout(this.analyserTimer);
         this.props.updateAnalyser(null);
     }
     play() {
@@ -92,8 +103,6 @@ export class AudioPlayerCore extends ImmutableComponent {
         };
 
         const onTimeUpdate = () => {
-            this.updateAnalyser();
-
             // this.props.onTimeUpdate(this.audio.currentTime); // TODO
         };
 

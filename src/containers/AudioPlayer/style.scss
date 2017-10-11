@@ -59,5 +59,19 @@
             }
         }
     }
+
+    .visualiser {
+        display: flex;
+        align-items: flex-end;
+        height: 32px;
+        width: 400px;
+        border: 1px solid #ccc;
+
+        .bar {
+            flex-grow: 1;
+            background: blue;
+            transition: height 0.1s ease-out;
+        }
+    }
 }
 

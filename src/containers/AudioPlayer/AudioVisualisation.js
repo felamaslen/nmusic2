@@ -1,3 +1,4 @@
+import { List as list } from 'immutable';
 import { connect } from 'react-redux';
 
 import React from 'react';
@@ -5,14 +6,23 @@ import PropTypes from 'prop-types';
 import ImmutableComponent from '../../ImmutableComponent';
 
 export class AudioVisualisation extends ImmutableComponent {
-    render() {
-        if (!this.props.data) {
-            return <span>no data</span>;
+    getValues() {
+        if (!this.props.data || !this.props.data.length) {
+            return new Array(64).fill(0);
         }
 
-        const sum = this.props.data.reduce((value, item) => value + item, 0);
+        return this.props.data.map(item => 100 * item / 255);
+    }
+    render() {
+        const values = this.getValues();
 
-        return <span>{sum}</span>;
+        const bars = list(values).map((value, key) => {
+            const style = { height: `${value}%` };
+
+            return <span key={key} className="bar" style={style} />;
+        });
+
+        return <span className="visualiser">{bars}</span>;
     }
 }
 
