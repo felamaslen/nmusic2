@@ -5,6 +5,7 @@ export const loadAudioFile = (state, song) => state
     .setIn(['player', 'url'], `${API_PREFIX}play/${song.get('id')}`)
     .setIn(['player', 'seekTime'], 0)
     .setIn(['player', 'playTime'], 0)
+    .setIn(['player', 'dragTime'], null)
     .setIn(['player', 'duration'], song.get('duration'))
     .setIn(['player', 'paused'], false);
 

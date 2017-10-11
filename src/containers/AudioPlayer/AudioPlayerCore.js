@@ -84,11 +84,15 @@ export class AudioPlayerCore extends ImmutableComponent {
         }
     }
     shouldComponentUpdate(nextProps) {
-        const updatedAudio = this.playPauseSeek(this.props, nextProps);
-
         const srcChanged = this.props.src !== nextProps.src;
 
-        return !updatedAudio && srcChanged;
+        if (srcChanged) {
+            return true;
+        }
+
+        const updatedAudio = this.playPauseSeek(this.props, nextProps);
+
+        return !updatedAudio;
     }
     componentDidUpdate(prevProps) {
         if (this.audio) {
