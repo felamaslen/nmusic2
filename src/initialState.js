@@ -17,6 +17,7 @@ export default fromJS({
         paused: true,
         url: null,
         seekTime: 0,
+        dragTime: null,
         playTime: 0,
         duration: 0
     }

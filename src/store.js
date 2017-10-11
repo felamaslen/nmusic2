@@ -2,7 +2,7 @@
 import { createStore, applyMiddleware, compose } from 'redux';
 import { combineReducers } from 'redux-immutable';
 
-import { AUDIO_ANALYSER_UPDATED } from './constants/actions';
+import { AUDIO_ANALYSER_UPDATED, AUDIO_TIME_UPDATED } from './constants/actions';
 
 import globalReducer, { analyserReducer } from './reducers';
 import effectHandler from './effects';
@@ -26,7 +26,8 @@ function getStore() {
         window && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 
     const actionsBlacklist = [
-        AUDIO_ANALYSER_UPDATED
+        AUDIO_ANALYSER_UPDATED,
+        AUDIO_TIME_UPDATED
     ];
 
     const composeEnhancers = devTools
