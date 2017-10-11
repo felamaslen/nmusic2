@@ -34,6 +34,7 @@ export class SongListHead extends ImmutableComponent {
         const itemAlbum = this.renderItem('Album', 'album', true);
 
         return <span className="song-list-head">
+            <span className="status" />
             {itemTrack}
             {itemTitle}
             {itemDuration}

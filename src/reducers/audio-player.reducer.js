@@ -1,6 +1,7 @@
 import { API_PREFIX } from '../constants/misc';
 
 export const loadAudioFile = (state, song) => state
+    .setIn(['player', 'current'], song.get('id'))
     .setIn(['player', 'url'], `${API_PREFIX}play/${song.get('id')}`)
     .setIn(['player', 'seekTime'], 0)
     .setIn(['player', 'playTime'], 0)

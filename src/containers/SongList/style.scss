@@ -5,6 +5,7 @@ $color-head: white;
 $color-head-arrow: #333;
 
 $border-color-list: #ccc;
+$bg-list-current: #feffc0;
 $bg-list-zebra-1: #f9f9f9;
 $bg-list-zebra-2: #efefef;
 $color-list: black;
@@ -19,6 +20,10 @@ $color-list-selected: white;
         &:not(:last-child) {
             border-right: 1px solid $border-color-list;
         }
+    }
+    .status {
+        flex-grow: 0;
+        flex-basis: 12px;
     }
     .track {
         flex-grow: 0;
@@ -109,6 +114,51 @@ $color-list-selected: white;
 
         &:nth-child(2n) {
             background-color: $bg-list-zebra-2;
+        }
+
+        .status {
+            position: relative;
+
+            &:before, &:after {
+                display: block;
+                position: absolute;
+                top: 50%;
+                margin-top: -5px;
+            }
+        }
+        
+        &.current {
+            background: $bg-list-current;
+
+            &:not(.paused) {
+                .status {
+                    &:before {
+                        content: "";
+                        width: 0;
+                        height: 0;
+                        border: solid transparent;
+                        border-width: 6px 10px;
+                        border-left-color: #222;
+                    }
+                }
+            }
+
+            &.paused {
+                .status {
+                    &:before, &:after {
+                        content: "";
+                        width: 0;
+                        height: 10px;
+                        border-left: 4px solid #222;
+                    }
+                    &:before {
+                        left: 3px;
+                    }
+                    &:after {
+                        left: 9px;
+                    }
+                }
+            }
         }
 
         &.selected {
