@@ -22,3 +22,6 @@ export const audioSeek = (state, time) => state
 export const audioTimeUpdate = (state, time) => state
     .setIn(['player', 'playTime'], time);
 
+export const updateAudioAnalyser = (state, frequencyData) => state
+    .set('frequencyData', frequencyData);
+
