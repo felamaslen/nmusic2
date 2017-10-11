@@ -17,7 +17,7 @@ export const audioEnded = () => buildAction(AUDIO_ENDED);
 
 export const audioPlayPaused = () => buildAction(AUDIO_PLAY_PAUSED);
 
-export const audioSeeked = time => buildAction(AUDIO_SEEKED, time);
+export const audioSeeked = evt => buildAction(AUDIO_SEEKED, evt);
 
 export const audioTimeUpdated = time => buildAction(AUDIO_TIME_UPDATED, time);
 

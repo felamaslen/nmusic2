@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
 import {
-    audioTimeUpdated, audioEnded, audioAnalyserUpdated
+    audioTimeUpdated, audioDurationSet, audioEnded, audioAnalyserUpdated
 } from '../../actions/audio-player.actions';
 
 import React from 'react';
@@ -78,6 +78,11 @@ export class AudioPlayerCore extends ImmutableComponent {
 
         return false;
     }
+    setDuration() {
+        if (this.audio) {
+            this.props.setDuration(this.audio.duration);
+        }
+    }
     shouldComponentUpdate(nextProps) {
         const updatedAudio = this.playPauseSeek(this.props, nextProps);
 
@@ -86,6 +91,10 @@ export class AudioPlayerCore extends ImmutableComponent {
         return !updatedAudio && srcChanged;
     }
     componentDidUpdate(prevProps) {
+        if (this.audio) {
+            this.audio.onloadedmetadata = () => this.setDuration();
+        }
+
         this.playPauseSeek(prevProps, this.props, true);
     }
     componentDidMount() {
@@ -103,7 +112,7 @@ export class AudioPlayerCore extends ImmutableComponent {
         };
 
         const onTimeUpdate = () => {
-            // this.props.onTimeUpdate(this.audio.currentTime); // TODO
+            this.props.onTimeUpdate(this.audio.currentTime);
         };
 
         const onEnded = () => this.props.onEnded();
@@ -122,6 +131,7 @@ AudioPlayerCore.propTypes = {
     src: PropTypes.string,
     paused: PropTypes.bool.isRequired,
     seekTime: PropTypes.number.isRequired,
+    setDuration: PropTypes.func.isRequired,
     onTimeUpdate: PropTypes.func.isRequired,
     onEnded: PropTypes.func.isRequired
 };
@@ -133,6 +143,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+    setDuration: duration => dispatch(audioDurationSet(duration)),
     onTimeUpdate: time => dispatch(audioTimeUpdated(time)),
     updateAnalyser: data => dispatch(audioAnalyserUpdated(data)),
     onEnded: () => dispatch(audioEnded())

@@ -60,10 +60,17 @@
         }
     }
 
+    .audio-player-scrubber-outer {
+        display: flex;
+        flex-flow: column;
+        flex-grow: 3;
+    }
+
     .visualiser {
         display: flex;
         align-items: flex-end;
-        flex-grow: 3;
+        flex-grow: 1;
+        height: 100%;
 
         background-image: linear-gradient(to bottom, #eee 1px, transparent 1px), linear-gradient(to right, #eee 1px, transparent 1px);
 
@@ -84,6 +91,38 @@
                 position: absolute;
                 top: -1px;
                 background: #f16400;
+            }
+        }
+    }
+
+    .audio-scrubber {
+        flex-basis: 22px;
+
+        .trough {
+            height: 100%;
+        }
+        .progress {
+            height: 100%;
+            background: #eee;
+            position: relative;
+        }
+        .play-head {
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            border-right: 1px solid black;
+            &:before {
+                content: "";
+                display: block;
+                width: 0;
+                height: 0;
+                margin-left: -5px;
+                border: solid transparent;
+                border-width: 8px 6px;
+                border-top-color: black;
             }
         }
     }
