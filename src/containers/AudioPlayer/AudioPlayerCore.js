@@ -1,61 +1,24 @@
 import { connect } from 'react-redux';
 
 import {
-    audioTimeUpdated, audioDurationSet, audioEnded, audioAnalyserUpdated
+    audioTimeUpdated, audioDurationSet, audioEnded, audioNodeUpdated
 } from '../../actions/audio-player.actions';
 
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 
-const ANALYSER_UPDATE_FREQUENCY = 100;
-
 export class AudioPlayerCore extends ImmutableComponent {
     constructor(props) {
         super(props);
 
         this.audio = null;
-        this.ctx = new AudioContext();
-        this.source = null;
-        this.analyser = null;
-
-        this.analyserTimer = null;
-
-    }
-    updateAnalyser() {
-        clearTimeout(this.analyserTimer);
-
-        const frequencyData = new Uint8Array(this.analyser.frequencyBinCount);
-
-        this.analyser.getByteFrequencyData(frequencyData);
-
-        this.props.updateAnalyser(frequencyData);
-
-        this.analyserTimer = setTimeout(() => this.updateAnalyser(), ANALYSER_UPDATE_FREQUENCY);
-    }
-    createAnalyser() {
-        if (!this.source) {
-            this.source = this.ctx.createMediaElementSource(this.audio);
-
-            this.analyser = this.ctx.createAnalyser();
-            this.analyser.fftSize = 128;
-
-            this.source.connect(this.analyser);
-            this.source.connect(this.ctx.destination);
-        }
-
-        this.updateAnalyser();
-
-        this.audio.play();
     }
     pause() {
         this.audio.pause();
-
-        clearTimeout(this.analyserTimer);
-        this.props.updateAnalyser(null);
     }
     play() {
-        this.createAnalyser();
+        this.audio.play();
     }
     playPauseSeek(prevProps, nextProps, updated = false) {
         if (this.audio) {
@@ -97,6 +60,8 @@ export class AudioPlayerCore extends ImmutableComponent {
     componentDidUpdate(prevProps) {
         if (this.audio) {
             this.audio.onloadedmetadata = () => this.setDuration();
+
+            this.props.updateAudioNode(this.audio);
         }
 
         this.playPauseSeek(prevProps, this.props, true);
@@ -104,6 +69,8 @@ export class AudioPlayerCore extends ImmutableComponent {
     componentDidMount() {
         if (this.audio && !this.props.paused) {
             this.play();
+
+            this.props.updateAudioNode(this.audio);
         }
     }
     render() {
@@ -137,7 +104,8 @@ AudioPlayerCore.propTypes = {
     seekTime: PropTypes.number.isRequired,
     setDuration: PropTypes.func.isRequired,
     onTimeUpdate: PropTypes.func.isRequired,
-    onEnded: PropTypes.func.isRequired
+    onEnded: PropTypes.func.isRequired,
+    updateAudioNode: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -149,7 +117,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     setDuration: duration => dispatch(audioDurationSet(duration)),
     onTimeUpdate: time => dispatch(audioTimeUpdated(time)),
-    updateAnalyser: data => dispatch(audioAnalyserUpdated(data)),
+    updateAudioNode: audioNode => dispatch(audioNodeUpdated(audioNode)),
     onEnded: () => dispatch(audioEnded())
 });
 

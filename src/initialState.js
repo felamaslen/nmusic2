@@ -13,6 +13,7 @@ export default fromJS({
             { key: 'artist', order: 1 }
         ]
     },
+    audioNode: null,
     player: {
         paused: true,
         url: null,

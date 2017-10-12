@@ -48,6 +48,6 @@ export function audioSeek(state, { dragging, ...evt }) {
 export const audioTimeUpdate = (state, time) => state
     .setIn(['player', 'playTime'], time);
 
-export const updateAudioAnalyser = (state, frequencyData) => state
-    .set('frequencyData', frequencyData);
+export const updateAudioNode = (state, audioNode) => state
+    .set('audioNode', audioNode);
 
