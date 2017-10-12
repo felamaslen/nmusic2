@@ -8,8 +8,9 @@ import {
 } from './song-list.reducer';
 
 import {
-    loadAudioFile, setAudioDuration, handleAudioEnded,
-    playPauseAudio, audioSeek, audioTimeUpdate, updateAudioAnalyser
+    loadAudioFile, setAudioDuration,
+    updateAudioAnalyser, audioTimeUpdate, handleAudioEnded,
+    playPauseAudio, changeTrack, audioSeek
 } from './audio-player.reducer';
 
 import initialState from '../initialState';
@@ -36,9 +37,12 @@ export default createReducer(initialState, createReducerObject([
 
     [AC.AUDIO_FILE_LOADED, loadAudioFile],
     [AC.AUDIO_DURATION_SET, setAudioDuration],
+
+    [AC.AUDIO_TIME_UPDATED, audioTimeUpdate],
     [AC.AUDIO_ENDED, handleAudioEnded],
+
     [AC.AUDIO_PLAY_PAUSED, playPauseAudio],
-    [AC.AUDIO_SEEKED, audioSeek],
-    [AC.AUDIO_TIME_UPDATED, audioTimeUpdate]
+    [AC.AUDIO_TRACK_CHANGED, changeTrack],
+    [AC.AUDIO_SEEKED, audioSeek]
 ]));
 

@@ -13,17 +13,20 @@ export default fromJS({
             { key: 'track', order: 1 },
             { key: 'album', order: 1 },
             { key: 'artist', order: 1 }
-        ],
-        repeat: REPEAT_NONE
+        ]
     },
-    queue: [],
+    queue: {
+        songs: [],
+        active: -1
+    },
     player: {
         paused: true,
         url: null,
         seekTime: 0,
         dragTime: null,
         playTime: 0,
-        duration: 0
+        duration: 0,
+        repeat: REPEAT_NONE
     }
 });
 

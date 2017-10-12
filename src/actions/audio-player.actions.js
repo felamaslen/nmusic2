@@ -4,6 +4,7 @@ import {
     AUDIO_DURATION_SET,
     AUDIO_ENDED,
     AUDIO_PLAY_PAUSED,
+    AUDIO_TRACK_CHANGED,
     AUDIO_SEEKED,
     AUDIO_TIME_UPDATED,
     AUDIO_ANALYSER_UPDATED
@@ -16,6 +17,8 @@ export const audioDurationSet = duration => buildAction(AUDIO_DURATION_SET, dura
 export const audioEnded = () => buildAction(AUDIO_ENDED);
 
 export const audioPlayPaused = () => buildAction(AUDIO_PLAY_PAUSED);
+
+export const audioTrackChanged = req => buildAction(AUDIO_TRACK_CHANGED, req);
 
 export const audioSeeked = evt => buildAction(AUDIO_SEEKED, evt);
 

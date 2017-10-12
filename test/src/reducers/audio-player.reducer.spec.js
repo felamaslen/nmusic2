@@ -57,7 +57,8 @@ describe('Audio player reducer', () => {
                 describe('if there is a queue', () => {
                     const stateWithQueue = stateWithoutQueue
                         .setIn(['queue', 'songs'], fromJS([{ id: 'q1' }, { id: 'q2' }]))
-                        .setIn(['queue', 'active'], -1);
+                        .setIn(['queue', 'active'], -1)
+                        .setIn(['player', 'current'], 'foo');
 
                     it('should play the next item on the queue if there is one', () => {
                         const result = R.changeTrack(stateWithQueue, 1);
@@ -65,7 +66,10 @@ describe('Audio player reducer', () => {
                         expect(result.getIn(['player', 'current'])).to.equal('q1');
 
                         const resultInQueue = R.changeTrack(
-                            stateWithQueue.setIn(['queue', 'active'], 0), 1
+                            stateWithQueue
+                                .setIn(['queue', 'active'], 0)
+                                .setIn(['player', 'current'], 'q1'),
+                            1
                         );
 
                         expect(resultInQueue.getIn(['player', 'current'])).to.equal('q2');
@@ -110,13 +114,15 @@ describe('Audio player reducer', () => {
             describe('while in the middle of a song', () => {
                 const stateInMiddle = stateWithoutQueue
                     .setIn(['player', 'current'], 'bar')
-                    .setIn(['player', 'playTime'], 101);
+                    .setIn(['player', 'playTime'], 1.51)
+                    .setIn(['player', 'seekTime'], 1.51);
 
                 it('should go to the beginning of the song', () => {
                     const result = R.changeTrack(stateInMiddle, -1);
 
                     expect(result.getIn(['player', 'paused'])).to.equal(true);
                     expect(result.getIn(['player', 'current'])).to.equal('bar');
+                    expect(result.getIn(['player', 'seekTime'])).to.equal(0);
 
                     const resultWhilePlaying = R.changeTrack(
                         stateInMiddle.setIn(['player', 'paused'], false), -1
@@ -130,7 +136,7 @@ describe('Audio player reducer', () => {
             describe('while at beginning of song', () => {
                 const stateAtBeginning = stateWithoutQueue
                     .setIn(['player', 'current'], 'bar')
-                    .setIn(['player', 'playTime'], 99);
+                    .setIn(['player', 'playTime'], 1.49);
 
                 const stateWithQueue = stateAtBeginning
                     .setIn(['queue', 'songs'], fromJS([{ id: 'q1' }, { id: 'q2' }]));
