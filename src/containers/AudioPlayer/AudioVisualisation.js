@@ -4,6 +4,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutableComponent from '../../ImmutableComponent';
 
+import { drawLinearVisualiser } from '../../helpers';
+
 export class AudioVisualisation extends ImmutableComponent {
     constructor(props) {
         super(props);
@@ -11,7 +13,7 @@ export class AudioVisualisation extends ImmutableComponent {
         this.source = null;
         this.audioCtx = new AudioContext();
         this.analyser = this.audioCtx.createAnalyser();
-        this.analyser.fftSize = 2048;
+        this.analyser.fftSize = 512;
 
         this.data = new Uint8Array(this.analyser.frequencyBinCount);
 
@@ -38,32 +40,7 @@ export class AudioVisualisation extends ImmutableComponent {
         this.source.connect(this.audioCtx.destination);
     }
     draw() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-        this.ctx.beginPath();
-        this.ctx.moveTo(0, this.canvas.height);
-
-        if (this.data && this.data.length) {
-            const sliceWidth = this.canvas.width / this.data.length;
-
-            this.data.forEach((point, key) => {
-                const xPix = sliceWidth * key;
-                const yPix = this.canvas.height * (1 - point / 256);
-
-                if (key === 0) {
-                    this.ctx.moveTo(xPix, yPix);
-                }
-                else {
-                    this.ctx.lineTo(xPix, yPix);
-                }
-            });
-        }
-
-        this.ctx.lineTo(this.canvas.width, this.canvas.height);
-
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeStyle = 'orange';
-        this.ctx.stroke();
+        drawLinearVisualiser(this.ctx, this.canvas.width, this.canvas.height, this.data);
     }
     animate() {
         this.animation = requestAnimationFrame(this.animateBind);
