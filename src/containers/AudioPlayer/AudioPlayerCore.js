@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
 import {
-    audioTimeUpdated, audioDurationSet, audioEnded, audioNodeUpdated
+    audioTimeUpdated, audioDurationSet, audioEnded, audioNodeUpdated, audioSeeked
 } from '../../actions/audio-player.actions';
 
 import React from 'react';
@@ -36,6 +36,9 @@ export class AudioPlayerCore extends ImmutableComponent {
                 this.audio.currentTime = nextProps.seekTime;
 
                 return true;
+            }
+            if (nextProps.seekTime < 0) {
+                this.props.seekToStart();
             }
         }
 
@@ -105,7 +108,8 @@ AudioPlayerCore.propTypes = {
     setDuration: PropTypes.func.isRequired,
     onTimeUpdate: PropTypes.func.isRequired,
     onEnded: PropTypes.func.isRequired,
-    updateAudioNode: PropTypes.func.isRequired
+    updateAudioNode: PropTypes.func.isRequired,
+    seekToStart: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -118,7 +122,8 @@ const mapDispatchToProps = dispatch => ({
     setDuration: duration => dispatch(audioDurationSet(duration)),
     onTimeUpdate: time => dispatch(audioTimeUpdated(time)),
     updateAudioNode: audioNode => dispatch(audioNodeUpdated(audioNode)),
-    onEnded: () => dispatch(audioEnded())
+    onEnded: () => dispatch(audioEnded()),
+    seekToStart: () => dispatch(audioSeeked({ raw: true, newTime: 0 }))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AudioPlayerCore);

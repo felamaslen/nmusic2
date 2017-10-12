@@ -29,6 +29,9 @@ export const audioStop = state => resetPlayerTimes(state)
     .setIn(['player', 'duration'], 0)
     .setIn(['player', 'paused'], true);
 
+const goToSongStart = state => resetPlayerTimes(state)
+    .setIn(['player', 'seekTime'], -1);
+
 function nextTrack(state, currentId, currentListIndex, songs, queue, queueActive) {
     if (!currentId) {
         const song = queue.size
@@ -40,7 +43,7 @@ function nextTrack(state, currentId, currentListIndex, songs, queue, queueActive
 
     const repeatCurrentTrack = state.getIn(['player', 'repeat']) === REPEAT_TRACK;
     if (repeatCurrentTrack) {
-        return resetPlayerTimes(state);
+        return goToSongStart(state);
     }
 
     const startQueue = queue.size > 0 && queueActive === -1;
@@ -79,7 +82,7 @@ function previousTrack(state, currentId, currentListIndex, songs, queue, queueAc
 
     const goToStart = currentPlayTime > REWIND_START_TIME;
     if (goToStart) {
-        return resetPlayerTimes(state);
+        return goToSongStart(state);
     }
 
     const queueItemExists = queueActive > 0;
@@ -147,17 +150,23 @@ function getClickedPlayTime(state, { clientX, target }) {
     return duration * progress;
 }
 
-export function audioSeek(state, { dragging, ...evt }) {
+const audioSeekRaw = (state, newTime) => state
+    .setIn(['player', 'dragTime'], null)
+    .setIn(['player', 'seekTime'], newTime)
+    .setIn(['player', 'playTime'], newTime);
+
+export function audioSeek(state, { raw, dragging, ...evt }) {
+    if (raw) {
+        return audioSeekRaw(state, evt.newTime);
+    }
+
     const newTime = getClickedPlayTime(state, evt);
 
     if (dragging) {
         return state.setIn(['player', 'dragTime'], newTime);
     }
 
-    return state
-        .setIn(['player', 'dragTime'], null)
-        .setIn(['player', 'seekTime'], newTime)
-        .setIn(['player', 'playTime'], newTime);
+    return audioSeekRaw(state, newTime);
 }
 
 export const audioTimeUpdate = (state, time) => state

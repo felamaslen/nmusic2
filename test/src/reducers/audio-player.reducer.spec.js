@@ -122,7 +122,7 @@ describe('Audio player reducer', () => {
 
                     expect(result.getIn(['player', 'paused'])).to.equal(true);
                     expect(result.getIn(['player', 'current'])).to.equal('bar');
-                    expect(result.getIn(['player', 'seekTime'])).to.equal(0);
+                    expect(result.getIn(['player', 'seekTime'])).to.equal(-1);
 
                     const resultWhilePlaying = R.changeTrack(
                         stateInMiddle.setIn(['player', 'paused'], false), -1
