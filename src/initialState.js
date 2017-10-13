@@ -21,6 +21,8 @@ export default fromJS({
         active: -1
     },
     player: {
+        current: null,
+        currentSong: null,
         paused: true,
         url: null,
         seekTime: 0,
