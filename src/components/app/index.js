@@ -1,7 +1,7 @@
 import React from 'react';
 
-import AudioPlayer from '../../containers/AudioPlayer';
-import SongList from '../../containers/SongList';
+import AudioPlayer from '../audio-player';
+import SongList from '../../containers/song-list';
 
 import './style.scss';
 

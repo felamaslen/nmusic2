@@ -9,8 +9,8 @@ import PropTypes from 'prop-types';
 
 import './style.scss';
 
-import SongListHead from './SongListHead';
-import SongListItem from './SongListItem';
+import SongListHead from './list-head';
+import SongListItem from './list-item';
 
 export class SongList extends ImmutableComponent {
     componentDidMount() {

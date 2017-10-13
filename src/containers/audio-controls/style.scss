@@ -11,6 +11,13 @@ $small_icon_size: $button_size_small * 2 / 9;
 $small_space_before_after: $button_size_small * 0.25;
 
 .audio-player-outer {
+    display: flex;
+    flex-flow: row;
+}
+
+.audio-player-controls-outer {
+    flex-grow: 1;
+    
     @mixin triangle($size) {
         width: 0;
         height: 0;
@@ -29,15 +36,6 @@ $small_space_before_after: $button_size_small * 0.25;
     @mixin triangle-left($size) {
         @include triangle($size);
         border-right-color: $color_button_fg;
-    }
-
-    display: flex;
-    flex-flow: row;
-
-    .audio-player-controls-outer {
-        display: flex;
-        flex-flow: row;
-        flex-grow: 1;
     }
 
     .button {
@@ -129,57 +127,5 @@ $small_space_before_after: $button_size_small * 0.25;
         margin: $margin_top_small 0;
     }
 
-    .audio-player-scrubber-outer {
-        display: flex;
-        flex-flow: column;
-        flex-grow: 3;
-    }
-
-    .visualiser {
-        display: flex;
-        align-items: flex-end;
-        flex-grow: 1;
-        height: 56px;
-
-        background-image: linear-gradient(to bottom, #eee 1px, transparent 1px), linear-gradient(to right, #eee 1px, transparent 1px);
-        background-size: 5px 5px;
-
-        .visualiser-canvas {
-            width: 100%;
-            height: inherit;
-        }
-    }
-
-    .audio-scrubber {
-        flex-basis: 22px;
-
-        .trough {
-            height: 100%;
-        }
-        .progress {
-            height: 100%;
-            background: #eee;
-            position: relative;
-        }
-        .play-head {
-            display: block;
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 0;
-            height: 100%;
-            border-right: 1px solid black;
-            &:before {
-                content: "";
-                display: block;
-                width: 0;
-                height: 0;
-                margin-left: -5px;
-                border: solid transparent;
-                border-width: 8px 6px;
-                border-top-color: black;
-            }
-        }
-    }
 }
 

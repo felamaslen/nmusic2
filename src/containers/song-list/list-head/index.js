@@ -1,11 +1,11 @@
 import { List as list, Map as map } from 'immutable';
 import { connect } from 'react-redux';
 
-import { songListSorted } from '../../actions/song-list.actions';
+import { songListSorted } from '../../../actions/song-list.actions';
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import ImmutableComponent from '../../ImmutableComponent';
+import ImmutableComponent from '../../../ImmutableComponent';
 import classNames from 'classnames';
 
 export class SongListHead extends ImmutableComponent {

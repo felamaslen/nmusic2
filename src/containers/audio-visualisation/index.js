@@ -6,6 +6,8 @@ import ImmutableComponent from '../../ImmutableComponent';
 
 import { drawLinearVisualiser } from '../../helpers';
 
+import './style.scss';
+
 export class AudioVisualisation extends ImmutableComponent {
     constructor(props) {
         super(props);

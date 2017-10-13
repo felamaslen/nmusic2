@@ -8,6 +8,8 @@ import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 
+import './style.scss';
+
 export class AudioScrubber extends ImmutableComponent {
     constructor(props) {
         super(props);
