@@ -5,7 +5,7 @@ Enzyme.configure({ adapter: new Adapter() });
 import React from 'react';
 import 'ignore-styles';
 
-import App from '../../../src/components/App/index';
+import App from '../../../src/components/app';
 
 describe('<App />', () => {
     it('should render a container div', () => {
