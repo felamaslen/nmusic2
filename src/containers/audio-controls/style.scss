@@ -18,7 +18,7 @@ $small_space_before_after: $button_size_small * 0.25;
 .audio-player-controls-outer {
     display: flex;
     flex-flow: row;
-    flex-grow: 1;
+    flex-grow: 0;
     
     @mixin triangle($size) {
         width: 0;
@@ -94,6 +94,12 @@ $small_space_before_after: $button_size_small * 0.25;
     
     $next_left_icon_margin: $small_space_before_after - $button_size_small / 2;
     $next_right_icon_margin: $button_size_small / 2 - $small_space_before_after - $small_icon_size;
+    
+    .button-next, .button-previous {
+        width: $button_size_small;
+        height: $button_size_small;
+        margin: $margin_top_small 0;
+    }
 
     .button-next {
         margin-left: $margin_within;
@@ -121,13 +127,6 @@ $small_space_before_after: $button_size_small * 0.25;
         &:after {
             margin-left: $next_right_icon_margin - $small_icon_size * 2;
         }
-    }
-    
-    .button-next, .button-previous {
-        width: $button_size_small;
-        height: $button_size_small;
-        margin: $margin_top_small 0;
-    }
-
+    }    
 }
 
