@@ -125,7 +125,10 @@ async function scanMusicInfoSingle(file, progress = null) {
     const { title, artist, album, year } = metadata.common;
     const { bitrate, duration, sampleRate } = metadata.format;
 
+    const track = metadata.common.track.no || 0;
+
     const info = {
+        track,
         title,
         artist,
         album,

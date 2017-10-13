@@ -111,7 +111,11 @@ export function insertSongList(state, { err, response }) {
             album: item[3],
             year: item[4],
             duration: item[5],
-            durationFormatted: formatSeconds(item[5])
+            durationFormatted: formatSeconds(item[5]),
+            track: item[6],
+            trackNo: item[6] > 0
+                ? item[6].toString()
+                : ''
         }));
     }
 

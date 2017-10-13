@@ -1,5 +1,7 @@
 import { fromJS } from 'immutable';
 
+import { REPEAT_NONE } from './constants/misc';
+
 export default fromJS({
     songList: {
         songs: [],
@@ -8,16 +10,24 @@ export default fromJS({
         lastClickedId: -1,
         orderKeys: [
             { key: 'title', order: 1 },
+            { key: 'track', order: 1 },
             { key: 'album', order: 1 },
             { key: 'artist', order: 1 }
         ]
+    },
+    audioNode: null,
+    queue: {
+        songs: [],
+        active: -1
     },
     player: {
         paused: true,
         url: null,
         seekTime: 0,
+        dragTime: null,
         playTime: 0,
-        duration: 0
+        duration: 0,
+        repeat: REPEAT_NONE
     }
 });
 

@@ -27,12 +27,15 @@ export class SongListHead extends ImmutableComponent {
         return <span className={key}>{title}</span>;
     }
     render() {
+        const itemTrack = this.renderItem('T#', 'track', true);
         const itemTitle = this.renderItem('Title', 'title', true);
         const itemDuration = this.renderItem('Duration', 'duration', false);
         const itemArtist = this.renderItem('Artist', 'artist', true);
         const itemAlbum = this.renderItem('Album', 'album', true);
 
         return <span className="song-list-head">
+            <span className="status" />
+            {itemTrack}
             {itemTitle}
             {itemDuration}
             {itemArtist}

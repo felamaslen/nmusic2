@@ -14,7 +14,8 @@ async function routeSongsList(req, res) {
                 result.info.artist,
                 result.info.album,
                 result.info.year,
-                Math.round(result.info.duration)
+                Math.round(result.info.duration),
+                result.info.track
             ]);
 
         res.json(songList);

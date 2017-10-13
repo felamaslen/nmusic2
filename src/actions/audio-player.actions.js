@@ -4,9 +4,10 @@ import {
     AUDIO_DURATION_SET,
     AUDIO_ENDED,
     AUDIO_PLAY_PAUSED,
+    AUDIO_TRACK_CHANGED,
     AUDIO_SEEKED,
     AUDIO_TIME_UPDATED,
-    AUDIO_ANALYSER_UPDATED
+    AUDIO_NODE_UPDATED
 } from '../constants/actions';
 
 export const audioFileLoaded = file => buildAction(AUDIO_FILE_LOADED, file);
@@ -17,9 +18,11 @@ export const audioEnded = () => buildAction(AUDIO_ENDED);
 
 export const audioPlayPaused = () => buildAction(AUDIO_PLAY_PAUSED);
 
-export const audioSeeked = time => buildAction(AUDIO_SEEKED, time);
+export const audioTrackChanged = req => buildAction(AUDIO_TRACK_CHANGED, req);
+
+export const audioSeeked = evt => buildAction(AUDIO_SEEKED, evt);
 
 export const audioTimeUpdated = time => buildAction(AUDIO_TIME_UPDATED, time);
 
-export const audioAnalyserUpdated = data => buildAction(AUDIO_ANALYSER_UPDATED, data);
+export const audioNodeUpdated = audioNode => buildAction(AUDIO_NODE_UPDATED, audioNode);
 
