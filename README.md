@@ -28,7 +28,7 @@ Run `npm install` to install Node dependencies
 
 ### Maintenance
 
-- [TODO] Run `npm run load_music` to process music files into the database
+- Run `npm run scan_music` to scan the music directory and synchronise it with the database
 
 ### Development
 
@@ -39,4 +39,7 @@ Run `npm install` to install Node dependencies
 ## Environment variables:
 
 - `MONGO_URI`: the URI to connect to a MongoDB instance
+- `MUSIC_DIRECTORY`: where your music is stored
+- `DISCOGS_CONSUMER_KEY`: Discogs key for album artwork
+- `DISCOGS_CONSUMER_SECRET`: Discogs secret
 
