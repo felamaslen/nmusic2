@@ -1,10 +1,18 @@
 const config = require('../../common/config');
 
 async function routeSongsList(req, res) {
+    const query = ['artist', 'album'].reduce((filter, item) => {
+        if (req.query[item]) {
+            filter[`info.${item}`] = req.query[item];
+        }
+
+        return filter;
+    }, {});
+
     try {
         const results = await req.db
             .collection(config.collections.music)
-            .find({})
+            .find(query)
             .toArray();
 
         const songList = results
