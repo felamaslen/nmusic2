@@ -198,7 +198,9 @@ async function routeArtwork(req, res, next) {
         decoded = decodeArtistAlbum(encoded);
     }
     catch (err) {
-        return next();
+        return res
+            .status(400)
+            .json({ error: true, status: 'Badly formatted ID' });
     }
 
     const { artist, album } = decoded;
