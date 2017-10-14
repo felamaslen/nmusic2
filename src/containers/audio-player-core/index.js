@@ -113,9 +113,9 @@ AudioPlayerCore.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    src: state.getIn(['global', 'player', 'url']),
-    paused: state.getIn(['global', 'player', 'paused']),
-    seekTime: state.getIn(['global', 'player', 'seekTime'])
+    src: state.getIn(['player', 'url']),
+    paused: state.getIn(['player', 'paused']),
+    seekTime: state.getIn(['player', 'seekTime'])
 });
 
 const mapDispatchToProps = dispatch => ({

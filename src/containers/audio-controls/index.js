@@ -40,7 +40,7 @@ AudioControls.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    paused: state.getIn(['global', 'player', 'paused'])
+    paused: state.getIn(['player', 'paused'])
 });
 
 const mapDispatchToProps = dispatch => ({

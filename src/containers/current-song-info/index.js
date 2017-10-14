@@ -39,10 +39,10 @@ CurrentSongInfo.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    active: Boolean(state.getIn(['global', 'player', 'current'])),
-    artist: state.getIn(['global', 'player', 'currentSong', 'artist']),
-    album: state.getIn(['global', 'player', 'currentSong', 'album']),
-    title: state.getIn(['global', 'player', 'currentSong', 'title'])
+    active: Boolean(state.getIn(['player', 'current'])),
+    artist: state.getIn(['player', 'currentSong', 'artist']),
+    album: state.getIn(['player', 'currentSong', 'album']),
+    title: state.getIn(['player', 'currentSong', 'title'])
 });
 
 const mapDispatchToProps = null;

@@ -48,13 +48,13 @@ SongListItem.propTypes = {
 };
 
 const mapStateToProps = (state, ownProps) => {
-    const current = state.getIn(['global', 'player', 'current']) === ownProps.id;
-    const paused = current && state.getIn(['global', 'player', 'paused']);
+    const current = state.getIn(['player', 'current']) === ownProps.id;
+    const paused = current && state.getIn(['player', 'paused']);
 
     return {
-        song: state.getIn(['global', 'songList', 'songs', ownProps.listKey]),
+        song: state.getIn(['songList', 'songs', ownProps.listKey]),
         selected: state
-            .getIn(['global', 'songList', 'selectedIds'])
+            .getIn(['songList', 'selectedIds'])
             .indexOf(ownProps.id) !== -1,
         current,
         paused

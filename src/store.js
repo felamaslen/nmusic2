@@ -1,10 +1,9 @@
 /* eslint-disable no-underscore-dangle */
 import { createStore, applyMiddleware, compose } from 'redux';
-import { combineReducers } from 'redux-immutable';
 
 import { AUDIO_TIME_UPDATED } from './constants/actions';
 
-import globalReducer from './reducers';
+import rootReducer from './reducers';
 import effectHandler from './effects';
 
 function sideEffectHandler() {
@@ -22,8 +21,9 @@ function sideEffectHandler() {
 function getStore() {
     const middleware = [sideEffectHandler()];
 
-    const devTools = process.env.NODE_ENV === 'development' &&
-        window && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
+    const __DEV__ = process.env.NODE_ENV === 'development';
+
+    const devTools = __DEV__ && window && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
 
     const actionsBlacklist = [
         AUDIO_TIME_UPDATED
@@ -37,12 +37,9 @@ function getStore() {
         applyMiddleware(...middleware)
     );
 
-    return createStore(
-        combineReducers({
-            global: globalReducer
-        }),
-        enhancer
-    );
+    const store = createStore(rootReducer, enhancer);
+
+    return store;
 }
 
 export default getStore;

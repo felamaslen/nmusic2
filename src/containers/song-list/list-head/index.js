@@ -50,7 +50,7 @@ SongListHead.propTypes = {
     sortList: PropTypes.func.isRequired
 };
 
-const keySort = state => key => state.getIn(['global', 'songList', 'orderKeys'])
+const keySort = state => key => state.getIn(['songList', 'orderKeys'])
     .filter(item => item.get('key') === key)
     .getIn([0, 'order']);
 
@@ -61,7 +61,7 @@ const mapStateToProps = state => ({
         album: keySort(state)('album')
     }),
     justSelected: state
-        .getIn(['global', 'songList', 'orderKeys'])
+        .getIn(['songList', 'orderKeys'])
         .slice(-1)
         .map(item => item.get('key'))
 });
