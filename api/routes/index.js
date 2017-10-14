@@ -24,7 +24,7 @@ function apiRoutes() {
 
     router.get('/songs', routeSongsList);
     router.get('/artists', routeFilterList('artist'));
-    router.get('/albums', routeFilterList('album'));
+    router.get('/albums/:artist?', routeFilterList('album', 'artist'));
 
     router.get('/play/:id', routePlay);
 

@@ -21,12 +21,17 @@ function sortCaseInsensitiveIgnorePrefix(prev, next) {
     return 0;
 }
 
-function routeFilterList(key) {
+function routeFilterList(key, subKey = null) {
     return async (req, res) => {
+        let query = {};
+        if (subKey && req.params[subKey]) {
+            query = { [`info.${subKey}`]: req.params[subKey] };
+        }
+
         try {
             const results = await req.db
                 .collection(config.collections.music)
-                .distinct(`info.${key}`)
+                .distinct(`info.${key}`, query)
 
             const items = results
                 .map(item => item || `Unknown ${key}`)
