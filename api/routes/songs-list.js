@@ -31,7 +31,7 @@ async function routeSongsList(req, res) {
     catch (err) {
         res
             .status(500)
-            .json({ status: 'Database error' });
+            .json({ error: true, status: 'Database error' });
     }
     finally {
         req.db.close();
