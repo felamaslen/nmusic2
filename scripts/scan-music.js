@@ -2,7 +2,7 @@
  * Scan music directory and add to Mongo database
  */
 
-/* eslint-disable max-statements */
+/* eslint-disable max-statements, no-await-in-loop */
 
 const path = require('path');
 const fs = require('fs');
@@ -14,6 +14,13 @@ const ProgressBar = require('progress');
 const config = require('../common/config');
 const logger = require('../common/logger');
 const Database = require('../common/db');
+
+const hasArg = arg => process.argv.indexOf(`-${arg.substring(0, 1)}`) !== -1 ||
+    process.argv.indexOf(`--${arg}`) !== -1;
+
+const DRY_RUN = hasArg('dry-run');
+const VERBOSE = hasArg('verbose');
+const QUIET = hasArg('quiet');
 
 async function getDirectoriesFromDirList(directory, items, pattern) {
     const itemsWithDirInfo = await Promise.all(items.map(item => {
@@ -145,18 +152,14 @@ async function scanMusicInfoSingle(file, progress = null) {
     return { file, info };
 }
 
-function scanMusicInfo(filesList, progress) {
-    return Promise.all(filesList.map(file => scanMusicInfoSingle(file, progress)));
-}
-
-function insertNewRows(db, rows) {
-    if (!rows.length) {
-        return null;
+function insertNewRow(db, row) {
+    if (!row) {
+        throw new Error('null row');
     }
 
     return new Promise((resolve, reject) => db
         .collection(config.collections.music)
-        .insert(rows, err => {
+        .insertOne(row, err => {
             if (err) {
                 return reject(err);
             }
@@ -166,9 +169,44 @@ function insertNewRows(db, rows) {
     );
 }
 
+async function scanAndAddMusic(db, filesList, progress) {
+    const scanErrors = [];
+    const dbErrors = [];
+    let numInserted = 0;
+
+    for (const file of filesList) {
+        try {
+            const row = await scanMusicInfoSingle(file, progress);
+
+            if (DRY_RUN) {
+                numInserted += 1;
+            }
+            else {
+                try {
+                    insertNewRow(db, row);
+
+                    numInserted += 1;
+                }
+                catch (dbErr) {
+                    dbErrors.push(file);
+                }
+            }
+        }
+        catch (err) {
+            scanErrors.push(file);
+        }
+    }
+
+    return { scanErrors, dbErrors, numInserted };
+}
+
 function deleteFromDatabase(db, files) {
     if (!files.length) {
         return null;
+    }
+
+    if (DRY_RUN) {
+        return Promise.resolve();
     }
 
     return new Promise((resolve, reject) => db
@@ -192,8 +230,48 @@ function getProgressBar(total) {
     });
 }
 
+async function initScan(files, db) {
+    if (!files.length) {
+        return;
+    }
+
+    let progress = null;
+
+    if (!QUIET) {
+        logger('MSG', 'Scanning and adding tag info for new files...');
+        progress = getProgressBar(files.length);
+    }
+
+    const { scanErrors, dbErrors, numInserted } = await scanAndAddMusic(db, files, progress);
+
+    if (!QUIET) {
+        if (scanErrors.length) {
+            logger('ERROR', scanErrors.length, 'file(s) could not be scanned');
+            if (VERBOSE) {
+                logger('DEBUG', 'They were:', scanErrors);
+            }
+        }
+
+        if (dbErrors.length) {
+            logger('ERROR', dbErrors.length, 'row(s) could not be inserted');
+            if (VERBOSE) {
+                logger('DEBUG', 'They were:', dbErrors);
+            }
+        }
+    }
+
+    if (VERBOSE) {
+        logger('DEBUG', `${numInserted} item(s) inserted`);
+    }
+}
+
 async function scanMusic(directory) {
+    let status = 0;
     let db = null;
+
+    if (DRY_RUN) {
+        logger('WARN', 'Not changing anything; this is a dry run');
+    }
 
     try {
         logger('MSG', 'Connecting to database...');
@@ -201,23 +279,23 @@ async function scanMusic(directory) {
 
         logger('MSG', 'Scanning music directory...');
         const filesList = await getListOfMusicFiles(directory);
-        logger('DEBUG', `Found ${filesList.length} file(s)`);
+        if (VERBOSE) {
+            logger('DEBUG', `Finished initial scan of music directory (found ${filesList.length} item(s))`);
+        }
 
         logger('MSG', 'Getting existing list from database...');
         const dbList = await getMusicFilesInDatabase(db);
         logger('DEBUG', `${dbList.length} item(s) in database`);
 
-        logger('MSG', 'Filtering: checking which files need to be added to the database...');
-        const filesNotInDb = getFilesNotInDb(filesList, dbList);
-        logger('DEBUG', `${filesNotInDb.length} file(s) to be scanned`);
-
-        if (filesNotInDb.length > 0) {
-            logger('MSG', 'Scanning and adding tag info for new files...');
-            const progressReadFiles = getProgressBar(filesNotInDb.length);
-            const rows = await scanMusicInfo(filesNotInDb, progressReadFiles);
-            await insertNewRows(db, rows);
-            logger('DEBUG', `${filesNotInDb.length} item(s) inserted`);
+        if (!QUIET) {
+            logger('MSG', 'Filtering: checking which files need to be added to the database...');
         }
+        const filesNotInDb = getFilesNotInDb(filesList, dbList);
+        if (VERBOSE) {
+            logger('DEBUG', `${filesNotInDb.length} file(s) to be scanned`);
+        }
+
+        await initScan(filesNotInDb, db);
 
         logger('MSG', 'Deleting items from the database which have been removed...');
         const deletedMusic = getDeletedMusic(filesList, dbList);
@@ -226,12 +304,19 @@ async function scanMusic(directory) {
     }
     catch (err) {
         logger('FATAL', 'An error occurred:', err);
+        if (VERBOSE) {
+            logger('FATAL', err.stack);
+        }
+
+        status = 1;
     }
     finally {
         if (db) {
             db.close();
         }
     }
+
+    return status;
 }
 
 function init() {
