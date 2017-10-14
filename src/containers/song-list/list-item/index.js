@@ -1,12 +1,12 @@
 import { Map as map } from 'immutable';
 import { connect } from 'react-redux';
 
-import { songListItemClicked } from '../../actions/song-list.actions';
-import { audioFileLoaded } from '../../actions/audio-player.actions';
+import { songListItemClicked } from '../../../actions/song-list.actions';
+import { audioFileLoaded } from '../../../actions/audio-player.actions';
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import ImmutableComponent from '../../ImmutableComponent';
+import ImmutableComponent from '../../../ImmutableComponent';
 import classNames from 'classnames';
 
 export class SongListItem extends ImmutableComponent {

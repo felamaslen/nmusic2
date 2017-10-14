@@ -1,0 +1,38 @@
+.audio-player-scrubber-outer {
+    display: flex;
+    flex-flow: column;
+    flex-grow: 3;
+    
+    .audio-scrubber {
+        flex-basis: 22px;
+
+        .trough {
+            height: 100%;
+        }
+        .progress {
+            height: 100%;
+            background: #eee;
+            position: relative;
+        }
+        .play-head {
+            display: block;
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 0;
+            height: 100%;
+            border-right: 1px solid black;
+            &:before {
+                content: "";
+                display: block;
+                width: 0;
+                height: 0;
+                margin-left: -5px;
+                border: solid transparent;
+                border-width: 8px 6px;
+                border-top-color: black;
+            }
+        }
+    }
+}
+

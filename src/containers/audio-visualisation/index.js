@@ -6,6 +6,8 @@ import ImmutableComponent from '../../ImmutableComponent';
 
 import { drawLinearVisualiser } from '../../helpers';
 
+import './style.scss';
+
 export class AudioVisualisation extends ImmutableComponent {
     constructor(props) {
         super(props);
@@ -81,8 +83,13 @@ export class AudioVisualisation extends ImmutableComponent {
     }
 }
 
+let AudioObject = Object;
+if (typeof Audio !== 'undefined') {
+    AudioObject = Audio;
+}
+
 AudioVisualisation.propTypes = {
-    audioNode: PropTypes.instanceOf(Audio)
+    audioNode: PropTypes.instanceOf(AudioObject)
 };
 
 const mapStateToProps = state => ({

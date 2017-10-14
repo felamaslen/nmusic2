@@ -7,6 +7,7 @@ const Database = require('../../common/db');
 
 const { routeSongsList } = require('./songs-list');
 const { routePlay } = require('./play');
+const { routeArtwork } = require('./artwork');
 
 async function dbMiddleware(req, res, next) {
     req.db = await Database.dbConnect(config.dbUri);
@@ -22,6 +23,7 @@ function apiRoutes() {
 
     router.get('/songs', routeSongsList);
     router.get('/play/:id', routePlay);
+    router.get('/artwork/:encoded', routeArtwork);
 
     return router;
 }

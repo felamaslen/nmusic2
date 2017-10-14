@@ -25,6 +25,10 @@ function init() {
     setupClient(app);
 
     app.use((req, res) => {
+        if (req.db) {
+            req.db.close();
+        }
+
         res
             .status(404)
             .json({

@@ -61,4 +61,5 @@ test/api/scripts/test-music/**/*.ogg
 test/api/scripts/test-music/**/*.mp3
 
 build
-
+.artwork/**
+!.artwork/unknown-artwork.png

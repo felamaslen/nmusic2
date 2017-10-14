@@ -9,6 +9,8 @@ import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
+import './style.scss';
+
 export class AudioControls extends ImmutableComponent {
     render() {
         const playPauseButtonClasses = classNames({
