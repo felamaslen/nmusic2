@@ -47,6 +47,10 @@ $color-list-selected: white;
     }
 }
 
+.song-list-outer {
+    flex-grow: 1;
+}
+
 .song-list-head, .song-list {
     user-select: none;
     cursor: default;
@@ -103,6 +107,7 @@ $color-list-selected: white;
 .song-list {
     display: flex;
     flex-flow: column;
+    overflow-y: scroll;
 
     .song {
         display: flex;

@@ -3,6 +3,21 @@ import { fromJS } from 'immutable';
 import { REPEAT_NONE } from './constants/misc';
 
 export default fromJS({
+    testKey: 0,
+    filter: {
+        artist: {
+            loaded: false,
+            items: [],
+            selectedKeys: [],
+            lastClickedKey: -1
+        },
+        album: {
+            loaded: false,
+            items: [],
+            selectedKeys: [],
+            lastClickedKey: -1
+        }
+    },
     songList: {
         songs: [],
         loading: false,

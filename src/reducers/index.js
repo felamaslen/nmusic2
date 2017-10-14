@@ -8,6 +8,11 @@ import {
 } from './song-list.reducer';
 
 import {
+    receiveFilterList,
+    startFilterSongList
+} from './filter.reducer';
+
+import {
     loadAudioFile, setAudioDuration,
     audioTimeUpdate, handleAudioEnded,
     playPauseAudio, changeTrack, audioSeek,
@@ -29,6 +34,9 @@ export default createReducer(initialState, createReducerObject([
     [AC.SONG_LIST_RETRIEVED, insertSongList],
     [AC.SONG_LIST_ITEM_CLICKED, selectSongListItem],
     [AC.SONG_LIST_SORTED, sortSongList],
+
+    [AC.FILTER_LIST_LOADED, receiveFilterList],
+    [AC.FILTER_ITEM_CLICKED, startFilterSongList],
 
     [AC.AUDIO_NODE_UPDATED, updateAudioNode],
     [AC.AUDIO_FILE_LOADED, loadAudioFile],

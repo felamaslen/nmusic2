@@ -11,9 +11,9 @@ function sideEffectHandler() {
         dispatch(action);
 
         if (action.effect && action.effect.type in effectHandler) {
-            const reduction = store.getState().global;
+            const state = store.getState();
 
-            effectHandler[action.effect.type](dispatch, reduction, action.effect.payload);
+            effectHandler[action.effect.type](dispatch, state, action.effect.payload);
         }
     };
 }
