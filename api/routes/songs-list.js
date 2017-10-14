@@ -1,9 +1,15 @@
 const config = require('../../common/config');
 
+const { getInfoFilterQuery } = require('../helpers');
+
 async function routeSongsList(req, res) {
     const query = ['artist', 'album'].reduce((filter, item) => {
         if (req.query[item]) {
-            filter[`info.${item}`] = req.query[item];
+            if (!filter.$and) {
+                filter.$and = [];
+            }
+
+            filter.$and.push(getInfoFilterQuery(req.query[item], item));
         }
 
         return filter;
