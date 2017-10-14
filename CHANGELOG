@@ -1,0 +1,6 @@
+- Release 0.0.1-alpha:
+    - Music scanning script
+    - MongoDB backend
+    - Basic music player react app
+    - Album artwork fetcher using Discogs
+

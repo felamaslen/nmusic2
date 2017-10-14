@@ -1,0 +1,32 @@
+.current-song-info-outer {
+    display: flex;
+    white-space: nowrap;
+
+    .artwork {
+        max-width: 80px;
+        max-height: 80px;
+
+        img {
+            max-width: inherit;
+            max-height: inherit;
+        }
+    }
+
+    .info {
+        display: flex;
+        margin: 0 1em;
+        flex-flow: column;
+
+        & > span {
+            line-height: 24px;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    
+        .title {
+            font-style: italic;
+        }
+    }
+}
+

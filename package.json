@@ -1,0 +1,81 @@
+{
+  "name": "nmusic2",
+  "version": "0.0.1-alpha",
+  "engines": {
+    "node": "=8"
+  },
+  "description": "Node music player",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "rm -rf ./node_modules",
+    "postinstall": "NODE_ENV=production ./node_modules/.bin/webpack",
+    "start": "NODE_ENV=production node ./api/index.js",
+    "dev:api": "NODE_ENV=development nodemon --inspect -w ./api ./api/index.js",
+    "dev:wds": "NODE_ENV=development ./node_modules/.bin/webpack-dev-server",
+    "scan_music": "node ./scripts/scan-music.js",
+    "test": "./test.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/felamaslen/nmusic2.git"
+  },
+  "author": "Fela Maslen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/felamaslen/nmusic2/issues"
+  },
+  "homepage": "https://github.com/felamaslen/nmusic2#readme",
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "enzyme": "^3.1.0",
+    "enzyme-adapter-react-16": "^1.0.1",
+    "eslint": "^4.8.0",
+    "ignore-styles": "^5.0.1",
+    "jsdom": "^11.3.0",
+    "mocha": "^4.0.0",
+    "react-pure-render": "^1.0.2",
+    "react-test-renderer": "^16.0.0",
+    "webpack-dev-server": "^2.9.1"
+  },
+  "dependencies": {
+    "axios": "^0.16.2",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "body-parser": "^1.18.2",
+    "classnames": "^2.2.5",
+    "colors": "^1.1.2",
+    "css-loader": "^0.28.7",
+    "dateformat": "^3.0.2",
+    "disconnect": "^1.2.1",
+    "dotenv": "^4.0.0",
+    "dotenv-webpack": "^1.5.4",
+    "ejs": "^2.5.7",
+    "express": "^4.16.1",
+    "extract-text-webpack-plugin": "^3.0.1",
+    "file-loader": "^1.1.5",
+    "http-https": "^1.0.0",
+    "immutable": "^3.8.2",
+    "mime-types": "^2.1.17",
+    "mongodb": "^2.2.31",
+    "morgan": "^1.9.0",
+    "music-metadata": "^0.8.6",
+    "node-sass": "^4.5.3",
+    "optimize-css-assets-webpack-plugin": "^3.2.0",
+    "progress": "^2.0.0",
+    "prop-types": "^15.6.0",
+    "react": "^16.0.0",
+    "react-dom": "^16.0.0",
+    "react-redux": "^5.0.6",
+    "redux": "^3.7.2",
+    "redux-create-reducer": "^1.1.1",
+    "redux-immutable": "^4.0.0",
+    "request": "^2.83.0",
+    "sass-loader": "^6.0.6",
+    "send-seekable": "^1.0.4",
+    "webpack": "^3.6.0"
+  }
+}
