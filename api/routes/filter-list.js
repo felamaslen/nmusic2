@@ -25,7 +25,11 @@ function routeFilterList(key, subKey = null) {
     return async (req, res) => {
         let query = {};
         if (subKey && req.params[subKey]) {
-            query = { [`info.${subKey}`]: req.params[subKey] };
+            const filter = req.params[subKey]
+                .split(',')
+                .map(item => ({ [`info.${subKey}`]: decodeURIComponent(item) }));
+
+            query = { $or: filter };
         }
 
         try {
