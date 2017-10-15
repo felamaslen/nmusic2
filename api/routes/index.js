@@ -7,6 +7,7 @@ const Database = require('../../common/db');
 
 const { routeSongsList } = require('./songs-list');
 const { routeFilterList } = require('./filter-list');
+const { routeSearch } = require('./search');
 const { routePlay } = require('./play');
 const { routeArtwork } = require('./artwork');
 
@@ -25,6 +26,7 @@ function apiRoutes() {
     router.get('/songs', routeSongsList);
     router.get('/artists', routeFilterList('artist'));
     router.get('/albums/:artist?', routeFilterList('album', 'artist'));
+    router.get('/search/:keyword', routeSearch);
 
     router.get('/play/:id', routePlay);
 
