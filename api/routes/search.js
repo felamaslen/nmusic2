@@ -19,7 +19,7 @@ const sortByMatchingFirst = keyword => {
     };
 };
 
-async function getSortedSearchResult(db, key, keyword, getId = false) {
+async function getSortedSearchResult(db, key, keyword, getRows = null) {
     const maxResults = 5;
 
     const match = new RegExp(`(^|\\s)${keyword}`, 'i');
@@ -28,13 +28,29 @@ async function getSortedSearchResult(db, key, keyword, getId = false) {
 
     let results = [];
 
-    if (getId) {
+    if (getRows) {
+        const fields = getRows.reduce((last, item) => {
+            last[item] = 1;
+
+            return last;
+        }, {});
+
+        if (getRows.length) {
+            if (!(infoKey in fields)) {
+                fields[infoKey] = 1;
+            }
+
+            if (!('_id' in fields)) {
+                fields._id = 0;
+            }
+        }
+
         const resultsFind = await db
             .collection(config.collections.music)
-            .find({ [infoKey]: match }, { '_id': 1, [infoKey]: 1 })
+            .find({ [infoKey]: match }, fields)
             .toArray();
 
-        results = resultsFind.map(item => ({ id: item._id.toString(), item: item.info[key] }));
+        results = resultsFind.map(row => ({ row, item: row.info[key] }));
     }
     else {
         const resultsDistinct = await db
@@ -48,8 +64,15 @@ async function getSortedSearchResult(db, key, keyword, getId = false) {
         .sort(sortByMatchingFirst(keyword))
         .slice(0, maxResults);
 
-    if (getId) {
-        return items;
+    if (getRows) {
+        return items.map(item => {
+            const result = {};
+            if ('_id' in item.row) {
+                result.id = item._id;
+            }
+
+            return { ...result, ...item.row.info };
+        });
     }
 
     return items.map(item => item.item);
@@ -60,8 +83,8 @@ async function routeSearch(req, res) {
 
     try {
         const artists = await getSortedSearchResult(req.db, 'artist', keyword);
-        const albums = await getSortedSearchResult(req.db, 'album', keyword);
-        const titles = await getSortedSearchResult(req.db, 'title', keyword, true);
+        const albums = await getSortedSearchResult(req.db, 'album', keyword, ['info.artist']);
+        const titles = await getSortedSearchResult(req.db, 'title', keyword, []);
 
         res.json({ artists, albums, titles });
     }
