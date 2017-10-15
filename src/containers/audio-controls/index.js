@@ -12,8 +12,6 @@ import classNames from 'classnames';
 import AudioScrubber from '../audio-scrubber';
 import AudioVisualisation from '../audio-visualisation';
 
-import './style.scss';
-
 export class AudioControls extends ImmutableComponent {
     render() {
         const playPauseButtonClasses = classNames({

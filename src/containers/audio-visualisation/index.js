@@ -8,8 +8,6 @@ import { VISUALISER_FPS_CAP, VISUALISER_FFT_SIZE } from '../../constants/misc';
 
 import { drawLinearVisualiser } from '../../helpers';
 
-import './style.scss';
-
 export class AudioVisualisation extends ImmutableComponent {
     constructor(props) {
         super(props);

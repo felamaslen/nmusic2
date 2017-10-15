@@ -7,8 +7,6 @@ import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 
-import './style.scss';
-
 import SongListHead from './list-head';
 import SongListItem from './list-item';
 
