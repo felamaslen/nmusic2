@@ -1,3 +1,5 @@
+import { List as list } from 'immutable';
+
 import {
     API_PREFIX, REPEAT_TRACK, REPEAT_LIST, REWIND_START_TIME
 } from '../constants/misc';
@@ -12,6 +14,8 @@ export function loadAudioFile(state, song, play = true) {
         .setIn(['player', 'current'], song.get('id'))
         .setIn(['player', 'currentSong'], song)
         .setIn(['player', 'url'], `${API_PREFIX}/play/${song.get('id')}`)
+        .setIn(['player', 'bufferedRanges'], list.of())
+        .setIn(['player', 'bufferedRangesRaw'], null)
         .setIn(['player', 'duration'], song.get('duration'));
 
     if (play) {
@@ -20,9 +24,6 @@ export function loadAudioFile(state, song, play = true) {
 
     return newState;
 }
-
-export const setAudioDuration = (state, duration) => state
-    .setIn(['player', 'duration'], duration);
 
 export const audioStop = state => resetPlayerTimes(state)
     .setIn(['player', 'current'], null)
@@ -170,6 +171,28 @@ export function audioSeek(state, { raw, dragging, ...evt }) {
 
     return audioSeekRaw(state, newTime);
 }
+
+function getBufferedRangesAsProps(buffered, duration) {
+    if (!(duration && buffered && buffered.length)) {
+        return list.of();
+    }
+
+    return list(new Array(buffered.length).fill(0))
+        .map((item, key) => ({
+            left: `${buffered.start(key) / duration * 100}%`,
+            width: `${(buffered.end(key) - buffered.start(key)) / duration * 100}%`
+        }));
+}
+
+export const setAudioDuration = (state, duration) => state
+    .setIn(['player', 'buffered'], getBufferedRangesAsProps(
+        state.getIn(['player', 'bufferedRangesRaw']), duration
+    ))
+    .setIn(['player', 'duration'], duration);
+
+export const audioProgressBuffer = (state, { buffered, duration }) => state
+    .setIn(['player', 'bufferdRangesRaw'], buffered)
+    .setIn(['player', 'bufferedRanges'], getBufferedRangesAsProps(buffered, duration));
 
 export const audioTimeUpdate = (state, time) => state
     .setIn(['player', 'playTime'], time);
