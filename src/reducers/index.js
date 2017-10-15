@@ -16,7 +16,8 @@ import {
     loadAudioFile, setAudioDuration,
     audioTimeUpdate, audioProgressBuffer, handleAudioEnded,
     playPauseAudio, changeTrack, audioSeek,
-    updateAudioNode
+    updateAudioSource,
+    setArtworkLoaded
 } from './audio-player.reducer';
 
 import initialState from '../initialState';
@@ -38,7 +39,7 @@ export default createReducer(initialState, createReducerObject([
     [AC.FILTER_LIST_LOADED, receiveFilterList],
     [AC.FILTER_ITEM_CLICKED, startFilterSongList],
 
-    [AC.AUDIO_NODE_UPDATED, updateAudioNode],
+    [AC.AUDIO_SOURCE_UPDATED, updateAudioSource],
     [AC.AUDIO_FILE_LOADED, loadAudioFile],
     [AC.AUDIO_DURATION_SET, setAudioDuration],
 
@@ -48,6 +49,8 @@ export default createReducer(initialState, createReducerObject([
 
     [AC.AUDIO_PLAY_PAUSED, playPauseAudio],
     [AC.AUDIO_TRACK_CHANGED, changeTrack],
-    [AC.AUDIO_SEEKED, audioSeek]
+    [AC.AUDIO_SEEKED, audioSeek],
+
+    [AC.ARTWORK_LOADED, setArtworkLoaded]
 ]));
 

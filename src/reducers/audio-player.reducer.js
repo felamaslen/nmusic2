@@ -9,6 +9,16 @@ const resetPlayerTimes = state => state
     .setIn(['player', 'playTime'], 0)
     .setIn(['player', 'dragTime'], null);
 
+const encodeArtistAlbum = (artist, album) => Buffer
+    .from([artist, album]
+        .map(item => encodeURIComponent(item))
+        .join('/'))
+    .toString('base64');
+
+const getArtworkSrc = song => `${API_PREFIX}/artwork/${encodeArtistAlbum(
+    song.get('artist') || '', song.get('album')
+)}`;
+
 export function loadAudioFile(state, song, play = true) {
     const newState = resetPlayerTimes(state)
         .setIn(['player', 'current'], song.get('id'))
@@ -16,7 +26,9 @@ export function loadAudioFile(state, song, play = true) {
         .setIn(['player', 'url'], `${API_PREFIX}/play/${song.get('id')}`)
         .setIn(['player', 'bufferedRanges'], list.of())
         .setIn(['player', 'bufferedRangesRaw'], null)
-        .setIn(['player', 'duration'], song.get('duration'));
+        .setIn(['player', 'duration'], song.get('duration'))
+        .setIn(['artwork', 'src'], getArtworkSrc(song))
+        .setIn(['artwork', 'loaded'], false);
 
     if (play) {
         return newState.setIn(['player', 'paused'], false);
@@ -24,6 +36,9 @@ export function loadAudioFile(state, song, play = true) {
 
     return newState;
 }
+
+export const setArtworkLoaded = state => state
+    .setIn(['artwork', 'loaded'], true);
 
 export const audioStop = state => resetPlayerTimes(state)
     .setIn(['player', 'current'], null)
@@ -197,6 +212,6 @@ export const audioProgressBuffer = (state, { buffered, duration }) => state
 export const audioTimeUpdate = (state, time) => state
     .setIn(['player', 'playTime'], time);
 
-export const updateAudioNode = (state, audioNode) => state
-    .set('audioNode', audioNode);
+export const updateAudioSource = (state, audioSource) => state
+    .set('audioSource', audioSource);
 

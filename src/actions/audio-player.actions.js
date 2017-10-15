@@ -8,7 +8,8 @@ import {
     AUDIO_SEEKED,
     AUDIO_TIME_UPDATED,
     AUDIO_BUFFERED,
-    AUDIO_NODE_UPDATED
+    AUDIO_SOURCE_UPDATED,
+    ARTWORK_LOADED
 } from '../constants/actions';
 
 export const audioFileLoaded = file => buildAction(AUDIO_FILE_LOADED, file);
@@ -27,5 +28,7 @@ export const audioTimeUpdated = time => buildAction(AUDIO_TIME_UPDATED, time);
 
 export const audioProgressed = req => buildAction(AUDIO_BUFFERED, req);
 
-export const audioNodeUpdated = audioNode => buildAction(AUDIO_NODE_UPDATED, audioNode);
+export const audioSourceUpdated = audioSource => buildAction(AUDIO_SOURCE_UPDATED, audioSource);
+
+export const artworkLoaded = () => buildAction(ARTWORK_LOADED);
 
