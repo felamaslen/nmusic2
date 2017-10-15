@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
 import {
-    audioTimeUpdated, audioDurationSet, audioEnded, audioNodeUpdated, audioSeeked
+    audioTimeUpdated, audioProgressed, audioDurationSet, audioEnded, audioNodeUpdated, audioSeeked
 } from '../../actions/audio-player.actions';
 
 import React from 'react';
@@ -89,6 +89,10 @@ export class AudioPlayerCore extends ImmutableComponent {
             this.props.onTimeUpdate(this.audio.currentTime);
         };
 
+        const onProgress = () => {
+            this.props.onProgress(this.audio.buffered, this.audio.duration);
+        };
+
         const onEnded = () => this.props.onEnded();
 
         return <audio ref={audioRef}
@@ -96,6 +100,7 @@ export class AudioPlayerCore extends ImmutableComponent {
             src={this.props.src}
             autoPlay={false}
             onTimeUpdate={onTimeUpdate}
+            onProgress={onProgress}
             onEnded={onEnded}
         />;
     }
@@ -106,6 +111,7 @@ AudioPlayerCore.propTypes = {
     paused: PropTypes.bool.isRequired,
     seekTime: PropTypes.number.isRequired,
     setDuration: PropTypes.func.isRequired,
+    onProgress: PropTypes.func.isRequired,
     onTimeUpdate: PropTypes.func.isRequired,
     onEnded: PropTypes.func.isRequired,
     updateAudioNode: PropTypes.func.isRequired,
@@ -121,6 +127,7 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => ({
     setDuration: duration => dispatch(audioDurationSet(duration)),
     onTimeUpdate: time => dispatch(audioTimeUpdated(time)),
+    onProgress: (buffered, duration) => dispatch(audioProgressed({ buffered, duration })),
     updateAudioNode: audioNode => dispatch(audioNodeUpdated(audioNode)),
     onEnded: () => dispatch(audioEnded()),
     seekToStart: () => dispatch(audioSeeked({ raw: true, newTime: 0 }))

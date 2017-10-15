@@ -44,6 +44,8 @@ export default fromJS({
         dragTime: null,
         playTime: 0,
         duration: 0,
+        bufferedRangesRaw: null,
+        bufferedRanges: [],
         repeat: REPEAT_NONE
     }
 });
