@@ -9,6 +9,7 @@ module.exports = {
         artwork: 'artwork'
     },
     apiVersion: 1,
+    searchMaxResults: 5,
     scripts: {
         scanMusic: {
             filesPattern: /\.(ogg|mp3)$/,

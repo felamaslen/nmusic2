@@ -19,72 +19,93 @@ const sortByMatchingFirst = keyword => {
     };
 };
 
-async function getSortedSearchResult(db, key, keyword, getRows = null) {
-    const maxResults = 5;
+function getSearchRegex(keyword) {
+    return new RegExp(`(^|\\s)${keyword}`, 'i');
+}
 
-    const match = new RegExp(`(^|\\s)${keyword}`, 'i');
+async function getSortedArtists(db, keyword) {
+    const match = getSearchRegex(keyword);
 
-    const infoKey = `info.${key}`;
+    const results = await db.collection(config.collections.music)
+        .distinct('info.artist', { 'info.artist': match });
 
-    let results = [];
-
-    if (getRows) {
-        const fields = getRows.reduce((last, item) => {
-            last[item] = 1;
-
-            return last;
-        }, {});
-
-        if (getRows.length) {
-            if (!(infoKey in fields)) {
-                fields[infoKey] = 1;
-            }
-
-            if (!('_id' in fields)) {
-                fields._id = 0;
-            }
-        }
-
-        const resultsFind = await db
-            .collection(config.collections.music)
-            .find({ [infoKey]: match }, fields)
-            .toArray();
-
-        results = resultsFind.map(row => ({ row, item: row.info[key] }));
-    }
-    else {
-        const resultsDistinct = await db
-            .collection(config.collections.music)
-            .distinct(`info.${key}`, { [`info.${key}`]: match });
-
-        results = resultsDistinct.map(item => ({ item }));
-    }
-
-    const items = results
+    return results
+        .map(item => ({ item }))
         .sort(sortByMatchingFirst(keyword))
-        .slice(0, maxResults);
+        .slice(0, config.searchMaxResults)
+        .map(({ item }) => item);
+}
 
-    if (getRows) {
-        return items.map(item => {
-            const result = {};
-            if ('_id' in item.row) {
-                result.id = item._id;
+async function getSortedAlbums(db, keyword) {
+    const match = getSearchRegex(keyword);
+
+    const results = await db
+        .collection(config.collections.music)
+        .aggregate([
+            {
+                $match: {
+                    'info.album': match
+                }
+            },
+            {
+                $unwind: '$info'
+            },
+            {
+                $match: {
+                    'info.album': match
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        album: '$info.album',
+                        artist: '$info.artist'
+                    }
+                }
+            },
+            {
+                $group: {
+                    _id: '$_id.album',
+                    artist: {
+                        $push: '$_id.artist'
+                    }
+                }
             }
+        ])
+        .toArray();
 
-            return { ...result, ...item.row.info };
-        });
-    }
+    return results
+        .map(row => ({
+            item: row._id,
+            artist: row.artist[0]
+        }))
+        .sort(sortByMatchingFirst(keyword))
+        .slice(0, config.searchMaxResults)
+        .map(row => ({ artist: row.artist, album: row.item }));
+}
 
-    return items.map(item => item.item);
+async function getSortedSongs(db, keyword) {
+    const match = getSearchRegex(keyword);
+
+    const results = await db
+        .collection(config.collections.music)
+        .find({ 'info.title': match }, { file: 0 })
+        .toArray();
+
+    return results
+        .map(row => ({ ...row, item: row.info.title }))
+        .sort(sortByMatchingFirst(keyword))
+        .slice(0, config.searchMaxResults)
+        .map(row => ({ id: row._id, ...row.info }));
 }
 
 async function routeSearch(req, res) {
     const keyword = req.params.keyword;
 
     try {
-        const artists = await getSortedSearchResult(req.db, 'artist', keyword);
-        const albums = await getSortedSearchResult(req.db, 'album', keyword, ['info.artist']);
-        const titles = await getSortedSearchResult(req.db, 'title', keyword, []);
+        const artists = await getSortedArtists(req.db, keyword);
+        const albums = await getSortedAlbums(req.db, keyword);
+        const titles = await getSortedSongs(req.db, keyword);
 
         res.json({ artists, albums, titles });
     }
