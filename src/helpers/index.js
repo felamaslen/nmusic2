@@ -45,6 +45,10 @@ export const getJoinedFilter = (filter, selectedKeys) => filter
 
 
 export function getNewlySelectedKeys(currentlySelected, lastClicked, { index, shift, ctrl }) {
+    if (index === -1) {
+        return list.of();
+    }
+
     if (shift) {
         // select a range
         if (lastClicked === -1) {

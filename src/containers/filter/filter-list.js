@@ -36,8 +36,13 @@ export class FilterList extends ImmutableComponent {
             loading: !this.props.loaded
         });
 
+        const selectAllClassName = classNames({
+            selected: this.props.selectedKeys.size === 0
+        });
+
         return <div className={className}>
             <ul className="filter-list-inner">
+                <li key={-1} className={selectAllClassName} onClick={onClick(-1)}>All</li>
                 {items}
             </ul>
         </div>;

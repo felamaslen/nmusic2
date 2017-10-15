@@ -23,7 +23,15 @@ export async function requestSongList(dispatch, state) {
 
         }, {});
 
-    const promises = [axios.get(`${API_PREFIX}/songs`, { params })];
+    const getSongsPromise = filterParams => {
+        if (!(params.artist && params.artist.length) && !(params.album && params.album.length)) {
+            return Promise.resolve({ data: [] });
+        }
+
+        return axios.get(`${API_PREFIX}/songs`, { params: filterParams });
+    }
+
+    const promises = [getSongsPromise(params)];
 
     const albumsListLoaded = state.getIn(['filter', 'album', 'loaded']);
     if (!albumsListLoaded) {
