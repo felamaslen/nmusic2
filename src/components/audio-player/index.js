@@ -8,7 +8,7 @@ import ImmutableComponent from '../../ImmutableComponent';
 export default class AudioPlayer extends ImmutableComponent {
     render() {
         return <div className="audio-player-outer">
-            <AudioControls />
+            <AudioControls visualisationEnabled={true} />
             <CurrentSongInfo />
             <AudioPlayerCore />
         </div>;

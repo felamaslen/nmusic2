@@ -20,3 +20,5 @@ export const AUDIO_TRACK_CHANGED = 'AUDIO_TRACK_CHANGED';
 
 export const AUDIO_SEEKED = 'AUDIO_SEEKED';
 
+export const ARTWORK_LOADED = 'ARTWORK_LOADED';
+

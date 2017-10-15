@@ -1,26 +1,31 @@
 import { connect } from 'react-redux';
 
+import { artworkLoaded } from '../../actions/audio-player.actions';
+
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 import './style.scss';
 
-function encodeArtistAlbum(artist, album) {
-    return Buffer.from(`${artist}/${album}`).toString('base64');
-}
-
 export class CurrentSongInfo extends ImmutableComponent {
-    render() {
-        if (!this.props.active) {
-            return null;
+    componentDidUpdate(prevProps) {
+        if (prevProps.artworkSrc === this.props.artworkSrc) {
+            this.props.onArtworkLoad();
         }
+    }
+    render() {
+        const onArtworkLoad = () => this.props.onArtworkLoad();
 
-        const artwork = `api/v1/artwork/${encodeArtistAlbum(this.props.artist, this.props.album)}`;
+        const artworkClasses = classNames({
+            artwork: true,
+            loading: this.props.artworkLoading
+        });
 
         return <div className="current-song-info-outer">
-            <span className="artwork">
-                <img src={artwork} />
+            <span className={artworkClasses}>
+                <img src={this.props.artworkSrc} onLoad={onArtworkLoad} onError={onArtworkLoad} />
             </span>
             <span className="info">
                 <span className="title">{this.props.title}</span>
@@ -32,20 +37,25 @@ export class CurrentSongInfo extends ImmutableComponent {
 }
 
 CurrentSongInfo.propTypes = {
-    active: PropTypes.bool.isRequired,
     artist: PropTypes.string,
     album: PropTypes.string,
-    title: PropTypes.string
+    title: PropTypes.string,
+    artworkSrc: PropTypes.string,
+    onArtworkLoad: PropTypes.func.isRequired,
+    artworkLoading: PropTypes.bool.isRequired
 };
 
 const mapStateToProps = state => ({
-    active: Boolean(state.getIn(['player', 'current'])),
-    artist: state.getIn(['player', 'currentSong', 'artist']),
-    album: state.getIn(['player', 'currentSong', 'album']),
-    title: state.getIn(['player', 'currentSong', 'title'])
+    artist: state.getIn(['player', 'currentSong', 'artist']) || null,
+    album: state.getIn(['player', 'currentSong', 'album']) || null,
+    title: state.getIn(['player', 'currentSong', 'title']) || null,
+    artworkSrc: state.getIn(['artwork', 'src']),
+    artworkLoading: !state.getIn(['artwork', 'loaded'])
 });
 
-const mapDispatchToProps = null;
+const mapDispatchToProps = dispatch => ({
+    onArtworkLoad: () => dispatch(artworkLoaded())
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(CurrentSongInfo);
 

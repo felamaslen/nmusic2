@@ -35,6 +35,10 @@ export default fromJS({
         songs: [],
         active: -1
     },
+    artwork: {
+        src: null,
+        loaded: true
+    },
     player: {
         current: null,
         currentSong: null,
