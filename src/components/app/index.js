@@ -1,12 +1,12 @@
 import React from 'react';
 
-import AudioPlayer from '../audio-player';
+import Meta from '../meta';
 import Filter from '../../containers/filter';
 import SongList from '../../containers/song-list';
 
 export default function App() {
     return <div className="nmusic-app-outer">
-        <AudioPlayer />
+        <Meta />
         <Filter />
         <SongList />
     </div>;

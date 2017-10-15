@@ -5,7 +5,7 @@ import CurrentSongInfo from '../../containers/current-song-info';
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 
-export default class AudioPlayer extends ImmutableComponent {
+export default class Meta extends ImmutableComponent {
     render() {
         return <div className="audio-player-outer">
             <AudioControls visualisationEnabled={true} />
