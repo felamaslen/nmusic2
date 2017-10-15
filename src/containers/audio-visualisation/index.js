@@ -4,7 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutableComponent from '../../ImmutableComponent';
 
-import { VISUALISER_FPS_CAP } from '../../constants/misc';
+import { VISUALISER_FPS_CAP, VISUALISER_FFT_SIZE } from '../../constants/misc';
 
 import { drawLinearVisualiser } from '../../helpers';
 
@@ -17,7 +17,7 @@ export class AudioVisualisation extends ImmutableComponent {
         this.source = null;
         this.audioCtx = new AudioContext();
         this.analyser = this.audioCtx.createAnalyser();
-        this.analyser.fftSize = 512;
+        this.analyser.fftSize = VISUALISER_FFT_SIZE;
 
         this.data = new Uint8Array(this.analyser.frequencyBinCount);
 

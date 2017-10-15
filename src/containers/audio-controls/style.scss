@@ -1,7 +1,7 @@
 $color_button_bg: beige; $color_button_active_bg: #dedec3;
 $color_button_fg: #222;
 
-$controls_height: 80px;
+$controls_height: 58px;
 $button_size_large: $controls_height * 0.75;
 $button_size_small: $controls_height * 9 / 16;
 
@@ -13,12 +13,17 @@ $small_space_before_after: $button_size_small * 0.25;
 .audio-player-outer {
     display: flex;
     flex: 0 0 auto;
-    height: $controls_height;
 }
 
 .audio-player-controls-outer {
     display: flex;
-    flex-flow: row;
+    flex-flow: column;
+
+    position: relative;
+}
+
+.audio-player-controls-buttons {
+    display: flex;
     flex-grow: 0;
     
     @mixin triangle($size) {

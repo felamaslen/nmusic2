@@ -1,37 +1,34 @@
-.audio-player-scrubber-outer {
-    display: flex;
-    flex-flow: column;
-    flex-grow: 3;
-    
-    .audio-scrubber {
-        flex-basis: 22px;
+$color_progress: rgba(200, 200, 200, 0.4);
+$color_playhead: #111;
 
-        .trough {
-            height: 100%;
-        }
-        .progress {
-            height: 100%;
-            background: #eee;
-            position: relative;
-        }
-        .play-head {
+$progress_height_outer: 22px;
+$progress_height: 8px;
+
+.audio-scrubber {
+    flex-basis: $progress_height_outer;
+    z-index: 2;
+
+    .trough {
+        height: $progress_height;
+        padding-top: $progress_height_outer - $progress_height;
+    }
+    .progress {
+        height: 100%;
+        background: $color_progress;
+        position: relative;
+    }
+    .play-head {
+        &:before {
             display: block;
-            position: absolute;
-            top: 0;
-            right: 0;
+            content: "";
             width: 0;
-            height: 100%;
-            border-right: 1px solid black;
-            &:before {
-                content: "";
-                display: block;
-                width: 0;
-                height: 0;
-                margin-left: -5px;
-                border: solid transparent;
-                border-width: 8px 6px;
-                border-top-color: black;
-            }
+            height: 0;
+            position: absolute;
+            bottom: 0;
+            right: -($progress_height / 2);
+            border: solid transparent;
+            border-width: $progress_height ($progress_height * 5 / 8);
+            border-bottom-color: $color_playhead;
         }
     }
 }

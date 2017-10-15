@@ -9,6 +9,9 @@ import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
+import AudioScrubber from '../audio-scrubber';
+import AudioVisualisation from '../audio-visualisation';
+
 import './style.scss';
 
 export class AudioControls extends ImmutableComponent {
@@ -20,14 +23,18 @@ export class AudioControls extends ImmutableComponent {
         });
 
         return <div className="audio-player-controls-outer">
-            <button className="button button-previous"
-                onClick={() => this.props.previous()} />
+            <div className="audio-player-controls-buttons">
+                <button className="button button-previous"
+                    onClick={() => this.props.previous()} />
 
-            <button className={playPauseButtonClasses}
-                onClick={() => this.props.playPause()} />
+                <button className={playPauseButtonClasses}
+                    onClick={() => this.props.playPause()} />
 
-            <button className="button button-next"
-                onClick={() => this.props.next()} />
+                <button className="button button-next"
+                    onClick={() => this.props.next()} />
+            </div>
+            <AudioScrubber />
+            <AudioVisualisation />
         </div>;
     }
 }
