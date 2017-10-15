@@ -1,0 +1,49 @@
+$filter_height: 240px;
+
+$bg-filter-list-zebra-1: #f9f9f9;
+$bg-filter-list-zebra-2: #efefef;
+
+$bg-filter-list-selected: #09e;
+$color-filter-list-selected: white;
+
+.filter-outer {
+    display: flex;
+    flex: 0 0 auto;
+    height: $filter_height;
+
+    cursor: default;
+    user-select: none;
+}
+
+.filter-section-outer {
+    flex-grow: 1;
+    flex-basis: 0;
+    overflow: hidden;
+}
+
+.filter-list-inner {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    height: 100%;
+    overflow-y: scroll;
+
+    li {
+        line-height: 22px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        background-color: $bg-filter-list-zebra-1;
+        &:nth-child(2n) {
+            background-color: $bg-filter-list-zebra-2;
+        }
+
+        &.selected {
+            background-color: $bg-filter-list-selected;
+            color: $color-filter-list-selected;
+        }
+    }
+}
+

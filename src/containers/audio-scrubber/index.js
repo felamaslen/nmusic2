@@ -52,15 +52,15 @@ AudioScrubber.propTypes = {
 };
 
 const mapStateToProps = state => {
-    const playTime = state.getIn(['global', 'player', 'playTime']);
-    const dragTime = state.getIn(['global', 'player', 'dragTime']);
+    const playTime = state.getIn(['player', 'playTime']);
+    const dragTime = state.getIn(['player', 'dragTime']);
 
     const progressTime = dragTime === null
         ? playTime
         : dragTime;
 
     return {
-        progress: 100 * handleNaN(progressTime / state.getIn(['global', 'player', 'duration']))
+        progress: 100 * handleNaN(progressTime / state.getIn(['player', 'duration']))
     };
 };
 

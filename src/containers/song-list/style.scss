@@ -47,6 +47,11 @@ $color-list-selected: white;
     }
 }
 
+.song-list-outer {
+    display: flex;
+    flex-flow: column;
+}
+
 .song-list-head, .song-list {
     user-select: none;
     cursor: default;
@@ -54,7 +59,7 @@ $color-list-selected: white;
 
 .song-list-head {
     display: flex;
-    flex-flow: row nowrap;
+    flex: 0 0 auto;
 
     height: 22px;
     line-height: 22px;
@@ -101,8 +106,7 @@ $color-list-selected: white;
 }
 
 .song-list {
-    display: flex;
-    flex-flow: column;
+    overflow-y: overlay;
 
     .song {
         display: flex;

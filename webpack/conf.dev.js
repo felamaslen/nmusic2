@@ -7,6 +7,7 @@ module.exports = {
     ...webpackConfig,
     devtool: 'source-map',
     entry: [
+        'react-hot-loader/patch',
         `webpack-dev-server/client?http://0.0.0.0:${process.env.PORT_WDS}`,
         'webpack/hot/only-dev-server',
         ...webpackConfig.entry
@@ -18,7 +19,8 @@ module.exports = {
                 NODE_ENV: JSON.stringify('development')
             }
         }),
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NamedModulesPlugin()
     ],
     module: moduleConfigDev,
     devServer: {

@@ -11,7 +11,7 @@ export function loadAudioFile(state, song, play = true) {
     const newState = resetPlayerTimes(state)
         .setIn(['player', 'current'], song.get('id'))
         .setIn(['player', 'currentSong'], song)
-        .setIn(['player', 'url'], `${API_PREFIX}play/${song.get('id')}`)
+        .setIn(['player', 'url'], `${API_PREFIX}/play/${song.get('id')}`)
         .setIn(['player', 'duration'], song.get('duration'));
 
     if (play) {

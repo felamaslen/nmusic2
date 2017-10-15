@@ -1,43 +1,10 @@
 import { List as list, Map as map } from 'immutable';
 
-import { formatSeconds } from './format.common';
+import { formatSeconds } from '../helpers/format';
+import { getNewlySelectedKeys } from '../helpers';
 
 export const startSongListRequest = state => state
     .setIn(['songList', 'loading'], true);
-
-export function getNewlySelectedKeys(currentlySelected, lastClicked, { index, shift, ctrl }) {
-    if (shift) {
-        // select a range
-        if (lastClicked === -1) {
-            return list([index]);
-        }
-
-        if (lastClicked === index) {
-            return currentlySelected;
-        }
-
-        const minItem = Math.min(index, lastClicked);
-        const numItems = 1 + Math.abs(lastClicked - index);
-
-        const newItems = list(new Array(numItems).fill(0))
-            .map((item, key) => minItem + key)
-            .filter(item => currentlySelected.indexOf(item) === -1);
-
-        return currentlySelected.concat(newItems);
-    }
-
-    if (ctrl) {
-        const selectedIndex = currentlySelected.indexOf(index);
-
-        if (selectedIndex !== -1) {
-            return currentlySelected.delete(selectedIndex);
-        }
-
-        return currentlySelected.push(index);
-    }
-
-    return list([index]);
-}
 
 export function getNewlySelectedIds(state, req) {
     // the list of selected items has to be mapped to / from IDs,

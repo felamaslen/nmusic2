@@ -6,6 +6,7 @@ const config = require('../../common/config');
 const Database = require('../../common/db');
 
 const { routeSongsList } = require('./songs-list');
+const { routeFilterList } = require('./filter-list');
 const { routePlay } = require('./play');
 const { routeArtwork } = require('./artwork');
 
@@ -22,7 +23,11 @@ function apiRoutes() {
     router.use(sendSeekable);
 
     router.get('/songs', routeSongsList);
+    router.get('/artists', routeFilterList('artist'));
+    router.get('/albums/:artist?', routeFilterList('album', 'artist'));
+
     router.get('/play/:id', routePlay);
+
     router.get('/artwork/:encoded', routeArtwork);
 
     return router;

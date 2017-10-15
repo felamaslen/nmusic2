@@ -12,7 +12,8 @@ $small_space_before_after: $button_size_small * 0.25;
 
 .audio-player-outer {
     display: flex;
-    flex-flow: row;
+    flex: 0 0 auto;
+    height: $controls_height;
 }
 
 .audio-player-controls-outer {

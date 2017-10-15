@@ -11,12 +11,18 @@ import App from './components/app';
 
 import './images/favicon.png';
 
-if (process.env.NODE_ENV !== 'test') {
-    render(
-        <Provider store={getStore()}>
-            <App />
-        </Provider>,
-        document.getElementById('root')
-    );
+const store = getStore();
+
+function renderRoot() {
+    if (process.env.NODE_ENV !== 'test') {
+        render(
+            <Provider store={store}>
+                <App />
+            </Provider>,
+            document.getElementById('root')
+        );
+    }
 }
+
+renderRoot();
 

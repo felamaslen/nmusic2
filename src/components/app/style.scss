@@ -4,3 +4,10 @@ body {
     font-size: 11pt;
 }
 
+.nmusic-app-outer {
+    display: flex;
+    flex-flow: column;
+
+    height: 100vh;
+}
+
