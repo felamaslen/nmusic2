@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 
 import {
-    audioTimeUpdated, audioProgressed, audioDurationSet, audioEnded, audioNodeUpdated, audioSeeked
+    audioTimeUpdated, audioProgressed, audioDurationSet, audioEnded, audioSourceUpdated, audioSeeked
 } from '../../actions/audio-player.actions';
 
 import React from 'react';
@@ -46,7 +46,7 @@ export class AudioPlayerCore extends ImmutableComponent {
     }
     setDuration() {
         if (this.audio) {
-            this.props.setDuration(this.audio.duration);
+            setTimeout(() => this.props.setDuration(this.audio.duration), 0);
         }
     }
     shouldComponentUpdate(nextProps) {
@@ -60,11 +60,17 @@ export class AudioPlayerCore extends ImmutableComponent {
 
         return !updatedAudio;
     }
+    getSource() {
+        const source = this.props.audioContext.createMediaElementSource(this.audio);
+        source.connect(this.props.audioContext.destination);
+
+        setTimeout(() => this.props.updateAudioSource(source), 0);
+    }
     componentDidUpdate(prevProps) {
         if (this.audio) {
             this.audio.onloadedmetadata = () => this.setDuration();
 
-            this.props.updateAudioNode(this.audio);
+            this.getSource();
         }
 
         this.playPauseSeek(prevProps, this.props, true);
@@ -73,7 +79,7 @@ export class AudioPlayerCore extends ImmutableComponent {
         if (this.audio && !this.props.paused) {
             this.play();
 
-            this.props.updateAudioNode(this.audio);
+            this.getSource();
         }
     }
     render() {
@@ -114,21 +120,22 @@ AudioPlayerCore.propTypes = {
     onProgress: PropTypes.func.isRequired,
     onTimeUpdate: PropTypes.func.isRequired,
     onEnded: PropTypes.func.isRequired,
-    updateAudioNode: PropTypes.func.isRequired,
+    updateAudioSource: PropTypes.func.isRequired,
     seekToStart: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
     src: state.getIn(['player', 'url']),
     paused: state.getIn(['player', 'paused']),
-    seekTime: state.getIn(['player', 'seekTime'])
+    seekTime: state.getIn(['player', 'seekTime']),
+    audioContext: state.get('audioContext')
 });
 
 const mapDispatchToProps = dispatch => ({
     setDuration: duration => dispatch(audioDurationSet(duration)),
     onTimeUpdate: time => dispatch(audioTimeUpdated(time)),
     onProgress: (buffered, duration) => dispatch(audioProgressed({ buffered, duration })),
-    updateAudioNode: audioNode => dispatch(audioNodeUpdated(audioNode)),
+    updateAudioSource: source => dispatch(audioSourceUpdated(source)),
     onEnded: () => dispatch(audioEnded()),
     seekToStart: () => dispatch(audioSeeked({ raw: true, newTime: 0 }))
 });

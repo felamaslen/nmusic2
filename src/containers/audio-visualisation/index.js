@@ -14,9 +14,7 @@ export class AudioVisualisation extends ImmutableComponent {
     constructor(props) {
         super(props);
 
-        this.source = null;
-        this.audioCtx = new AudioContext();
-        this.analyser = this.audioCtx.createAnalyser();
+        this.analyser = this.props.audioContext.createAnalyser();
         this.analyser.fftSize = VISUALISER_FFT_SIZE;
 
         this.data = new Uint8Array(this.analyser.frequencyBinCount);
@@ -41,10 +39,7 @@ export class AudioVisualisation extends ImmutableComponent {
         this.animateBind = this.animate.bind(this);
     }
     createAnalyser() {
-        this.source = this.audioCtx.createMediaElementSource(this.props.audioNode);
-
-        this.source.connect(this.analyser);
-        this.source.connect(this.audioCtx.destination);
+        this.props.audioSource.connect(this.analyser);
     }
     draw() {
         drawLinearVisualiser(this.ctx, this.canvas.width, this.canvas.height, this.data);
@@ -97,17 +92,18 @@ export class AudioVisualisation extends ImmutableComponent {
     }
 }
 
-let AudioObject = Object;
-if (typeof Audio !== 'undefined') {
-    AudioObject = Audio;
+let SourceType = Object;
+if (typeof MediaElementSourceNode !== 'undefined') {
+    SourceType = MediaElementSourceNode; // eslint-disable-line no-undef
 }
 
 AudioVisualisation.propTypes = {
-    audioNode: PropTypes.instanceOf(AudioObject)
+    source: PropTypes.instanceOf(SourceType)
 };
 
 const mapStateToProps = state => ({
-    audioNode: state.getIn(['audioNode'])
+    audioSource: state.get('audioSource'),
+    audioContext: state.get('audioContext')
 });
 
 export default connect(mapStateToProps)(AudioVisualisation);

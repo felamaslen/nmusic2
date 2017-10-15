@@ -2,8 +2,15 @@ import { fromJS } from 'immutable';
 
 import { REPEAT_NONE } from './constants/misc';
 
+function getAudioContext() {
+    if (typeof AudioContext !== 'undefined') {
+        return new AudioContext();
+    }
+
+    return null;
+}
+
 export default fromJS({
-    testKey: 0,
     filter: {
         artist: {
             loaded: false,
@@ -30,7 +37,8 @@ export default fromJS({
             { key: 'artist', order: 1 }
         ]
     },
-    audioNode: null,
+    audioSource: null,
+    audioContext: getAudioContext(),
     queue: {
         songs: [],
         active: -1

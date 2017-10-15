@@ -212,6 +212,6 @@ export const audioProgressBuffer = (state, { buffered, duration }) => state
 export const audioTimeUpdate = (state, time) => state
     .setIn(['player', 'playTime'], time);
 
-export const updateAudioNode = (state, audioNode) => state
-    .set('audioNode', audioNode);
+export const updateAudioSource = (state, audioSource) => state
+    .set('audioSource', audioSource);
 

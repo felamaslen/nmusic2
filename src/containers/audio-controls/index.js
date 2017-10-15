@@ -22,6 +22,11 @@ export class AudioControls extends ImmutableComponent {
             playing: !this.props.paused
         });
 
+        let visualisation = null;
+        if (this.props.visualisationEnabled) {
+            visualisation = <AudioVisualisation />;
+        }
+
         return <div className="audio-player-controls-outer">
             <div className="audio-player-controls-buttons">
                 <button className="button button-previous"
@@ -34,7 +39,7 @@ export class AudioControls extends ImmutableComponent {
                     onClick={() => this.props.next()} />
             </div>
             <AudioScrubber />
-            <AudioVisualisation />
+            {visualisation}
         </div>;
     }
 }
