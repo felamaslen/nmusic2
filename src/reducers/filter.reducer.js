@@ -8,9 +8,13 @@ export function startFilterSongList(state, { filterKey, index, ...evt }) {
 
     const newlySelectedKeys = getNewlySelectedKeys(selectedKeys, lastClicked, { index, ...evt });
 
+    const albumsListLoaded = state.getIn(['filter', 'album', 'loaded']) &&
+        !(filterKey === 'artist' && !selectedKeys.equals(newlySelectedKeys));
+
     return state
         .setIn(['filter', filterKey, 'lastClickedKey'], index)
-        .setIn(['filter', filterKey, 'selectedKeys'], newlySelectedKeys);
+        .setIn(['filter', filterKey, 'selectedKeys'], newlySelectedKeys)
+        .setIn(['filter', 'album', 'loaded'], albumsListLoaded);
 }
 
 export function receiveFilterList(state, { err, items, key }) {
