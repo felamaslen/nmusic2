@@ -4,6 +4,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutableComponent from '../../ImmutableComponent';
 
+import { VISUALISER_FPS_CAP } from '../../constants/misc';
+
 import { drawLinearVisualiser } from '../../helpers';
 
 import './style.scss';
@@ -20,6 +22,9 @@ export class AudioVisualisation extends ImmutableComponent {
         this.data = new Uint8Array(this.analyser.frequencyBinCount);
 
         this.animation = null;
+        this.animationLastTime = 0;
+        const fps = VISUALISER_FPS_CAP;
+        this.minTimeBetweenFrames = 1000 / fps;
 
         this.canvas = null;
         this.ctx = null;
@@ -46,6 +51,15 @@ export class AudioVisualisation extends ImmutableComponent {
     }
     animate() {
         this.animation = requestAnimationFrame(this.animateBind);
+
+        const now = Date.now();
+        const timeDelta = now - this.animationLastTime;
+
+        if (timeDelta < this.minTimeBetweenFrames) {
+            return;
+        }
+
+        this.animationLastTime = now;
 
         this.analyser.getByteFrequencyData(this.data);
 
