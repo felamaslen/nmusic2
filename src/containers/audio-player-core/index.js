@@ -13,6 +13,7 @@ export class AudioPlayerCore extends ImmutableComponent {
         super(props);
 
         this.audio = null;
+        this.source = null;
     }
     pause() {
         this.audio.pause();
@@ -61,10 +62,12 @@ export class AudioPlayerCore extends ImmutableComponent {
         return !updatedAudio;
     }
     getSource() {
-        const source = this.props.audioContext.createMediaElementSource(this.audio);
-        source.connect(this.props.audioContext.destination);
+        if (!this.source) {
+            this.source = this.props.audioContext.createMediaElementSource(this.audio);
+            this.source.connect(this.props.audioContext.destination);
+        }
 
-        setTimeout(() => this.props.updateAudioSource(source), 0);
+        setTimeout(() => this.props.updateAudioSource(this.source), 0);
     }
     componentDidUpdate(prevProps) {
         if (this.audio) {
