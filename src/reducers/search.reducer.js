@@ -49,7 +49,7 @@ export function selectSearchItem(state, { key, category }) {
         return selectAlbum(state, key);
     }
 
-    if (category === 'song') {
+    if (category.indexOf('song') === 0) {
         return selectSong(state, key);
     }
 
