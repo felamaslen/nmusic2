@@ -12,7 +12,6 @@ const resetSearch = state => state
 export function changeSearch(state, value) {
     if (value.length) {
         return state
-            .setIn(['search', 'term'], value)
             .setIn(['search', 'loading'], true);
     }
 
@@ -42,11 +41,11 @@ function selectSong(state, key) {
 }
 
 export function selectSearchItem(state, { key, category }) {
-    if (category === 'artist') {
+    if (category.indexOf('artist') === 0) {
         return selectArtist(state, key);
     }
 
-    if (category === 'album') {
+    if (category.indexOf('album') === 0) {
         return selectAlbum(state, key);
     }
 
@@ -118,16 +117,22 @@ export function navigateSearch(state, { key, shift }) {
         .setIn(['search', 'navIndex'], (navIndex + delta + 1) % (numItems + 1) - 1);
 }
 
-export function handleSearchResults(state, data) {
-    if (!(data && data.artists && data.albums && data.titles &&
+export function handleSearchResults(state, { response, err, searchTerm }) {
+    const data = response && response.data;
+    if (!(response && data && data.artists && data.albums && data.titles &&
         Array.isArray(data.artists) && Array.isArray(data.albums) && Array.isArray(data.titles))) {
 
         return resetSearch(state);
     }
 
-    const { artists, albums, titles } = data;
+    if (err) {
+        return state;
+    }
+
+    const { artists, albums, titles } = response.data;
 
     return state
+        .setIn(['search', 'term'], searchTerm)
         .setIn(['search', 'active'], true)
         .setIn(['search', 'loading'], false)
         .setIn(['search', 'artists'], fromJS(artists))
