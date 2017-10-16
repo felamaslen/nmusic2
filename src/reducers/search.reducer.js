@@ -22,13 +22,17 @@ export function changeSearch(state, value) {
 function selectArtist(state, key) {
     const item = state.getIn(['search', 'artists', key]);
 
-    return state // TODO
+    return state
+        .setIn(['search', 'artistSearch'], item)
+        .setIn(['search', 'albumSearch'], null);
 }
 
 function selectAlbum(state, key) {
     const item = state.getIn(['search', 'albums', key]);
 
-    return state // TODO
+    return state
+        .setIn(['search', 'artistSearch'], item.get('artist'))
+        .setIn(['search', 'albumSearch'], item.get('album'));
 }
 
 function selectSong(state, key) {
