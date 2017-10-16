@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 
 import debounce from '../../helpers/debounce';
 
+import SearchList from './search-list';
+
 export class SearchBox extends ImmutableComponent {
     constructor(props) {
         super(props);
@@ -17,21 +19,29 @@ export class SearchBox extends ImmutableComponent {
         this.onChange = evt => this.fireChange(evt.target.value);
     }
     render() {
+        let searchList = null;
+        if (this.props.active) {
+            searchList = <SearchList />;
+        }
+
         return <div className="search-box-outer">
             <input className="search-box"
                 type="text"
                 defaultValue={this.props.value}
                 onChange={this.onChange}
             />
+            {searchList}
         </div>;
     }
 }
 
 SearchBox.propTypes = {
+    active: PropTypes.bool.isRequired,
     value: PropTypes.string.isRequired
 }
 
 const mapStateToProps = state => ({
+    active: state.getIn(['search', 'active']),
     value: state.getIn(['search', 'term'])
 });
 
