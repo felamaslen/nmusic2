@@ -67,7 +67,7 @@ export const sortSongList = (state, orderKey) => {
         .setIn(['songList', 'orderKeys'], newOrderKeys);
 }
 
-export function insertSongList(state, { err, response }) {
+export function insertSongList(state, response) {
     let songs = list.of();
 
     if (!err) {

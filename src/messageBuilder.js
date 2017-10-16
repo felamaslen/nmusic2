@@ -1,14 +1,6 @@
 /*
- * Builds actions for communicating between the views and store,
- * with possible side effects
+ * Builds actions for communicating between the views and store
  */
 
-const buildMessage = (type, payload) => ({ type, payload });
-
-export const buildEffectAction = (type, payload) => effect => ({
-    ...buildMessage(type, payload),
-    effect: buildMessage(effect, payload)
-});
-
-export default buildMessage;
+export default (type, payload) => ({ type, payload });
 

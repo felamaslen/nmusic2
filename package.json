@@ -76,6 +76,7 @@
     "react-redux": "^5.0.6",
     "redux": "^3.7.2",
     "redux-create-reducer": "^1.1.1",
+    "redux-saga": "^0.16.0",
     "request": "^2.83.0",
     "sass-loader": "^6.0.6",
     "send-seekable": "^1.0.4",

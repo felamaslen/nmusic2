@@ -1,12 +1,10 @@
-import buildAction, { buildEffectAction } from '../messageBuilder';
+import buildAction from '../messageBuilder';
 
 import {
     SEARCH_CHANGED, SEARCH_SELECTED, SEARCH_NAVIGATED, SEARCH_RESULTS_RECEIVED
 } from '../constants/actions';
 
-import { REQUEST_SEARCH_RESULTS } from '../constants/effects';
-
-export const searchChanged = value => buildEffectAction(SEARCH_CHANGED, value)(REQUEST_SEARCH_RESULTS);
+export const searchChanged = value => buildAction(SEARCH_CHANGED, value);
 
 export const searchSelected = index => buildAction(SEARCH_SELECTED, index);
 

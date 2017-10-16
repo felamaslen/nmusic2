@@ -1,46 +1,46 @@
 /* eslint-disable no-underscore-dangle */
 import { createStore, applyMiddleware, compose } from 'redux';
+import createSagaMiddleware, { END } from 'redux-saga';
 
 import { AUDIO_TIME_UPDATED } from './constants/actions';
+const actionsBlacklist = [
+    AUDIO_TIME_UPDATED
+];
+
+import initialState from './initialState';
 
 import rootReducer from './reducers';
-import effectHandler from './effects';
 
-function sideEffectHandler() {
-    return store => dispatch => action => {
-        dispatch(action);
+export default function configureStore(__DEV__ = false) {
+    const sagaMiddleware = createSagaMiddleware();
 
-        if (action.effect && action.effect.type in effectHandler) {
-            const state = store.getState();
-
-            effectHandler[action.effect.type](dispatch, state, action.effect.payload);
-        }
-    };
-}
-
-function getStore() {
-    const middleware = [sideEffectHandler()];
-
-    const __DEV__ = process.env.NODE_ENV === 'development';
+    const middleware = [sagaMiddleware];
 
     const devTools = __DEV__ && window && window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__;
-
-    const actionsBlacklist = [
-        AUDIO_TIME_UPDATED
-    ];
 
     const composeEnhancers = devTools
         ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({ actionsBlacklist })
         : compose;
 
-    const enhancer = composeEnhancers(
-        applyMiddleware(...middleware)
+    const enhancer = composeEnhancers(applyMiddleware(...middleware));
+
+    const store = createStore(
+        rootReducer,
+        initialState,
+        enhancer
     );
 
-    const store = createStore(rootReducer, enhancer);
+    if (__DEV__ && module.hot) {
+        module.hot.accept('./reducers', () => {
+            // eslint-disable-next-line global-require
+            const nextRootReducer = require('./reducers').default;
+            store.replaceReducer(nextRootReducer);
+        });
+    }
+
+    store.runSaga = sagaMiddleware.run;
+    store.close = () => store.dispatch(END);
 
     return store;
 }
-
-export default getStore;
 
