@@ -20,6 +20,10 @@ import {
     setArtworkLoaded
 } from './audio-player.reducer';
 
+import {
+    changeSearch, selectSearchItem, navigateSearch, handleSearchResults
+} from './search.reducer';
+
 import initialState from '../initialState';
 
 function createReducerObject(array) {
@@ -51,6 +55,11 @@ export default createReducer(initialState, createReducerObject([
     [AC.AUDIO_TRACK_CHANGED, changeTrack],
     [AC.AUDIO_SEEKED, audioSeek],
 
-    [AC.ARTWORK_LOADED, setArtworkLoaded]
+    [AC.ARTWORK_LOADED, setArtworkLoaded],
+
+    [AC.SEARCH_CHANGED, changeSearch],
+    [AC.SEARCH_NAVIGATED, navigateSearch],
+    [AC.SEARCH_SELECTED, selectSearchItem],
+    [AC.SEARCH_RESULTS_RECEIVED, handleSearchResults]
 ]));
 

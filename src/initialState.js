@@ -25,6 +25,15 @@ export default fromJS({
             lastClickedKey: -1
         }
     },
+    search: {
+        term: '',
+        navIndex: -1,
+        active: false,
+        loading: false,
+        artists: [],
+        albums: [],
+        songs: []
+    },
     songList: {
         songs: [],
         loading: false,
