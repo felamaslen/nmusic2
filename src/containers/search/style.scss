@@ -85,6 +85,16 @@ $search-width: 280px;
         content: "Songs";
     }
 
+    .search-list-songs, .search-list-albums {
+        .artist {
+            float: right;
+            margin-right: 0.5em;
+            font-size: 0.85em;
+            color: #333;
+            font-style: italic;
+        }
+    }
+
     &.loading {
         @include loading-indicator(32px);
         &:after {
