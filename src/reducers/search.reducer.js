@@ -41,16 +41,20 @@ function selectSong(state, key) {
 }
 
 export function selectSearchItem(state, { key, category }) {
+    const stateAdvanced = state
+        .setIn(['search', 'active'], false)
+        .setIn(['songList', 'loading'], true);
+
     if (category.indexOf('artist') === 0) {
-        return selectArtist(state, key);
+        return selectArtist(stateAdvanced, key);
     }
 
     if (category.indexOf('album') === 0) {
-        return selectAlbum(state, key);
+        return selectAlbum(stateAdvanced, key);
     }
 
     if (category.indexOf('song') === 0) {
-        return selectSong(state, key);
+        return selectSong(stateAdvanced, key);
     }
 
     throw new Error('value for "category" out of range');
@@ -114,6 +118,7 @@ export function navigateSearch(state, { key, shift }) {
     const navIndex = state.getIn(['search', 'navIndex']);
 
     return state
+        .setIn(['search', 'active'], true)
         .setIn(['search', 'navIndex'], (navIndex + delta + 1) % (numItems + 1) - 1);
 }
 

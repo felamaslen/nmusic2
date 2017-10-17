@@ -36,7 +36,7 @@ export async function requestSearchedSongList(dispatch, state) {
             return filter;
         }, {});
 
-    if (noTerm) {
+    if (noTerm || !state.getIn(['songList', 'loading'])) {
         return;
     }
 
