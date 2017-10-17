@@ -36,6 +36,11 @@ $search-width: 280px;
     outline: none;
     border: 1px solid #eee;
     border-bottom-color: #ddd;
+
+    &:active, &:focus {
+        border-color: #aaa;
+        border-bottom-color: #5d5d5d;
+    }
 }
 
 .search-list-outer {

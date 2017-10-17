@@ -164,7 +164,16 @@ export function handleSearchResults(state, { response, err, searchTerm }) {
         .setIn(['search', 'songs'], fromJS(titles));
 }
 
-export const setFocusStatus = (state, status) => state
-    .setIn(['search', 'active'], status)
-    .setIn(['search', 'navIndex'], -1);
+export function setFocusStatus(state, status) {
+    const listLength = ['artists', 'albums', 'songs']
+        .reduce((sum, key) => sum + state.getIn(['search', key]).size, 0);
+
+    if (listLength > 0) {
+        return state
+            .setIn(['search', 'active'], status)
+            .setIn(['search', 'navIndex'], -1);
+    }
+
+    return state;
+}
 
