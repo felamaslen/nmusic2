@@ -7,6 +7,9 @@ $search-width: 280px;
     flex-basis: 0;
     flex-grow: 1;
     padding-right: 1em;
+
+    user-select: none;
+    cursor: default;
 }
 
 .search-inner {

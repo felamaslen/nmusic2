@@ -1,5 +1,7 @@
 import { List as list, fromJS } from 'immutable';
 
+import { getNavIndex } from '../helpers';
+
 import { loadAudioFile } from './audio-player.reducer';
 
 const resetSearch = state => state
@@ -96,7 +98,14 @@ export function getSearchKeyCategory(state) {
     return { key, category };
 }
 
-export function navigateSearch(state, { key, shift, ctrl }) {
+export function navigateSearch(state, { itemKey, category, key, shift, ctrl }) {
+    if (typeof itemKey !== 'undefined' && category) {
+        const navIndex = getNavIndex(state)(itemKey, category);
+
+        return state
+            .setIn(['search', 'navIndex'], navIndex);
+    }
+
     const goDown = key === 'ArrowUp' ||
         (key === 'ArrowLeft' && ctrl) ||
         (key === 'Tab' && shift);
@@ -109,8 +118,9 @@ export function navigateSearch(state, { key, shift, ctrl }) {
     const enter = key === 'Enter';
 
     if (exit) {
-        return resetSearch(state)
-            .setIn(['search', 'active'], false);
+        return state
+            .setIn(['search', 'active'], false)
+            .setIn(['search', 'navIndex'], -1);
     }
 
     if (enter) {

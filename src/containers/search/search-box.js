@@ -25,7 +25,6 @@ export class SearchBox extends ImmutableComponent {
         }
 
         const onFocus = () => this.props.setFocus(true);
-        const onBlur = () => this.props.setFocus(false);
 
         return <div className="search-box-outer">
             <input className="search-box"
@@ -33,7 +32,6 @@ export class SearchBox extends ImmutableComponent {
                 defaultValue={this.props.value}
                 onChange={this.onChange}
                 onFocus={onFocus}
-                onBlur={onBlur}
             />
             {searchList}
         </div>;
