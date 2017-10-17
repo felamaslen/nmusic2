@@ -3,8 +3,8 @@ import { List as list, fromJS } from 'immutable';
 import { loadAudioFile } from './audio-player.reducer';
 
 const resetSearch = state => state
-    .setIn(['search', 'active'], false)
     .setIn(['search', 'loading'], false)
+    .setIn(['search', 'term'], '')
     .setIn(['search', 'artists'], list.of())
     .setIn(['search', 'albums'], list.of())
     .setIn(['search', 'songs'], list.of());
@@ -104,7 +104,8 @@ export function navigateSearch(state, { key, shift }) {
     const enter = key === 'Enter';
 
     if (exit) {
-        return resetSearch(state);
+        return resetSearch(state)
+            .setIn(['search', 'active'], false);
     }
 
     if (enter) {
@@ -127,7 +128,8 @@ export function handleSearchResults(state, { response, err, searchTerm }) {
     if (!(response && data && data.artists && data.albums && data.titles &&
         Array.isArray(data.artists) && Array.isArray(data.albums) && Array.isArray(data.titles))) {
 
-        return resetSearch(state);
+        return resetSearch(state)
+            .setIn(['search', 'active'], false);
     }
 
     if (err) {
@@ -144,4 +146,7 @@ export function handleSearchResults(state, { response, err, searchTerm }) {
         .setIn(['search', 'albums'], fromJS(albums))
         .setIn(['search', 'songs'], fromJS(titles));
 }
+
+export const setFocusStatus = (state, status) => state
+    .setIn(['search', 'active'], status);
 
