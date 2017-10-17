@@ -63,6 +63,7 @@ export default fromJS({
         currentSong: null,
         paused: true,
         url: null,
+        audioSource: false,
         seekTime: 0,
         dragTime: null,
         playTime: 0,
