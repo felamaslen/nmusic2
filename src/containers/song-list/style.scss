@@ -5,7 +5,7 @@
 }
 
 .song-list-head, .song-list {
-    user-select: none;
+    @include noselect;
     cursor: default;
 }
 
