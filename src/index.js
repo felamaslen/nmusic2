@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import getStore from './store';
 import App from './components/app';
 
+import './sass/index.scss';
 import './images/favicon.png';
 
 const store = getStore();

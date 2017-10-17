@@ -1,0 +1,35 @@
+// colours
+$border-color-list: #ccc;
+$bg-list-current: #feffc0;
+$bg-list-zebra-1: #f9f9f9;
+$bg-list-zebra-2: #efefef;
+$color-list: black;
+
+$bg-list-selected: #09e;
+$color-list-selected: white;
+
+$border-color-head: #555;
+$bg-head: #666;
+$bg-head-selected: #565656;
+$color-head: white;
+$color-head-arrow: #333;
+
+$color-button-bg: beige;
+$color-button-active-bg: #dedec3;
+$color-button-fg: #222;
+
+// sizes
+$filter-height: 240px;
+$list-row-height: 24px;
+$controls-height: 58px;
+
+// calculations (no need to modify after here)
+$button-size-large: $controls-height * 0.75;
+$button-size-small: $controls-height * 9 / 16;
+
+$play-icon-size: $button-size-large * 0.25;
+$small-icon-size: $button-size-small * 2 / 9;
+    
+$small-space-before-after: $button-size-small * 0.25;
+
+

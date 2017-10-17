@@ -25,6 +25,17 @@ export default fromJS({
             lastClickedKey: -1
         }
     },
+    search: {
+        term: '',
+        navIndex: -1,
+        active: false,
+        loading: false,
+        artists: [],
+        artistSearch: null,
+        albums: [],
+        albumSearch: null,
+        songs: []
+    },
     songList: {
         songs: [],
         loading: false,
@@ -52,6 +63,7 @@ export default fromJS({
         currentSong: null,
         paused: true,
         url: null,
+        audioSource: false,
         seekTime: 0,
         dragTime: null,
         playTime: 0,

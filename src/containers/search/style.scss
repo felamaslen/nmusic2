@@ -1,0 +1,114 @@
+$search-width: 280px;
+
+.search-outer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-basis: 0;
+    flex-grow: 1;
+    padding-right: 1em;
+
+    @include noselect;
+    cursor: default;
+}
+
+.search-inner {
+    display: flex;
+    flex-flow: column;
+    flex: 0 0 $search-width;
+}
+
+.search-box-outer {
+    display: flex;
+    width: 100%;
+    position: relative;
+}
+
+.search-box {
+    margin: 0;
+    padding: 2px;
+    width: 0;
+    flex-basis: 0;
+    flex-grow: 1;
+    border: none;
+    line-height: 1.5em;
+    font-size: 1.3em;
+    outline: none;
+    border: 1px solid #eee;
+    border-bottom-color: #ddd;
+
+    &:active, &:focus {
+        border-color: #aaa;
+        border-bottom-color: #5d5d5d;
+    }
+}
+
+.search-list-outer {
+    display: flex;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    padding-bottom: 1em;
+    width: 100%;
+    flex: 0 0 auto;
+    max-width: $search-width;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+
+    .search-list {
+        width: 100%;
+
+        ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            @include zebra-selectable-list-row;
+        }
+
+        &:before {
+            font-weight: bold;
+            line-height: $list-row-height - 2px;
+            font-size: 90%;
+            padding: 0 0.3em;
+            font-style: italic;
+        }
+    }
+
+    .search-list-artists:before {
+        content: "Artists";
+    }
+    .search-list-albums:before {
+        content: "Albums";
+    }
+    .search-list-songs:before {
+        content: "Songs";
+    }
+
+    .search-list-songs, .search-list-albums {
+        .artist {
+            float: right;
+            margin-right: 0.5em;
+            font-size: 0.85em;
+            color: #333;
+            font-style: italic;
+        }
+    }
+
+    &.loading {
+        @include loading-indicator(32px);
+        &:after {
+            position: absolute;
+        }
+
+        .search-list {
+            visibility: hidden;
+        }
+    }
+}
+

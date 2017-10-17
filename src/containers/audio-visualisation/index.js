@@ -8,8 +8,6 @@ import { VISUALISER_FPS_CAP, VISUALISER_FFT_SIZE } from '../../constants/misc';
 
 import { drawLinearVisualiser } from '../../helpers';
 
-import './style.scss';
-
 export class AudioVisualisation extends ImmutableComponent {
     constructor(props) {
         super(props);
@@ -22,7 +20,9 @@ export class AudioVisualisation extends ImmutableComponent {
         this.animation = null;
         this.animationLastTime = 0;
         const fps = VISUALISER_FPS_CAP;
-        this.minTimeBetweenFrames = 1000 / fps;
+        this.minTimeBetweenFrames = fps
+            ? 1000 / fps
+            : 0;
 
         this.canvas = null;
         this.ctx = null;
@@ -38,7 +38,7 @@ export class AudioVisualisation extends ImmutableComponent {
         // to create a bottleneck if done on each animation frame
         this.animateBind = this.animate.bind(this);
     }
-    createAnalyser() {
+    connectAnalyser() {
         this.props.audioSource.connect(this.analyser);
     }
     draw() {
@@ -69,11 +69,15 @@ export class AudioVisualisation extends ImmutableComponent {
         window.removeEventListener('resize', this.handleResize);
     }
     componentDidUpdate() {
+        if (!this.props.audioSource) {
+            return;
+        }
+
         if (this.animation) {
             cancelAnimationFrame(this.animation);
         }
 
-        this.createAnalyser();
+        this.connectAnalyser();
         this.animate();
     }
     render() {

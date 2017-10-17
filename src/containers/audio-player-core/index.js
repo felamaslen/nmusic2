@@ -57,9 +57,9 @@ export class AudioPlayerCore extends ImmutableComponent {
             return true;
         }
 
-        const updatedAudio = this.playPauseSeek(this.props, nextProps);
+        this.playPauseSeek(this.props, nextProps);
 
-        return !updatedAudio;
+        return false;
     }
     getSource() {
         if (!this.source) {
@@ -74,6 +74,9 @@ export class AudioPlayerCore extends ImmutableComponent {
             this.audio.onloadedmetadata = () => this.setDuration();
 
             this.getSource();
+        }
+        else if (!this.props.src) {
+            this.source = null;
         }
 
         this.playPauseSeek(prevProps, this.props, true);
@@ -119,6 +122,7 @@ AudioPlayerCore.propTypes = {
     src: PropTypes.string,
     paused: PropTypes.bool.isRequired,
     seekTime: PropTypes.number.isRequired,
+    audioContext: PropTypes.object,
     setDuration: PropTypes.func.isRequired,
     onProgress: PropTypes.func.isRequired,
     onTimeUpdate: PropTypes.func.isRequired,

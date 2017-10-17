@@ -8,7 +8,7 @@ const sassVariables = encodeURIComponent(jsonToSassVars(
 ));
 
 const sassLoader = ExtractTextPlugin.extract(
-    `css-loader!sass-loader!prepend-loader?data=${sassVariables}`
+    `css-loader!sass-loader!import-glob-loader!prepend-loader?data=${sassVariables}`
 );
 
 const babelOptions = JSON.stringify({

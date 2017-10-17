@@ -1,17 +1,11 @@
-@keyframes spin {
-    from {
-        transform: rotateZ(0deg);
-    }
-    to {
-        transform: rotateZ(360deg);
-    }
-}
-
 .current-song-info-outer {
     display: flex;
     white-space: nowrap;
 
     .artwork {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         width: 80px;
         height: 80px;
         position: relative;
@@ -32,17 +26,9 @@
                 opacity: 0;
             }
 
+            @include loading-indicator(30%);
             &:after {
-                content: "";
                 position: absolute;
-                width: 30%;
-                height: 30%;
-                left: 35%;
-                top: 35%;
-                border: 3px solid transparent;
-                border-left-color: #999;
-                border-radius: 100%;
-                animation: spin 1s linear infinite;
             }
         }
     }

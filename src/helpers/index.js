@@ -82,3 +82,16 @@ export function getNewlySelectedKeys(currentlySelected, lastClicked, { index, sh
     return list([index]);
 }
 
+export const getNavIndex = state => (itemKey, category) => {
+    if (category === 'artists') {
+        return itemKey;
+    }
+
+    if (category === 'albums') {
+        return itemKey + state.getIn(['search', 'artists']).size;
+    }
+
+    return itemKey + state.getIn(['search', 'artists']).size +
+        state.getIn(['search', 'albums']).size;
+};
+
