@@ -96,9 +96,14 @@ export function getSearchKeyCategory(state) {
     return { key, category };
 }
 
-export function navigateSearch(state, { key, shift }) {
-    const goDown = key === 'ArrowUp' || key === 'ArrowLeft' || (key === 'Tab' && shift);
-    const goUp = key === 'ArrowRight' || key === 'ArrowDown' || (key === 'Tab' && !shift);
+export function navigateSearch(state, { key, shift, ctrl }) {
+    const goDown = key === 'ArrowUp' ||
+        (key === 'ArrowLeft' && ctrl) ||
+        (key === 'Tab' && shift);
+
+    const goUp = key === 'ArrowDown' ||
+        (key === 'ArrowRight' && ctrl) ||
+        (key === 'Tab' && !shift);
 
     const exit = key === 'Escape';
     const enter = key === 'Enter';
@@ -118,9 +123,11 @@ export function navigateSearch(state, { key, shift }) {
 
     const navIndex = state.getIn(['search', 'navIndex']);
 
+    const newNavIndex = (navIndex + delta + 1 + numItems + 1) % (numItems + 1) - 1;
+
     return state
         .setIn(['search', 'active'], true)
-        .setIn(['search', 'navIndex'], (navIndex + delta + 1) % (numItems + 1) - 1);
+        .setIn(['search', 'navIndex'], newNavIndex);
 }
 
 export function handleSearchResults(state, { response, err, searchTerm }) {
@@ -148,5 +155,6 @@ export function handleSearchResults(state, { response, err, searchTerm }) {
 }
 
 export const setFocusStatus = (state, status) => state
-    .setIn(['search', 'active'], status);
+    .setIn(['search', 'active'], status)
+    .setIn(['search', 'navIndex'], -1);
 

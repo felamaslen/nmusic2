@@ -13,9 +13,9 @@ export class SearchList extends ImmutableComponent {
         super(props);
 
         this.keyListener = evt => {
-            const { key, shiftKey } = evt;
+            const { key, shiftKey, ctrlKey } = evt;
 
-            this.props.navigate(key, shiftKey);
+            this.props.navigate(key, shiftKey, ctrlKey);
 
             if (key === 'Tab') {
                 evt.preventDefault();
@@ -127,7 +127,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     selectItem: (key, category) => dispatch(searchSelected({ key, category })),
-    navigate: (key, shift) => dispatch(searchNavigated({ key, shift }))
+    navigate: (key, shift, ctrl) => dispatch(searchNavigated({ key, shift, ctrl }))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchList);
