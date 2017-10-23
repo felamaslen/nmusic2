@@ -31,7 +31,9 @@ export default fromJS({
         active: false,
         loading: false,
         artists: [],
+        artistSearch: null,
         albums: [],
+        albumSearch: null,
         songs: []
     },
     songList: {
@@ -61,6 +63,7 @@ export default fromJS({
         currentSong: null,
         paused: true,
         url: null,
+        audioSource: false,
         seekTime: 0,
         dragTime: null,
         playTime: 0,

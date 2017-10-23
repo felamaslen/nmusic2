@@ -1,10 +1,12 @@
 import { List as list, fromJS } from 'immutable';
 
+import { getNavIndex } from '../helpers';
+
 import { loadAudioFile } from './audio-player.reducer';
 
 const resetSearch = state => state
-    .setIn(['search', 'active'], false)
     .setIn(['search', 'loading'], false)
+    .setIn(['search', 'term'], '')
     .setIn(['search', 'artists'], list.of())
     .setIn(['search', 'albums'], list.of())
     .setIn(['search', 'songs'], list.of());
@@ -12,7 +14,6 @@ const resetSearch = state => state
 export function changeSearch(state, value) {
     if (value.length) {
         return state
-            .setIn(['search', 'term'], value)
             .setIn(['search', 'loading'], true);
     }
 
@@ -22,13 +23,17 @@ export function changeSearch(state, value) {
 function selectArtist(state, key) {
     const item = state.getIn(['search', 'artists', key]);
 
-    return state // TODO
+    return state
+        .setIn(['search', 'artistSearch'], item)
+        .setIn(['search', 'albumSearch'], null);
 }
 
 function selectAlbum(state, key) {
     const item = state.getIn(['search', 'albums', key]);
 
-    return state // TODO
+    return state
+        .setIn(['search', 'artistSearch'], item.get('artist'))
+        .setIn(['search', 'albumSearch'], item.get('album'));
 }
 
 function selectSong(state, key) {
@@ -38,16 +43,20 @@ function selectSong(state, key) {
 }
 
 export function selectSearchItem(state, { key, category }) {
-    if (category === 'artist') {
-        return selectArtist(state, key);
+    const stateAdvanced = state
+        .setIn(['search', 'active'], false)
+        .setIn(['songList', 'loading'], true);
+
+    if (category.indexOf('artist') === 0) {
+        return selectArtist(stateAdvanced, key);
     }
 
-    if (category === 'album') {
-        return selectAlbum(state, key);
+    if (category.indexOf('album') === 0) {
+        return selectAlbum(stateAdvanced, key);
     }
 
-    if (category === 'song') {
-        return selectSong(state, key);
+    if (category.indexOf('song') === 0) {
+        return selectSong(stateAdvanced, key);
     }
 
     throw new Error('value for "category" out of range');
@@ -89,15 +98,29 @@ export function getSearchKeyCategory(state) {
     return { key, category };
 }
 
-export function navigateSearch(state, { key, shift }) {
-    const goDown = key === 'ArrowUp' || key === 'ArrowLeft' || (key === 'Tab' && shift);
-    const goUp = key === 'ArrowRight' || key === 'ArrowDown' || (key === 'Tab' && !shift);
+export function navigateSearch(state, { itemKey, category, key, shift, ctrl }) {
+    if (typeof itemKey !== 'undefined' && category) {
+        const navIndex = getNavIndex(state)(itemKey, category);
+
+        return state
+            .setIn(['search', 'navIndex'], navIndex);
+    }
+
+    const goDown = key === 'ArrowUp' ||
+        (key === 'ArrowLeft' && ctrl) ||
+        (key === 'Tab' && shift);
+
+    const goUp = key === 'ArrowDown' ||
+        (key === 'ArrowRight' && ctrl) ||
+        (key === 'Tab' && !shift);
 
     const exit = key === 'Escape';
     const enter = key === 'Enter';
 
     if (exit) {
-        return resetSearch(state);
+        return state
+            .setIn(['search', 'active'], false)
+            .setIn(['search', 'navIndex'], -1);
     }
 
     if (enter) {
@@ -110,24 +133,47 @@ export function navigateSearch(state, { key, shift }) {
 
     const navIndex = state.getIn(['search', 'navIndex']);
 
+    const newNavIndex = (navIndex + delta + 1 + numItems + 1) % (numItems + 1) - 1;
+
     return state
-        .setIn(['search', 'navIndex'], (navIndex + delta + 1) % (numItems + 1) - 1);
+        .setIn(['search', 'active'], true)
+        .setIn(['search', 'navIndex'], newNavIndex);
 }
 
-export function handleSearchResults(state, data) {
-    if (!(data && data.artists && data.albums && data.titles &&
+export function handleSearchResults(state, { response, err, searchTerm }) {
+    const data = response && response.data;
+    if (!(response && data && data.artists && data.albums && data.titles &&
         Array.isArray(data.artists) && Array.isArray(data.albums) && Array.isArray(data.titles))) {
 
-        return resetSearch(state);
+        return resetSearch(state)
+            .setIn(['search', 'active'], false);
     }
 
-    const { artists, albums, titles } = data;
+    if (err) {
+        return state;
+    }
+
+    const { artists, albums, titles } = response.data;
 
     return state
+        .setIn(['search', 'term'], searchTerm)
         .setIn(['search', 'active'], true)
         .setIn(['search', 'loading'], false)
         .setIn(['search', 'artists'], fromJS(artists))
         .setIn(['search', 'albums'], fromJS(albums))
         .setIn(['search', 'songs'], fromJS(titles));
+}
+
+export function setFocusStatus(state, status) {
+    const listLength = ['artists', 'albums', 'songs']
+        .reduce((sum, key) => sum + state.getIn(['search', key]).size, 0);
+
+    if (listLength > 0) {
+        return state
+            .setIn(['search', 'active'], status)
+            .setIn(['search', 'navIndex'], -1);
+    }
+
+    return state;
 }
 

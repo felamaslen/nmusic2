@@ -1,21 +1,23 @@
 import { List as list } from 'immutable';
 import { connect } from 'react-redux';
 
-import { searchNavigated, searchSelected } from '../../actions/search.actions';
+import { searchNavigated } from '../../actions/search.actions';
 
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
+import SearchListItem from './search-list-item';
+
 export class SearchList extends ImmutableComponent {
     constructor(props) {
         super(props);
 
         this.keyListener = evt => {
-            const { key, shiftKey } = evt;
+            const { key, shiftKey, ctrlKey } = evt;
 
-            this.props.navigate(key, shiftKey);
+            this.props.navigate(key, shiftKey, ctrlKey);
 
             if (key === 'Tab') {
                 evt.preventDefault();
@@ -28,58 +30,27 @@ export class SearchList extends ImmutableComponent {
     componentWillUnmount() {
         window.removeEventListener('keydown', this.keyListener);
     }
-    getNavIndex(key, category) {
-        if (category === 'artists') {
-            return key;
-        }
-
-        if (category === 'albums') {
-            return key + this.props.artists.size;
-        }
-
-        return key + this.props.artists.size + this.props.albums.size;
-    }
     renderArtists() {
         return this.props.artists.map((artist, key) => {
-            const className = classNames({
-                selected: this.props.navIndex === this.getNavIndex(key, 'artists')
-            });
-
-            const onClick = () => this.props.selectItem(key, 'artist');
-
-            return <li key={artist} onClick={onClick} className={className}>
+            return <SearchListItem key={artist} itemKey={key} category="artists">
                 <span className="artist">{artist}</span>
-            </li>;
+            </SearchListItem>;
         });
     }
     renderAlbums() {
         return this.props.albums.map((item, key) => {
-            const className = classNames({
-                selected: this.props.navIndex === this.getNavIndex(key, 'albums')
-            });
-
-            const onClick = () => this.props.selectItem(key, 'album');
-
-            const liKey = item.join(',');
-
-            return <li key={liKey} onClick={onClick} className={className}>
+            return <SearchListItem key={item.join(',')} itemKey={key} category="albums">
                 <span className="album">{item.get('album')}</span>
                 <span className="artist">{item.get('artist')}</span>
-            </li>;
+            </SearchListItem>;
         });
     }
     renderSongs() {
         return this.props.songs.map((song, key) => {
-            const className = classNames({
-                selected: this.props.navIndex === this.getNavIndex(key, 'songs')
-            });
-
-            const onClick = () => this.props.selectItem(key, 'song');
-
-            return <li key={song.get('id')} onClick={onClick} className={className}>
+            return <SearchListItem key={song.get('id')} itemKey={key} category="songs">
                 <span className="title">{song.get('title')}</span>
                 <span className="artist">{song.get('artist')}</span>
-            </li>;
+            </SearchListItem>;
         });
     }
     render() {
@@ -113,8 +84,7 @@ SearchList.propTypes = {
     navIndex: PropTypes.number.isRequired,
     artists: PropTypes.instanceOf(list).isRequired,
     albums: PropTypes.instanceOf(list).isRequired,
-    songs: PropTypes.instanceOf(list).isRequired,
-    selectItem: PropTypes.func.isRequired
+    songs: PropTypes.instanceOf(list).isRequired
 };
 
 const mapStateToProps = state => ({
@@ -126,8 +96,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    selectItem: (key, category) => dispatch(searchSelected({ key, category })),
-    navigate: (key, shift) => dispatch(searchNavigated({ key, shift }))
+    navigate: (key, shift, ctrl) => dispatch(searchNavigated({ key, shift, ctrl }))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchList);

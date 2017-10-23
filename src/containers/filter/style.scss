@@ -5,7 +5,7 @@
     height: $filter_height;
 
     cursor: default;
-    user-select: none;
+    @include noselect;
 }
 
 .filter-section-outer {

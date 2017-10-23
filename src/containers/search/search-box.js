@@ -1,12 +1,14 @@
 import { connect } from 'react-redux';
 
-import { searchChanged } from '../../actions/search.actions';
+import { searchChanged, searchFocusSet } from '../../actions/search.actions';
 
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 
 import debounce from '../../helpers/debounce';
+
+import SearchList from './search-list';
 
 export class SearchBox extends ImmutableComponent {
     constructor(props) {
@@ -17,26 +19,39 @@ export class SearchBox extends ImmutableComponent {
         this.onChange = evt => this.fireChange(evt.target.value);
     }
     render() {
+        let searchList = null;
+        if (this.props.active) {
+            searchList = <SearchList />;
+        }
+
+        const onFocus = () => this.props.setFocus(true);
+
         return <div className="search-box-outer">
             <input className="search-box"
                 type="text"
                 defaultValue={this.props.value}
                 onChange={this.onChange}
+                onFocus={onFocus}
             />
+            {searchList}
         </div>;
     }
 }
 
 SearchBox.propTypes = {
-    value: PropTypes.string.isRequired
+    active: PropTypes.bool.isRequired,
+    value: PropTypes.string.isRequired,
+    setFocus: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
+    active: state.getIn(['search', 'active']),
     value: state.getIn(['search', 'term'])
 });
 
 const mapDispatchToProps = dispatch => ({
-    onChange: value => dispatch(searchChanged(value))
+    onChange: value => dispatch(searchChanged(value)),
+    setFocus: status => dispatch(searchFocusSet(status))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBox);

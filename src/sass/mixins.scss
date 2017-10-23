@@ -19,6 +19,11 @@
     }
 }
 
+@mixin noselect {
+    user-select: none;
+    -moz-user-select: -moz-none;
+}
+
 @mixin triangle($size) {
     width: 0;
     height: 0;
@@ -52,6 +57,41 @@
 
     &:nth-child(2n) {
         background-color: $bg-list-zebra-2;
+    }
+        
+    &.current {
+        background-color: $bg-list-current;
+        color: $color-list;
+
+        &:not(.paused) {
+            .status {
+                &:before {
+                    content: "";
+                    width: 0;
+                    height: 0;
+                    border: solid transparent;
+                    border-width: 6px 10px;
+                    border-left-color: #222;
+                }
+            }
+        }
+
+        &.paused {
+            .status {
+                &:before, &:after {
+                    content: "";
+                    width: 0;
+                    height: 10px;
+                    border-left: 4px solid #222;
+                }
+                &:before {
+                    left: 3px;
+                }
+                &:after {
+                    left: 9px;
+                }
+            }
+        }
     }
 
     &.selected {

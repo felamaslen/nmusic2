@@ -27,6 +27,9 @@
             }
 
             @include loading-indicator(30%);
+            &:after {
+                position: absolute;
+            }
         }
     }
 

@@ -5,7 +5,7 @@
 }
 
 .song-list-head, .song-list {
-    user-select: none;
+    @include noselect;
     cursor: default;
 }
 
@@ -72,41 +72,6 @@
                 position: absolute;
                 top: 50%;
                 margin-top: -5px;
-            }
-        }
-        
-        &.current {
-            background: $bg-list-current;
-            color: $color-list;
-
-            &:not(.paused) {
-                .status {
-                    &:before {
-                        content: "";
-                        width: 0;
-                        height: 0;
-                        border: solid transparent;
-                        border-width: 6px 10px;
-                        border-left-color: #222;
-                    }
-                }
-            }
-
-            &.paused {
-                .status {
-                    &:before, &:after {
-                        content: "";
-                        width: 0;
-                        height: 10px;
-                        border-left: 4px solid #222;
-                    }
-                    &:before {
-                        left: 3px;
-                    }
-                    &:after {
-                        left: 9px;
-                    }
-                }
             }
         }
         
