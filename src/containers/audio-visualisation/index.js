@@ -4,22 +4,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutableComponent from '../../ImmutableComponent';
 
-import { drawLinearVisualiser } from '../../helpers';
+import { VISUALISER_FPS_CAP, VISUALISER_FFT_SIZE } from '../../constants/misc';
 
-import './style.scss';
+import { drawLinearVisualiser } from '../../helpers';
 
 export class AudioVisualisation extends ImmutableComponent {
     constructor(props) {
         super(props);
 
-        this.source = null;
-        this.audioCtx = new AudioContext();
-        this.analyser = this.audioCtx.createAnalyser();
-        this.analyser.fftSize = 512;
+        this.analyser = this.props.audioContext.createAnalyser();
+        this.analyser.fftSize = VISUALISER_FFT_SIZE;
 
         this.data = new Uint8Array(this.analyser.frequencyBinCount);
 
         this.animation = null;
+        this.animationLastTime = 0;
+        const fps = VISUALISER_FPS_CAP;
+        this.minTimeBetweenFrames = fps
+            ? 1000 / fps
+            : 0;
 
         this.canvas = null;
         this.ctx = null;
@@ -35,17 +38,23 @@ export class AudioVisualisation extends ImmutableComponent {
         // to create a bottleneck if done on each animation frame
         this.animateBind = this.animate.bind(this);
     }
-    createAnalyser() {
-        this.source = this.audioCtx.createMediaElementSource(this.props.audioNode);
-
-        this.source.connect(this.analyser);
-        this.source.connect(this.audioCtx.destination);
+    connectAnalyser() {
+        this.props.audioSource.connect(this.analyser);
     }
     draw() {
         drawLinearVisualiser(this.ctx, this.canvas.width, this.canvas.height, this.data);
     }
     animate() {
         this.animation = requestAnimationFrame(this.animateBind);
+
+        const now = Date.now();
+        const timeDelta = now - this.animationLastTime;
+
+        if (timeDelta < this.minTimeBetweenFrames) {
+            return;
+        }
+
+        this.animationLastTime = now;
 
         this.analyser.getByteFrequencyData(this.data);
 
@@ -60,11 +69,15 @@ export class AudioVisualisation extends ImmutableComponent {
         window.removeEventListener('resize', this.handleResize);
     }
     componentDidUpdate() {
+        if (!this.props.audioSource) {
+            return;
+        }
+
         if (this.animation) {
             cancelAnimationFrame(this.animation);
         }
 
-        this.createAnalyser();
+        this.connectAnalyser();
         this.animate();
     }
     render() {
@@ -83,17 +96,18 @@ export class AudioVisualisation extends ImmutableComponent {
     }
 }
 
-let AudioObject = Object;
-if (typeof Audio !== 'undefined') {
-    AudioObject = Audio;
+let SourceType = Object;
+if (typeof MediaElementSourceNode !== 'undefined') {
+    SourceType = MediaElementSourceNode; // eslint-disable-line no-undef
 }
 
 AudioVisualisation.propTypes = {
-    audioNode: PropTypes.instanceOf(AudioObject)
+    source: PropTypes.instanceOf(SourceType)
 };
 
 const mapStateToProps = state => ({
-    audioNode: state.getIn(['global', 'audioNode'])
+    audioSource: state.get('audioSource'),
+    audioContext: state.get('audioContext')
 });
 
 export default connect(mapStateToProps)(AudioVisualisation);

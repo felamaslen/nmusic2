@@ -7,15 +7,10 @@ import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 
-import './style.scss';
-
 import SongListHead from './list-head';
 import SongListItem from './list-item';
 
 export class SongList extends ImmutableComponent {
-    componentDidMount() {
-        this.props.requestList();
-    }
     render() {
         const songList = this.props.songs.map((song, key) => <SongListItem
             key={song.get('id')} listKey={key} id={song.get('id')} />
@@ -34,7 +29,7 @@ SongList.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    songs: state.getIn(['global', 'songList', 'songs'])
+    songs: state.getIn(['songList', 'songs'])
 });
 
 const mapDispatchToProps = dispatch => ({

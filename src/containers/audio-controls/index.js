@@ -9,7 +9,8 @@ import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-import './style.scss';
+import AudioScrubber from '../audio-scrubber';
+import AudioVisualisation from '../audio-visualisation';
 
 export class AudioControls extends ImmutableComponent {
     render() {
@@ -19,15 +20,24 @@ export class AudioControls extends ImmutableComponent {
             playing: !this.props.paused
         });
 
+        let visualisation = null;
+        if (this.props.visualisationEnabled) {
+            visualisation = <AudioVisualisation />;
+        }
+
         return <div className="audio-player-controls-outer">
-            <button className="button button-previous"
-                onClick={() => this.props.previous()} />
+            <div className="audio-player-controls-buttons">
+                <button className="button button-previous"
+                    onClick={() => this.props.previous()} />
 
-            <button className={playPauseButtonClasses}
-                onClick={() => this.props.playPause()} />
+                <button className={playPauseButtonClasses}
+                    onClick={() => this.props.playPause()} />
 
-            <button className="button button-next"
-                onClick={() => this.props.next()} />
+                <button className="button button-next"
+                    onClick={() => this.props.next()} />
+            </div>
+            <AudioScrubber />
+            {visualisation}
         </div>;
     }
 }
@@ -40,7 +50,7 @@ AudioControls.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    paused: state.getIn(['global', 'player', 'paused'])
+    paused: state.getIn(['player', 'paused'])
 });
 
 const mapDispatchToProps = dispatch => ({

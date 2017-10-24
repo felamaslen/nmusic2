@@ -1,0 +1,37 @@
+const config = require('../../common/config');
+
+const { getInfoFilterQuery, sortCaseInsensitiveIgnorePrefix } = require('../helpers');
+
+function routeFilterList(key, subKey = null) {
+    return async (req, res) => {
+        let query = {};
+        if (subKey && req.params[subKey]) {
+            query = getInfoFilterQuery(req.params[subKey], subKey);
+        }
+
+        try {
+            const results = await req.db
+                .collection(config.collections.music)
+                .distinct(`info.${key}`, query)
+
+            const items = results
+                .map(item => item || `Unknown ${key}`)
+                .sort(sortCaseInsensitiveIgnorePrefix);
+
+            res.json(items);
+        }
+        catch (err) {
+            res
+                .status(500)
+                .json({ error: true, status: 'Database error' });
+        }
+        finally {
+            req.db.close();
+        }
+    };
+}
+
+module.exports = {
+    routeFilterList
+};
+

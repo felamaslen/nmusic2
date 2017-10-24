@@ -9,7 +9,7 @@ module.exports = {
         filename: 'js/bundle.js'
     },
     resolve: {
-        extensions: ['*', '.js']
+        extensions: ['*', '.js', '.json']
     },
     resolveLoader: {
         modules: ['node_modules', __dirname]

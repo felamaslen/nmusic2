@@ -1,0 +1,29 @@
+
+.filter-outer {
+    display: flex;
+    flex: 0 0 auto;
+    height: $filter_height;
+
+    cursor: default;
+    @include noselect;
+}
+
+.filter-section-outer {
+    flex-grow: 1;
+    flex-basis: 0;
+    overflow: hidden;
+}
+
+.filter-list-inner {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    height: 100%;
+    overflow-y: scroll;
+
+    li {
+        @include zebra-selectable-list-row;
+    }
+}
+

@@ -2,17 +2,10 @@ import { createReducer } from 'redux-create-reducer';
 
 import * as AC from '../constants/actions';
 
-import {
-    startSongListRequest, insertSongList, selectSongListItem,
-    sortSongList
-} from './song-list.reducer';
-
-import {
-    loadAudioFile, setAudioDuration,
-    audioTimeUpdate, handleAudioEnded,
-    playPauseAudio, changeTrack, audioSeek,
-    updateAudioNode
-} from './audio-player.reducer';
+import * as songList from './song-list.reducer';
+import * as filter from './filter.reducer';
+import * as audio from './audio-player.reducer';
+import * as search from './search.reducer';
 
 import initialState from '../initialState';
 
@@ -25,20 +18,31 @@ function createReducerObject(array) {
 }
 
 export default createReducer(initialState, createReducerObject([
-    [AC.SONG_LIST_REQUESTED, startSongListRequest],
-    [AC.SONG_LIST_RETRIEVED, insertSongList],
-    [AC.SONG_LIST_ITEM_CLICKED, selectSongListItem],
-    [AC.SONG_LIST_SORTED, sortSongList],
+    [AC.SONG_LIST_REQUESTED, songList.startSongListRequest],
+    [AC.SONG_LIST_RETRIEVED, songList.insertSongList],
+    [AC.SONG_LIST_ITEM_CLICKED, songList.selectSongListItem],
+    [AC.SONG_LIST_SORTED, songList.sortSongList],
 
-    [AC.AUDIO_NODE_UPDATED, updateAudioNode],
-    [AC.AUDIO_FILE_LOADED, loadAudioFile],
-    [AC.AUDIO_DURATION_SET, setAudioDuration],
+    [AC.FILTER_LIST_REQUESTED, filter.requestFilterList],
+    [AC.FILTER_LIST_RECEIVED, filter.receiveFilterList],
+    [AC.FILTER_ITEM_CLICKED, filter.startFilterSongList],
 
-    [AC.AUDIO_TIME_UPDATED, audioTimeUpdate],
-    [AC.AUDIO_ENDED, handleAudioEnded],
+    [AC.AUDIO_SOURCE_UPDATED, audio.updateAudioSource],
+    [AC.AUDIO_FILE_LOADED, audio.loadAudioFile],
+    [AC.AUDIO_DURATION_SET, audio.setAudioDuration],
 
-    [AC.AUDIO_PLAY_PAUSED, playPauseAudio],
-    [AC.AUDIO_TRACK_CHANGED, changeTrack],
-    [AC.AUDIO_SEEKED, audioSeek]
+    [AC.AUDIO_TIME_UPDATED, audio.audioTimeUpdate],
+    [AC.AUDIO_BUFFERED, audio.audioProgressBuffer],
+    [AC.AUDIO_ENDED, audio.handleAudioEnded],
+
+    [AC.AUDIO_PLAY_PAUSED, audio.playPauseAudio],
+    [AC.AUDIO_TRACK_CHANGED, audio.changeTrack],
+    [AC.AUDIO_SEEKED, audio.audioSeek],
+
+    [AC.SEARCH_CHANGED, search.changeSearch],
+    [AC.SEARCH_NAVIGATED, search.navigateSearch],
+    [AC.SEARCH_SELECTED, search.selectSearchItem],
+    [AC.SEARCH_RESULTS_RECEIVED, search.handleSearchResults],
+    [AC.SEARCH_FOCUS_SET, search.setFocusStatus]
 ]));
 

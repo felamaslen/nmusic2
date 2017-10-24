@@ -4,15 +4,27 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const webpackConfig = require('./conf.common');
 const moduleConfigProd = require('./module.prod');
 
+const envInjectVars = [
+];
+
+const injectedEnvVars = {
+    NODE_ENV: JSON.stringify('production'),
+
+    ...envInjectVars.reduce((vars, name) => {
+        vars[name] = JSON.stringify(process.env[name] || '');
+
+        return vars;
+
+    }, {})
+}
+
 module.exports = {
     ...webpackConfig,
     devtool: 'cheap-module-source-map',
     plugins: [
         ...webpackConfig.plugins,
         new webpack.DefinePlugin({
-            'process.env': {
-                NODE_ENV: JSON.stringify('production')
-            }
+            'process.env': injectedEnvVars
         }),
         new webpack.optimize.UglifyJsPlugin({
             compress: {

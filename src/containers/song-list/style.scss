@@ -1,60 +1,17 @@
-$border-color-head: #555;
-$bg-head: #666;
-$bg-head-selected: #565656;
-$color-head: white;
-$color-head-arrow: #333;
 
-$border-color-list: #ccc;
-$bg-list-current: #feffc0;
-$bg-list-zebra-1: #f9f9f9;
-$bg-list-zebra-2: #efefef;
-$color-list: black;
-
-$bg-list-selected: #09e;
-$color-list-selected: white;
-
-@mixin song-list-row {
-    span {
-        flex-basis: 0;
-        padding-left: 5px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        &:not(:last-child) {
-            border-right: 1px solid $border-color-list;
-        }
-    }
-    .status {
-        flex-grow: 0;
-        flex-basis: 12px;
-    }
-    .track {
-        flex-grow: 0;
-        flex-basis: 30px;
-    }
-    .title {
-        flex-grow: 6;
-    }
-    .duration {
-        flex-grow: 1;
-        padding-right: 10px;
-    }
-    .artist {
-        flex-grow: 4;
-    }
-    .album {
-        flex-grow: 4;
-    }
+.song-list-outer {
+    display: flex;
+    flex-flow: column;
 }
 
 .song-list-head, .song-list {
-    user-select: none;
+    @include noselect;
     cursor: default;
 }
 
 .song-list-head {
     display: flex;
-    flex-flow: row nowrap;
+    flex: 0 0 auto;
 
     height: 22px;
     line-height: 22px;
@@ -101,23 +58,11 @@ $color-list-selected: white;
 }
 
 .song-list {
-    display: flex;
-    flex-flow: column;
+    overflow-y: overlay;
 
     .song {
         display: flex;
         flex-flow: row nowrap;
-        
-        height: 24px;
-        line-height: 24px;
-
-        background-color: $bg-list-zebra-1;
-        color: black;
-        border-bottom: 1px solid $border-color-list;
-
-        &:nth-child(2n) {
-            background-color: $bg-list-zebra-2;
-        }
 
         .status {
             position: relative;
@@ -130,45 +75,7 @@ $color-list-selected: white;
             }
         }
         
-        &.current {
-            background: $bg-list-current;
-
-            &:not(.paused) {
-                .status {
-                    &:before {
-                        content: "";
-                        width: 0;
-                        height: 0;
-                        border: solid transparent;
-                        border-width: 6px 10px;
-                        border-left-color: #222;
-                    }
-                }
-            }
-
-            &.paused {
-                .status {
-                    &:before, &:after {
-                        content: "";
-                        width: 0;
-                        height: 10px;
-                        border-left: 4px solid #222;
-                    }
-                    &:before {
-                        left: 3px;
-                    }
-                    &:after {
-                        left: 9px;
-                    }
-                }
-            }
-        }
-
-        &.selected {
-            background-color: $bg-list-selected;
-            color: $color-list-selected;
-        }
-
+        @include zebra-selectable-list-row;
         @include song-list-row;
 
         .duration {

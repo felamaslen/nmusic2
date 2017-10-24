@@ -1,10 +1,24 @@
 const config = require('../../common/config');
 
+const { getInfoFilterQuery } = require('../helpers');
+
 async function routeSongsList(req, res) {
+    const query = ['artist', 'album'].reduce((filter, item) => {
+        if (req.query[item]) {
+            if (!filter.$and) {
+                filter.$and = [];
+            }
+
+            filter.$and.push(getInfoFilterQuery(req.query[item], item));
+        }
+
+        return filter;
+    }, {});
+
     try {
         const results = await req.db
             .collection(config.collections.music)
-            .find({})
+            .find(query)
             .toArray();
 
         const songList = results
@@ -23,7 +37,7 @@ async function routeSongsList(req, res) {
     catch (err) {
         res
             .status(500)
-            .json({ status: 'Database error' });
+            .json({ error: true, status: 'Database error' });
     }
     finally {
         req.db.close();

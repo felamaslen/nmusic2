@@ -1,3 +1,4 @@
+import { List as list } from 'immutable';
 import { connect } from 'react-redux';
 
 import { handleNaN } from '../../helpers';
@@ -7,8 +8,6 @@ import { audioSeeked } from '../../actions/audio-player.actions';
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
-
-import './style.scss';
 
 export class AudioScrubber extends ImmutableComponent {
     constructor(props) {
@@ -31,6 +30,12 @@ export class AudioScrubber extends ImmutableComponent {
             width: `${this.props.progress}%`
         };
 
+        const bufferedBars = this.props.bufferedRanges.map(({ left, width }, key) => {
+            const style = { left, width };
+
+            return <div key={key} className="buffered" style={style} />;
+        });
+
         return <div className="audio-scrubber">
             <div className="trough"
                 onMouseDown={onSeekStart}
@@ -39,6 +44,7 @@ export class AudioScrubber extends ImmutableComponent {
                 onTouchMove={onSeek}
                 onTouchEnd={onSeekEnd}>
 
+                {bufferedBars}
                 <div className="progress" style={progressStyle}>
                     <i className="play-head" />
                 </div>
@@ -48,19 +54,21 @@ export class AudioScrubber extends ImmutableComponent {
 }
 
 AudioScrubber.propTypes = {
+    bufferedRanges: PropTypes.instanceOf(list).isRequired,
     progress: PropTypes.number.isRequired
 };
 
 const mapStateToProps = state => {
-    const playTime = state.getIn(['global', 'player', 'playTime']);
-    const dragTime = state.getIn(['global', 'player', 'dragTime']);
+    const playTime = state.getIn(['player', 'playTime']);
+    const dragTime = state.getIn(['player', 'dragTime']);
 
     const progressTime = dragTime === null
         ? playTime
         : dragTime;
 
     return {
-        progress: 100 * handleNaN(progressTime / state.getIn(['global', 'player', 'duration']))
+        bufferedRanges: state.getIn(['player', 'bufferedRanges']),
+        progress: 100 * handleNaN(progressTime / state.getIn(['player', 'duration']))
     };
 };
 

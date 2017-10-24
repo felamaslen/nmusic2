@@ -1,54 +1,28 @@
-$color_button_bg: beige; $color_button_active_bg: #dedec3;
-$color_button_fg: #222;
-
-$controls_height: 80px;
-$button_size_large: $controls_height * 0.75;
-$button_size_small: $controls_height * 9 / 16;
-
-$play_icon_size: $button_size_large * 0.25;
-$small_icon_size: $button_size_small * 2 / 9;
-    
-$small_space_before_after: $button_size_small * 0.25;
-
 .audio-player-outer {
     display: flex;
-    flex-flow: row;
+    flex: 0 0 auto;
 }
 
 .audio-player-controls-outer {
     display: flex;
-    flex-flow: row;
+    flex-flow: column;
+
+    position: relative;
+}
+
+.audio-player-controls-buttons {
+    display: flex;
     flex-grow: 0;
     
-    @mixin triangle($size) {
-        width: 0;
-        height: 0;
-        border: solid transparent;
-        border-width: $size ($size * 1.5);
-        top: 50%;
-        left: 50%;
-        margin-left: -($size * 0.75);
-        margin-top: -$size;
-    }
-    @mixin triangle-right($size) {
-        @include triangle($size);
-        border-left-color: $color_button_fg;
-    }
-
-    @mixin triangle-left($size) {
-        @include triangle($size);
-        border-right-color: $color_button_fg;
-    }
-
     .button {
         border: none;
         border-radius: 100%;
         outline: none;
-        background: $color_button_bg;
+        background: $color-button-bg;
         position: relative;
         
         &:active {
-            background: $color_button_active_bg;
+            background: $color-button-active-bg;
         }
 
         &:before, &:after {
@@ -59,19 +33,19 @@ $small_space_before_after: $button_size_small * 0.25;
     }
 
     .button-playpause {
-        width: $button_size_large;
-        height: $button_size_large;
-        margin: (($controls_height - $button_size_large) / 2) ($button_size_large / 10);
+        width: $button-size-large;
+        height: $button-size-large;
+        margin: (($controls-height - $button-size-large) / 2) ($button-size-large / 10);
 
         &.playing {
             &:before, &:after {
-                background: $color_button_fg;
-                width: $play_icon_size * 0.75;
-                height: $play_icon_size * 2;
-                top: $play_icon_size;
+                background: $color-button-fg;
+                width: $play-icon-size * 0.75;
+                height: $play-icon-size * 2;
+                top: $play-icon-size;
             }
             
-            $margin: ($button_size_large - $play_icon_size * 1.875) / 2;
+            $margin: ($button-size-large - $play-icon-size * 1.875) / 2;
             
             &:before {
                 left: $margin;
@@ -83,49 +57,49 @@ $small_space_before_after: $button_size_small * 0.25;
 
         &.paused {
             &:before {
-                @include triangle-right($play_icon_size);
+                @include triangle-right($play-icon-size);
             }
         }
     }
 
-    $margin_top_small: ($controls_height - $button_size_small) / 2;
-    $margin_without: $button_size_large / 5;
-    $margin_within: $button_size_large / 10;
+    $margin-top-small: ($controls-height - $button-size-small) / 2;
+    $margin-without: $button-size-large / 5;
+    $margin-within: $button-size-large / 10;
     
-    $next_left_icon_margin: $small_space_before_after - $button_size_small / 2;
-    $next_right_icon_margin: $button_size_small / 2 - $small_space_before_after - $small_icon_size;
+    $next-left-icon-margin: $small-space-before-after - $button-size-small / 2;
+    $next-right-icon-margin: $button-size-small / 2 - $small-space-before-after - $small-icon-size;
     
     .button-next, .button-previous {
-        width: $button_size_small;
-        height: $button_size_small;
-        margin: $margin_top_small 0;
+        width: $button-size-small;
+        height: $button-size-small;
+        margin: $margin-top-small 0;
     }
 
     .button-next {
-        margin-left: $margin_within;
-        margin-right: $margin_without;
+        margin-left: $margin-within;
+        margin-right: $margin-without;
         &:before, &:after {
-            @include triangle-right($small_icon_size);
+            @include triangle-right($small-icon-size);
         }
         &:before {
-            margin-left: $next_left_icon_margin;
+            margin-left: $next-left-icon-margin;
         }
         &:after {
-            margin-left: $next_right_icon_margin;
+            margin-left: $next-right-icon-margin;
         }
     }
     
     .button-previous {
-        margin-left: $margin_without;
-        margin-right: $margin_within;
+        margin-left: $margin-without;
+        margin-right: $margin-within;
         &:before, &:after {
-            @include triangle-left($small_icon_size);
+            @include triangle-left($small-icon-size);
         }
         &:before {
-            margin-left: $next_left_icon_margin - $small_icon_size * 2;
+            margin-left: $next-left-icon-margin - $small-icon-size * 2;
         }
         &:after {
-            margin-left: $next_right_icon_margin - $small_icon_size * 2;
+            margin-left: $next-right-icon-margin - $small-icon-size * 2;
         }
     }    
 }

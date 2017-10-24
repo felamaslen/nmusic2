@@ -1,0 +1,138 @@
+@keyframes spin {
+    from {
+        transform: rotateZ(0deg);
+    }
+    to {
+        transform: rotateZ(360deg);
+    }
+}
+
+@mixin loading-indicator($spinner-size) {
+    &:after {
+        content: "";
+        width: $spinner-size;
+        height: $spinner-size;
+        border: 3px solid transparent;
+        border-left-color: #999;
+        border-radius: 100%;
+        animation: spin 1s linear infinite;
+    }
+}
+
+@mixin noselect {
+    user-select: none;
+    -moz-user-select: -moz-none;
+}
+
+@mixin triangle($size) {
+    width: 0;
+    height: 0;
+    border: solid transparent;
+    border-width: $size ($size * 1.5);
+    top: 50%;
+    left: 50%;
+    margin-left: -($size * 0.75);
+    margin-top: -$size;
+}
+@mixin triangle-right($size) {
+    @include triangle($size);
+    border-left-color: $color-button-fg;
+}
+
+@mixin triangle-left($size) {
+    @include triangle($size);
+    border-right-color: $color-button-fg;
+}
+
+@mixin zebra-selectable-list-row {
+    height: $list-row-height;
+    line-height: $list-row-height;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    background-color: $bg-list-zebra-1;
+    color: $color-list;
+    border-bottom: 1px solid $border-color-list;
+
+    &:nth-child(2n) {
+        background-color: $bg-list-zebra-2;
+    }
+        
+    &.current {
+        background-color: $bg-list-current;
+        color: $color-list;
+
+        &:not(.paused) {
+            .status {
+                &:before {
+                    content: "";
+                    width: 0;
+                    height: 0;
+                    border: solid transparent;
+                    border-width: 6px 10px;
+                    border-left-color: #222;
+                }
+            }
+        }
+
+        &.paused {
+            .status {
+                &:before, &:after {
+                    content: "";
+                    width: 0;
+                    height: 10px;
+                    border-left: 4px solid #222;
+                }
+                &:before {
+                    left: 3px;
+                }
+                &:after {
+                    left: 9px;
+                }
+            }
+        }
+    }
+
+    &.selected {
+        background-color: $bg-list-selected;
+        color: $color-list-selected;
+    }
+}
+
+@mixin song-list-row {
+    span {
+        flex-basis: 0;
+        padding-left: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        &:not(:last-child) {
+            border-right: 1px solid $border-color-list;
+        }
+    }
+
+    .status {
+        flex-grow: 0;
+        flex-basis: 12px;
+    }
+    .track {
+        flex-grow: 0;
+        flex-basis: 30px;
+    }
+    .title {
+        flex-grow: 6;
+    }
+    .duration {
+        flex-grow: 1;
+        padding-right: 10px;
+    }
+    .artist {
+        flex-grow: 4;
+    }
+    .album {
+        flex-grow: 4;
+    }
+
+}
+

@@ -21,8 +21,12 @@ function decodeArtistAlbum(encoded) {
 
     const match = decoded.match(/^(.+)\/(.+)$/);
 
-    const artist = match[1];
-    const album = match[2];
+    const artist = decodeURIComponent(match[1]);
+    const album = decodeURIComponent(match[2]);
+
+    if (!(artist.length && album.length)) {
+        throw new Error('Must supply artist and album');
+    }
 
     return { artist, album };
 }
@@ -190,7 +194,16 @@ async function getAlbumArtwork(db, res, artist, album) {
     return { file, cacheable };
 }
 
-async function routeArtwork(req, res, next) {
+async function serveArtworkFile(res, file) {
+    const contentType = getContentTypeFromFile(file);
+    const buffer = await getBufferFromFile(file);
+
+    return res
+        .header('Content-Type', contentType)
+        .send(buffer);
+}
+
+async function routeArtwork(req, res) {
     const encoded = req.params.encoded;
 
     let decoded = null;
@@ -198,7 +211,7 @@ async function routeArtwork(req, res, next) {
         decoded = decodeArtistAlbum(encoded);
     }
     catch (err) {
-        return next();
+        return serveArtworkFile(res, ARTWORK_UNKNOWN_FILE);
     }
 
     const { artist, album } = decoded;
@@ -213,7 +226,9 @@ async function routeArtwork(req, res, next) {
             .toArray();
 
         if (!existsInDatabaseResult.length) {
-            return next();
+            return res
+                .status(400)
+                .json({ existsInDatabaseResult, artist, album, error: true, status: 'File not found in database' });
         }
     }
     catch (err) {
@@ -230,16 +245,13 @@ async function routeArtwork(req, res, next) {
         req.db.close();
 
         if (file) {
-            const contentType = getContentTypeFromFile(file);
-            const buffer = await getBufferFromFile(file);
-
-            return res
-                .header('Content-Type', contentType)
-                .send(buffer);
+            return serveArtworkFile(res, file);
         }
     }
     catch (err) {
-        return next();
+        return res
+            .status(404)
+            .json({ error: true, status: 'Not found', err });
     }
 
     return null;

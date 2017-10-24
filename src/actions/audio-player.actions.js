@@ -7,7 +7,8 @@ import {
     AUDIO_TRACK_CHANGED,
     AUDIO_SEEKED,
     AUDIO_TIME_UPDATED,
-    AUDIO_NODE_UPDATED
+    AUDIO_BUFFERED,
+    AUDIO_SOURCE_UPDATED
 } from '../constants/actions';
 
 export const audioFileLoaded = file => buildAction(AUDIO_FILE_LOADED, file);
@@ -24,5 +25,7 @@ export const audioSeeked = evt => buildAction(AUDIO_SEEKED, evt);
 
 export const audioTimeUpdated = time => buildAction(AUDIO_TIME_UPDATED, time);
 
-export const audioNodeUpdated = audioNode => buildAction(AUDIO_NODE_UPDATED, audioNode);
+export const audioProgressed = req => buildAction(AUDIO_BUFFERED, req);
+
+export const audioSourceUpdated = audioSource => buildAction(AUDIO_SOURCE_UPDATED, audioSource);
 
