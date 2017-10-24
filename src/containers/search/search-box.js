@@ -71,7 +71,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     onChange: value => dispatch(searchChanged(value)),
-    setFocus: status => dispatch(searchFocusSet(status))
+    setFocus: (status = true) => dispatch(searchFocusSet(status))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBox);
