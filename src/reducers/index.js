@@ -23,7 +23,8 @@ export default createReducer(initialState, createReducerObject([
     [AC.SONG_LIST_ITEM_CLICKED, songList.selectSongListItem],
     [AC.SONG_LIST_SORTED, songList.sortSongList],
 
-    [AC.FILTER_LIST_LOADED, filter.receiveFilterList],
+    [AC.FILTER_LIST_REQUESTED, filter.requestFilterList],
+    [AC.FILTER_LIST_RECEIVED, filter.receiveFilterList],
     [AC.FILTER_ITEM_CLICKED, filter.startFilterSongList],
 
     [AC.AUDIO_SOURCE_UPDATED, audio.updateAudioSource],
@@ -37,8 +38,6 @@ export default createReducer(initialState, createReducerObject([
     [AC.AUDIO_PLAY_PAUSED, audio.playPauseAudio],
     [AC.AUDIO_TRACK_CHANGED, audio.changeTrack],
     [AC.AUDIO_SEEKED, audio.audioSeek],
-
-    [AC.ARTWORK_LOADED, audio.setArtworkLoaded],
 
     [AC.SEARCH_CHANGED, search.changeSearch],
     [AC.SEARCH_NAVIGATED, search.navigateSearch],

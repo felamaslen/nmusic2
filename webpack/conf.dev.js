@@ -1,4 +1,5 @@
 const webpack = require('webpack');
+const Dotenv = require('dotenv-webpack');
 
 const webpackConfig = require('./conf.common');
 const moduleConfigDev = require('./module.dev');
@@ -7,9 +8,9 @@ module.exports = {
     ...webpackConfig,
     devtool: 'source-map',
     entry: [
-        'react-hot-loader/patch',
         `webpack-dev-server/client?http://0.0.0.0:${process.env.PORT_WDS}`,
         'webpack/hot/only-dev-server',
+        'react-hot-loader/patch',
         ...webpackConfig.entry
     ],
     plugins: [
@@ -20,7 +21,7 @@ module.exports = {
             }
         }),
         new webpack.HotModuleReplacementPlugin(),
-        new webpack.NamedModulesPlugin()
+        new Dotenv({ path: '.env' })
     ],
     module: moduleConfigDev,
     devServer: {
@@ -35,7 +36,6 @@ module.exports = {
         noInfo: false,
         publicPath: '/',
         port: process.env.PORT_WDS,
-        historyApiFallback: true,
         proxy: {
             '/': {
                 target: `http://localhost:${process.env.PORT}`,

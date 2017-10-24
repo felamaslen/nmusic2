@@ -2,28 +2,35 @@
  * Entry point to the web app
  */
 
-import React from 'react';
-import { render } from 'react-dom';
-import { Provider } from 'react-redux';
+/* eslint-disable global-require */
 
-import getStore from './store';
-import App from './components/app';
+import 'babel-polyfill';
+
+import React from 'react';
+import { AppContainer } from 'react-hot-loader';
+import { render } from 'react-dom';
+
+import store from './store';
+import Root from './containers/root';
 
 import './sass/index.scss';
 import './images/favicon.png';
 
-const store = getStore();
-
-function renderRoot() {
-    if (process.env.NODE_ENV !== 'test') {
-        render(
-            <Provider store={store}>
-                <App />
-            </Provider>,
-            document.getElementById('root')
-        );
-    }
+function renderApp(RootComponent = Root) {
+    render(
+        <AppContainer>
+            <RootComponent store={store} />
+        </AppContainer>,
+        document.getElementById('root')
+    );
 }
 
-renderRoot();
+renderApp();
+
+if (module.hot) {
+    module.hot.accept(
+        './containers/root',
+        () => renderApp(require('./containers/root'))
+    );
+}
 

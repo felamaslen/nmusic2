@@ -1,16 +1,14 @@
-import buildAction, { buildEffectAction } from '../messageBuilder';
+import buildAction from '../messageBuilder';
 
 import {
     SEARCH_CHANGED, SEARCH_SELECTED, SEARCH_NAVIGATED, SEARCH_RESULTS_RECEIVED, SEARCH_FOCUS_SET
 } from '../constants/actions';
 
-import { REQUEST_SEARCH_RESULTS, REQUEST_SEARCHED_SONG_LIST } from '../constants/effects';
+export const searchChanged = value => buildAction(SEARCH_CHANGED, value);
 
-export const searchChanged = value => buildEffectAction(SEARCH_CHANGED, value)(REQUEST_SEARCH_RESULTS);
+export const searchSelected = req => buildAction(SEARCH_SELECTED, req);
 
-export const searchSelected = index => buildEffectAction(SEARCH_SELECTED, index)(REQUEST_SEARCHED_SONG_LIST);
-
-export const searchNavigated = key => buildEffectAction(SEARCH_NAVIGATED, key)(REQUEST_SEARCHED_SONG_LIST);
+export const searchNavigated = key => buildAction(SEARCH_NAVIGATED, key);
 
 export const searchResultsReceived = data => buildAction(SEARCH_RESULTS_RECEIVED, data);
 

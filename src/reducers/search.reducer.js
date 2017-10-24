@@ -42,29 +42,7 @@ function selectSong(state, key) {
     return loadAudioFile(state, song);
 }
 
-export function selectSearchItem(state, { key, category }) {
-    const stateAdvanced = state
-        .setIn(['search', 'active'], false)
-        .setIn(['songList', 'loading'], true);
-
-    if (category.indexOf('artist') === 0) {
-        return selectArtist(stateAdvanced, key);
-    }
-
-    if (category.indexOf('album') === 0) {
-        return selectAlbum(stateAdvanced, key);
-    }
-
-    if (category.indexOf('song') === 0) {
-        return selectSong(stateAdvanced, key);
-    }
-
-    throw new Error('value for "category" out of range');
-}
-
-export function getSearchKeyCategory(state) {
-    const navIndex = state.getIn(['search', 'navIndex']);
-
+export function getSearchKeyCategory(state, navIndex = state.getIn(['search', 'navIndex'])) {
     const listCategories = ['artists', 'albums', 'songs'];
 
     const result = listCategories.reduce(({ key, category, sumToHere, done }, item) => {
@@ -98,6 +76,32 @@ export function getSearchKeyCategory(state) {
     return { key, category };
 }
 
+export function selectSearchItem(state, { index, ...req }) {
+    if (typeof index !== 'undefined') {
+        ({ category: req.category, key: req.key } = getSearchKeyCategory(state, index));
+    }
+
+    const { category, key } = req;
+
+    const stateAdvanced = state
+        .setIn(['search', 'active'], false)
+        .setIn(['songList', 'loading'], true);
+
+    if (category.indexOf('artist') === 0) {
+        return selectArtist(stateAdvanced, key);
+    }
+
+    if (category.indexOf('album') === 0) {
+        return selectAlbum(stateAdvanced, key);
+    }
+
+    if (category.indexOf('song') === 0) {
+        return selectSong(stateAdvanced, key);
+    }
+
+    throw new Error('value for "category" out of range');
+}
+
 export function navigateSearch(state, { itemKey, category, key, shift, ctrl }) {
     if (typeof itemKey !== 'undefined' && category) {
         const navIndex = getNavIndex(state)(itemKey, category);
@@ -115,16 +119,11 @@ export function navigateSearch(state, { itemKey, category, key, shift, ctrl }) {
         (key === 'Tab' && !shift);
 
     const exit = key === 'Escape';
-    const enter = key === 'Enter';
 
     if (exit) {
         return state
             .setIn(['search', 'active'], false)
             .setIn(['search', 'navIndex'], -1);
-    }
-
-    if (enter) {
-        return selectSearchItem(state, getSearchKeyCategory(state));
     }
 
     const delta = (goUp >> 0) - (goDown >> 0);

@@ -17,18 +17,26 @@ export function startFilterSongList(state, { filterKey, index, ...evt }) {
         .setIn(['filter', 'album', 'loaded'], albumsListLoaded);
 }
 
+export const requestFilterList = (state, { key }) => state
+    .setIn(['filter', key, 'loaded'], false)
+    .setIn(['filter', key, 'loading'], true);
+
 export function receiveFilterList(state, { err, items, key }) {
-    const loadedState = state
-        .setIn(['filter', key, 'loaded'], true)
+    const nextState = state
+        .setIn(['filter', key, 'loading'], false)
         .setIn(['filter', key, 'selectedKeys'], list.of())
         .setIn(['filter', key, 'lastClickedKey'], -1);
 
     if (err) {
-        return loadedState;
+        return nextState;
     }
 
+    const loadedState = nextState
+        .setIn(['filter', key, 'loaded'], true);
+
+
     if (!items) {
-        return state;
+        return loadedState;
     }
 
     return loadedState

@@ -14,12 +14,14 @@ export default fromJS({
     filter: {
         artist: {
             loaded: false,
+            loading: false,
             items: [],
             selectedKeys: [],
             lastClickedKey: -1
         },
         album: {
             loaded: false,
+            loading: false,
             items: [],
             selectedKeys: [],
             lastClickedKey: -1
