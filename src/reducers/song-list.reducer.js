@@ -67,11 +67,11 @@ export const sortSongList = (state, orderKey) => {
         .setIn(['songList', 'orderKeys'], newOrderKeys);
 }
 
-export function insertSongList(state, response) {
+export function insertSongList(state, { err, data }) {
     let songs = list.of();
 
     if (!err) {
-        songs = list(response.data).map(item => map({
+        songs = list(data).map(item => map({
             id: item[0],
             title: item[1],
             artist: item[2],

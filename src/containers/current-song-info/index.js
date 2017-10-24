@@ -1,25 +1,44 @@
 import { connect } from 'react-redux';
 
-import { artworkLoaded } from '../../actions/audio-player.actions';
-
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 export class CurrentSongInfo extends ImmutableComponent {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            artworkLoading: false
+        };
+    }
+    onArtworkLoad() {
+        this.setState({
+            artworkLoading: false
+        });
+    }
+    componentDidMount() {
+        if (this.props.artworkSrc) {
+            this.setState({
+                artworkLoading: true
+            });
+        }
+    }
     componentDidUpdate(prevProps) {
-        if (prevProps.artworkSrc === this.props.artworkSrc) {
-            this.props.onArtworkLoad();
+        if (prevProps.artworkSrc !== this.props.artworkSrc) {
+            this.setState({
+                artworkLoading: true
+            });
         }
     }
     render() {
-        const onArtworkLoad = () => this.props.onArtworkLoad();
-
         const artworkClasses = classNames({
             artwork: true,
-            loading: this.props.artworkLoading
+            loading: this.state.artworkLoading
         });
+
+        const onArtworkLoad = () => this.onArtworkLoad();
 
         return <div className="current-song-info-outer">
             <span className={artworkClasses}>
@@ -38,22 +57,15 @@ CurrentSongInfo.propTypes = {
     artist: PropTypes.string,
     album: PropTypes.string,
     title: PropTypes.string,
-    artworkSrc: PropTypes.string,
-    onArtworkLoad: PropTypes.func.isRequired,
-    artworkLoading: PropTypes.bool.isRequired
+    artworkSrc: PropTypes.string
 };
 
 const mapStateToProps = state => ({
     artist: state.getIn(['player', 'currentSong', 'artist']) || null,
     album: state.getIn(['player', 'currentSong', 'album']) || null,
     title: state.getIn(['player', 'currentSong', 'title']) || null,
-    artworkSrc: state.getIn(['artwork', 'src']),
-    artworkLoading: !state.getIn(['artwork', 'loaded'])
+    artworkSrc: state.getIn(['artwork', 'src'])
 });
 
-const mapDispatchToProps = dispatch => ({
-    onArtworkLoad: () => dispatch(artworkLoaded())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(CurrentSongInfo);
+export default connect(mapStateToProps)(CurrentSongInfo);
 

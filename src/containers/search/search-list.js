@@ -1,7 +1,7 @@
 import { List as list } from 'immutable';
 import { connect } from 'react-redux';
 
-import { searchNavigated } from '../../actions/search.actions';
+import { searchNavigated, searchSelected } from '../../actions/search.actions';
 
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
@@ -17,10 +17,17 @@ export class SearchList extends ImmutableComponent {
         this.keyListener = evt => {
             const { key, shiftKey, ctrlKey } = evt;
 
-            this.props.navigate(key, shiftKey, ctrlKey);
+            if (key === 'Enter') {
+                this.props.selectItem({
+                    index: this.props.navIndex
+                });
+            }
+            else {
+                this.props.navigate(key, shiftKey, ctrlKey);
 
-            if (key === 'Tab') {
-                evt.preventDefault();
+                if (key === 'Tab') {
+                    evt.preventDefault();
+                }
             }
         };
     }
@@ -96,7 +103,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    navigate: (key, shift, ctrl) => dispatch(searchNavigated({ key, shift, ctrl }))
+    navigate: (key, shift, ctrl) => dispatch(searchNavigated({ key, shift, ctrl })),
+    selectItem: req => dispatch(searchSelected(req))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchList);

@@ -37,9 +37,6 @@ export function loadAudioFile(state, song, play = true) {
     return newState;
 }
 
-export const setArtworkLoaded = state => state
-    .setIn(['artwork', 'loaded'], true);
-
 export const audioStop = state => resetPlayerTimes(state)
     .setIn(['player', 'current'], null)
     .setIn(['player', 'currentSong'], null)

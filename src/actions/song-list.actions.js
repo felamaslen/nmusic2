@@ -6,7 +6,7 @@ import {
 
 export const songListRequested = () => buildAction(SONG_LIST_REQUESTED);
 
-export const songListRetrieved = res => buildAction(SONG_LIST_RETRIEVED, res);
+export const songListReceived = res => buildAction(SONG_LIST_RETRIEVED, res);
 
 export const songListItemClicked = id => buildAction(SONG_LIST_ITEM_CLICKED, id);
 

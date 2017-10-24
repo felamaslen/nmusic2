@@ -1,28 +1,24 @@
-/*
+import { select, put } from 'redux-saga/effects';
+
 import axios from 'axios';
 
 import { API_PREFIX } from '../constants/misc';
-import { songListRetrieved } from '../actions/song-list.actions';
-import { filterListReceived } from '../actions/filter.actions';
+import { songListReceived } from '../actions/song-list.actions';
 
 import { getJoinedFilter } from '../helpers';
-*/
 
-export function requestSongList() {
-    return new Promise(resolve => {
-        setTimeout(() => resolve('foo'), 2000);
-    });
+export function *fetchFilteredSongList() {
+    const filter = yield select(state => state.get('filter'));
 
-    /*
-    const params = state.get('filter')
-        .reduce((items, filter, filterKey) => {
-            const selectedKeys = filter.get('selectedKeys');
+    const params = filter
+        .reduce((items, filterItem, filterKey) => {
+            const selectedKeys = filterItem.get('selectedKeys');
 
-            const loadFilter = selectedKeys.size && filter.get('loaded');
+            const loadFilter = selectedKeys.size && filterItem.get('loaded');
             if (loadFilter) {
                 return {
                     ...items,
-                    [filterKey]: getJoinedFilter(filter, selectedKeys)
+                    [filterKey]: getJoinedFilter(filterItem, selectedKeys)
                 };
             }
 
@@ -30,31 +26,15 @@ export function requestSongList() {
 
         }, {});
 
-    const getSongsPromise = filterParams => {
-        if (!(params.artist && params.artist.length) && !(params.album && params.album.length)) {
-            return Promise.resolve({ data: [] });
-        }
+    let response = null;
 
-        return axios.get(`${API_PREFIX}/songs`, { params: filterParams });
+    if (!(params.artist && params.artist.length) && !(params.album && params.album.length)) {
+        response = { data: [] };
+    }
+    else {
+        response = yield axios.get(`${API_PREFIX}/songs`, { params });
     }
 
-    const promises = [getSongsPromise(params)];
-
-    const albumsListLoaded = state.getIn(['filter', 'album', 'loaded']);
-    if (!albumsListLoaded) {
-        const path = [API_PREFIX, 'albums'];
-
-        const artistsFilter = state.getIn(['filter', 'artist']);
-        const selectedKeys = artistsFilter.get('selectedKeys');
-        if (selectedKeys.size) {
-            path.push(getJoinedFilter(artistsFilter, selectedKeys));
-        }
-
-        promises.push(axios.get(path.join('/')));
-    }
-
-    return Promise.all(promises);
-
-    // */
+    yield put(songListReceived(response));
 }
 

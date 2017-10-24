@@ -1,22 +1,19 @@
-/*
+import { select, put } from 'redux-saga/effects';
+
 import axios from 'axios';
 
 import { API_PREFIX } from '../constants/misc';
 import { filterListReceived } from '../actions/filter.actions';
 
 import { getJoinedFilter } from '../helpers';
-*/
 
-export function requestFilterList() {
-    return new Promise(resolve => {
-        setTimeout(() => resolve('bar'), 2000);
-    });
+export function *fetchFilterList({ payload }) {
+    const { key } = payload;
 
-    /*
     const path = [API_PREFIX, `${key}s`];
 
     if (key === 'album') {
-        const artistFilter = state.getIn(['filter', 'artist']);
+        const artistFilter = yield select(state => state.getIn(['filter', 'artist']));
         const selectedKeys = artistFilter.get('selectedKeys');
 
         if (selectedKeys.size) {
@@ -27,15 +24,14 @@ export function requestFilterList() {
     }
 
     try {
-        const response = await axios.get(path.join('/'));
+        const response = yield axios.get(path.join('/'));
 
         const items = response.data;
 
-        dispatch(filterListReceived({ items, key }));
+        yield put(filterListReceived({ items, key }));
     }
     catch (err) {
-        dispatch(filterListReceived({ err }));
+        yield put(filterListReceived({ err }));
     }
-    */
 }
 

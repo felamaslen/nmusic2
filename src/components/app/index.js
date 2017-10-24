@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Meta from '../meta';
-import Filter from '../../containers/filter';
+import Filter from '../filter';
 import SongList from '../../containers/song-list';
 
 export default function App() {

@@ -6,9 +6,9 @@ import {
 
 export const searchChanged = value => buildAction(SEARCH_CHANGED, value);
 
-export const searchSelected = index => buildEffectAction(SEARCH_SELECTED, index)(REQUEST_SEARCHED_SONG_LIST);
+export const searchSelected = req => buildAction(SEARCH_SELECTED, req);
 
-export const searchNavigated = key => buildEffectAction(SEARCH_NAVIGATED, key)(REQUEST_SEARCHED_SONG_LIST);
+export const searchNavigated = key => buildAction(SEARCH_NAVIGATED, key);
 
 export const searchResultsReceived = data => buildAction(SEARCH_RESULTS_RECEIVED, data);
 

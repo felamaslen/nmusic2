@@ -1,37 +1,43 @@
-import { take, takeEvery, put, all } from 'redux-saga/effects';
+import { takeEvery, fork, call, all, select } from 'redux-saga/effects';
 
 import * as actions from '../constants/actions';
 
-import { requestSongList } from './song-list.saga';
-import { requestFilterList } from './filter.saga';
-
-import { songListRetrieved } from '../actions/song-list.actions';
-import { filterListReceived } from '../actions/filter.actions';
-
-export function *fetchSongList() {
-    const response = yield requestSongList();
-
-    yield put(songListRetrieved(response));
-}
-
-export function *fetchFilterList() {
-    const response = yield requestFilterList();
-
-    yield put(filterListReceived(response));
-}
-
-export function *watchSongListRequested() {
-    yield take(actions.SONG_LIST_REQUESTED, fetchSongList);
-}
+import { fetchFilterList } from './filter.saga';
+import { fetchFilteredSongList } from './song-list.saga';
+import { fetchSearchResults, selectSearchItem } from './search.saga';
 
 export function *watchFilterListRequested() {
-    yield takeEvery(actions.FILTER_LIST_LOADED, fetchFilterList);
+    yield takeEvery(actions.FILTER_LIST_REQUESTED, fetchFilterList);
+}
+
+export function *fetchSongListWithAlbums(req) {
+    const tasks = [call(fetchFilteredSongList, req)];
+
+    const albumsLoaded = yield select(state => state.getIn(['filter', 'album', 'loaded']));
+    if (!albumsLoaded) {
+        tasks.push(call(fetchFilterList, { payload: { key: 'album' } }));
+    }
+
+    yield all(tasks);
+}
+
+export function *watchFilterListClicked() {
+    yield takeEvery(actions.FILTER_ITEM_CLICKED, fetchSongListWithAlbums);
+}
+
+export function *watchSearchChanged() {
+    yield takeEvery(actions.SEARCH_CHANGED, fetchSearchResults);
+}
+
+export function *watchSearchSelected() {
+    yield takeEvery(actions.SEARCH_SELECTED, selectSearchItem);
 }
 
 export default function *rootSaga() {
-    yield all([
-        watchSongListRequested(),
-        watchFilterListRequested()
-    ]);
+    yield fork(watchFilterListRequested);
+    yield fork(watchFilterListClicked);
+
+    yield fork(watchSearchChanged);
+    yield fork(watchSearchSelected);
 }
 

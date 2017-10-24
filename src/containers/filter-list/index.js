@@ -33,7 +33,8 @@ export class FilterList extends ImmutableComponent {
 
         const className = classNames({
             [`filter-section-outer filter-${this.props.filterKey}`]: true,
-            loading: !this.props.loaded
+            loaded: this.props.loaded,
+            loading: this.props.loading
         });
 
         const selectAllClassName = classNames({
@@ -52,6 +53,7 @@ export class FilterList extends ImmutableComponent {
 FilterList.propTypes = {
     filterKey: PropTypes.string.isRequired,
     loaded: PropTypes.bool.isRequired,
+    loading: PropTypes.bool.isRequired,
     items: PropTypes.instanceOf(list),
     selectedKeys: PropTypes.instanceOf(list),
     loadInitialList: PropTypes.func.isRequired
@@ -59,6 +61,7 @@ FilterList.propTypes = {
 
 const mapStateToProps = (state, ownProps) => ({
     loaded: state.getIn(['filter', ownProps.filterKey, 'loaded']),
+    loading: state.getIn(['filter', ownProps.filterKey, 'loading']),
     items: state.getIn(['filter', ownProps.filterKey, 'items']),
     selectedKeys: state.getIn(['filter', ownProps.filterKey, 'selectedKeys'])
 });
