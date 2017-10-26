@@ -2,17 +2,19 @@
  * Returns webpack configuration objects
  */
 
-require('dotenv').config();
+/* eslint-disable global-require */
 
-const webpackConfigDevelopment = require('./webpack/conf.dev');
-const webpackConfigProduction = require('./webpack/conf.prod');
+const dotenv = require('dotenv');
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
 function webpackConfig() {
-    if (process.env.NODE_ENV !== 'development') {
-        return webpackConfigProduction;
+    if (process.env.NODE_ENV === 'production') {
+        return require('./webpack/conf.prod');
     }
 
-    return webpackConfigDevelopment;
+    return require('./webpack/conf.dev');
 }
 
 module.exports = webpackConfig();
