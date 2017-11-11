@@ -1,13 +1,31 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+
 body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: 'Open Sans', cursive, arial, helvetica, sans-serif;
     font-size: 11pt;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
 .nmusic-app-outer {
     display: flex;
-    flex-flow: column;
+    flex-flow: row;
 
-    height: 100vh;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.nmusic-body {
+    display: flex;
+    flex-flow: column;
+    overflow: hidden;
 }
 
