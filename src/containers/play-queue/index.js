@@ -8,7 +8,8 @@ import QueueItem from './queue-item';
 
 export function PlayQueue({ queue, active }) {
     const queueItems = queue.map(
-        (item, itemKey) => <QueueItem key={itemKey} active={active === itemKey} song={item} />
+        (item, itemKey) => <QueueItem key={itemKey} active={active === itemKey} song={item}
+            itemKey={itemKey} />
     );
 
     return <div className="play-queue-outer">

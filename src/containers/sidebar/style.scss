@@ -2,27 +2,50 @@
     flex-basis: $sidebar-width;
     flex-grow: 0;
     flex-shrink: 0;
+    z-index: 102;
+    overflow: hidden;
    
     &.hidden {
         flex-basis: $sidebar-width-hidden;
         max-width: $sidebar-width-hidden;
 
         .inner {
-            overflow: hidden;
-            
             .sidebar-body {
             }
         }
+    }
 
-        .sidebar-top-outer {
-            .button-sidebar-display-toggle {
-                display: none;
+    &:not(.display-over) {
+        border-right: 2px solid $color-light;
+        
+        &.hidden {
+            .inner {
+            }
+
+            .sidebar-top-outer {
+                .button-sidebar-display-toggle {
+                    display: none;
+                }
+            }
+
+            .sidebar-body {
+                opacity: 0;
             }
         }
     }
 
     &.display-over {
         flex-basis: $sidebar-width-hidden;
+        flex-grow: 0;
+        flex-shrink: 0;
+        width: $sidebar-width-hidden;
+        overflow: visible;
+        
+        .inner {
+            box-shadow: 3px 0 9px $color-shadow-3;
+            transition: left 0.5s ease;
+            left: 0;
+        }
     
         .sidebar-top-outer {
             .button-sidebar-display-toggle {
@@ -34,31 +57,21 @@
                 }
             }
         }
-        
-        .inner {
-            width: $sidebar-width;
-            position: fixed;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            overflow: hidden;
-            transition: width 0.5s ease;
-        }
 
         &.hidden {
             .inner {
-                width: $sidebar-width-hidden;
+                left: -($sidebar-width - $sidebar-width-hidden) - 4px;
             }
         }
     }
 
     .inner {
         display: flex;
+        width: $sidebar-width;
         flex-flow: column;
         position: relative;
         height: 100%;
         z-index: 101;
-        box-shadow: 3px 0 9px $color-shadow-3;
         background-color: $bg-sidebar;
     }
 
@@ -140,10 +153,11 @@
             }
         }
     }
-
+    
     .sidebar-body {
         position: relative;
         flex-grow: 1;
+        transition: opacity 0.3s ease;
     }
 }
 

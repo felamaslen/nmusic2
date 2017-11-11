@@ -3,10 +3,10 @@ import PropTypes from 'prop-types';
 
 export default function SidebarTop({ onHideToggle, onDisplayOverToggle }) {
     return <div className="sidebar-top-outer">
-        <a onClick={onHideToggle} className="button-sidebar-toggle">
+        <a onClick={onDisplayOverToggle} className="button-sidebar-display-toggle">
             <div className="bars" />
         </a>
-        <a onClick={onDisplayOverToggle} className="button-sidebar-display-toggle">
+        <a onClick={onHideToggle} className="button-sidebar-toggle">
             <div className="bars" />
         </a>
     </div>;

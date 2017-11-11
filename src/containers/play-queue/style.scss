@@ -5,4 +5,51 @@
         border-bottom: 1px solid $color-very-light;
         white-space: nowrap;
     }
+
+    .play-queue {
+    }
+    .play-queue-song {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        padding: 0.5em 1em;
+        background-color: $bg-list-zebra-1;
+        @include noselect;
+
+        &:nth-child(2n) {
+            background-color: $bg-list-zebra-2;
+        }
+        &.active {
+            background-color: $bg-list-current;
+        }
+
+        .list-key {
+            flex-basis: 1.5em;
+            flex-grow: 0;
+            flex-shrink: 0;
+        }
+        .info {
+            display: flex;
+            flex-grow: 1;
+            flex-flow: row;
+            flex-wrap: wrap;
+        }
+        .title {
+            width: 100%;
+            line-height: 1.1em;
+        }
+        .artist, .album {
+            font-size: 0.9em;
+            font-style: italic;
+            line-height: 0.9em;
+            color: $color-ultra-dark;
+        }
+        .artist {
+            &::after {
+                content: '\00a0/\00a0';
+            }
+        }
+        .album {
+        }
+    }
 }

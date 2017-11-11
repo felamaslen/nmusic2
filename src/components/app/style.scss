@@ -4,6 +4,12 @@ body {
     font-size: 11pt;
 }
 
+ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
 .nmusic-app-outer {
     display: flex;
     flex-flow: row;
