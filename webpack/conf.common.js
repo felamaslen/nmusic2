@@ -3,12 +3,13 @@ const path = require('path');
 const plugins = require('./plugin.common');
 
 module.exports = {
-    entry: ['babel-polyfill', './src/index'],
+    entry: ['./src/index'],
     output: {
         path: path.join(__dirname, '../build'),
         filename: 'js/bundle.js'
     },
     resolve: {
+        modules: ['node_modules', path.join(__dirname, '../src/images/sprite')],
         extensions: ['*', '.js', '.json']
     },
     resolveLoader: {

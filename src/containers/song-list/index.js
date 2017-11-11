@@ -4,23 +4,22 @@ import { connect } from 'react-redux';
 import { songListRequested } from '../../actions/song-list.actions';
 
 import React from 'react';
-import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 
 import SongListHead from './list-head';
 import SongListItem from './list-item';
+import SongListMenu from './menu';
 
-export class SongList extends ImmutableComponent {
-    render() {
-        const songList = this.props.songs.map((song, key) => <SongListItem
-            key={song.get('id')} listKey={key} id={song.get('id')} />
-        );
+export function SongList({ songs }) {
+    const songList = songs.map((song, key) => <SongListItem
+        key={song.get('id')} listKey={key} id={song.get('id')} />
+    );
 
-        return <div className="song-list-outer">
-            <SongListHead />
-            <div className="song-list">{songList}</div>
-        </div>;
-    }
+    return <div className="song-list-outer">
+        <SongListHead />
+        <div className="song-list">{songList}</div>
+        <SongListMenu />
+    </div>;
 }
 
 SongList.propTypes = {

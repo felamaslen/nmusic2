@@ -1,15 +1,13 @@
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const sassLoader = require('./sassLoader');
-
 module.exports = {
     loaders: [
         {
-            test: /\.jsx?$/,
+            test: /\.js$/,
             exclude: /node_modules/,
             loaders: 'babel-loader'
         },
         {
             test: /favicon\.png/,
+            exclude: /node_modules/,
             loader: 'file-loader',
             query: {
                 name: 'favicon.ico',
@@ -17,13 +15,8 @@ module.exports = {
             }
         },
         {
-            test: filename => {
-                if (filename.match(/favicon\.png/)) {
-                    return false;
-                }
-
-                return filename.match(/\.(woff2?|ttf|eot|svg|png|jpg)(\?v=[0-9]\.[0-9]\.[0-9])?$/);
-            },
+            test: /\.(png|jpg|wav|mp(3|4|eg))(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            exclude: [/favicon\.png/, /node_modules/],
             loader: 'file-loader',
             query: {
                 name: 'assets/[hash].[ext]',
@@ -31,14 +24,29 @@ module.exports = {
             }
         },
         {
-            test: /\.scss$/,
-            enforce: 'pre',
-            loaders: 'import-glob-loader'
+            test: /\.(woff2?|ttf|eot)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+            exclude: /node_modules/,
+            loader: 'url-loader'
+        },
+        {
+            test: /\.svg$/,
+            use: [
+                {
+                    loader: 'babel-loader'
+                },
+                {
+                    loader: 'react-svg-loader',
+                    options: {
+                        jsx: true
+                    }
+                }
+            ]
         },
         {
             test: /\.scss$/,
-            exclude: /node_modules/,
-            loaders: ExtractTextPlugin.extract(sassLoader)
+            exclude: [/fonts\.scss$/, /node_modules/],
+            enforce: 'pre',
+            loaders: 'import-glob-loader'
         }
     ]
 };

@@ -10,7 +10,13 @@ function setupClient(app) {
     app.set('views', path.join(__dirname, '../src/templates'));
     app.set('view engine', 'ejs');
 
-    app.get('/', (req, res) => res.render('index', { version }));
+    app.get('/', (req, res) => res.render('index', {
+        htmlWebpackPlugin: {
+            options: {
+                version
+            }
+        }
+    }));
     app.use(express.static(path.join(__dirname, '../build')));
 }
 

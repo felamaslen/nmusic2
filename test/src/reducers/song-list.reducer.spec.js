@@ -1,4 +1,4 @@
-import { List as list, Map as map } from 'immutable';
+import { fromJS, List as list, Map as map } from 'immutable';
 import { expect } from 'chai';
 
 import state from '../../../src/initialState';
@@ -91,6 +91,35 @@ describe('Song list reducer', () => {
                 { key1: 'zef', key2: 'rak' },
                 { key1: 'foo', key2: 'zav' }
             ]);
+        });
+    });
+
+    describe('addToQueue', () => {
+        it('should add a song to the queue', () => {
+            expect(R.addToQueue(fromJS({ queue: { songs: [] } }), 'foo').get('queue')
+                .toJS()
+            )
+                .to.deep.equal({ songs: ['foo'] });
+        });
+        it('should close the context menu', () => {
+            expect(R.addToQueue(fromJS({ queue: { songs: [] }, songList: { menu: { hidden: false } } }), 'foo')
+                .getIn(['songList', 'menu', 'hidden']))
+                .to.equal(true);
+        });
+    });
+
+    describe('openMenu', () => {
+        it('should open a menu based on a song and mouse position', () => {
+            expect(R.openMenu(fromJS({ songList: {} }), { posX: 1, posY: 2 }).toJS())
+                .to.deep.equal({
+                    songList: {
+                        menu: {
+                            posX: 1,
+                            posY: 2,
+                            hidden: false
+                        }
+                    }
+                });
         });
     });
 });
