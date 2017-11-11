@@ -94,10 +94,21 @@ export function insertSongList(state, { err, data }) {
         .setIn(['songList', 'menu', 'hidden'], true);
 }
 
-export const addToQueue = (state, song) => state
-    .setIn(['queue', 'songs'], state.getIn(['queue', 'songs']).push(song))
-    .setIn(['songList', 'menu', 'hidden'], true);
+export function addToQueue(state, song = null) {
+    let songs = list.of(song);
+    if (!song) {
+        const selectedIds = state.getIn(['songList', 'selectedIds']);
 
-export const openMenu = (state, { song, posX, posY }) => state
-    .setIn(['songList', 'menu'], map({ song, posX, posY, hidden: false }));
+        songs = state
+            .getIn(['songList', 'songs'])
+            .filter(item => selectedIds.indexOf(item.get('id')) !== -1);
+    }
+
+    return state
+        .setIn(['queue', 'songs'], state.getIn(['queue', 'songs']).concat(songs))
+        .setIn(['songList', 'menu', 'hidden'], true);
+}
+
+export const openMenu = (state, { posX, posY }) => state
+    .setIn(['songList', 'menu'], map({ posX, posY, hidden: false }));
 

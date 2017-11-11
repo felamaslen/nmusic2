@@ -7,7 +7,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-export function SongListMenu({ hidden, song, posX, posY, addToQueue }) {
+export function SongListMenu({ hidden, posX, posY, addToQueue }) {
     const menuStyle = {
         left: posX,
         top: posY
@@ -16,7 +16,7 @@ export function SongListMenu({ hidden, song, posX, posY, addToQueue }) {
     const onAddToQueue = evt => {
         evt.nativeEvent.stopImmediatePropagation();
 
-        addToQueue(song);
+        addToQueue();
     }
 
     const className = classNames({
@@ -47,7 +47,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    addToQueue: song => dispatch(songListQueueAdded(song))
+    addToQueue: () => dispatch(songListQueueAdded())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SongListMenu);

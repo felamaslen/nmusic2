@@ -110,11 +110,10 @@ describe('Song list reducer', () => {
 
     describe('openMenu', () => {
         it('should open a menu based on a song and mouse position', () => {
-            expect(R.openMenu(fromJS({ songList: {} }), { song: 'foo', posX: 1, posY: 2 }).toJS())
+            expect(R.openMenu(fromJS({ songList: {} }), { posX: 1, posY: 2 }).toJS())
                 .to.deep.equal({
                     songList: {
                         menu: {
-                            song: 'foo',
                             posX: 1,
                             posY: 2,
                             hidden: false

@@ -2,7 +2,7 @@ import { Map as map } from 'immutable';
 import { connect } from 'react-redux';
 
 import {
-    songListItemClicked, songListQueueAdded, songListMenuOpened
+    songListItemClicked, songListMenuOpened
 } from '../../../actions/song-list.actions';
 import { audioFileLoaded } from '../../../actions/audio-player.actions';
 
@@ -30,6 +30,14 @@ export function SongListItem(props) {
     });
 
     const onSelect = evt => {
+        const rightClick = evt.nativeEvent.which === 3;
+        if (rightClick && selected) {
+            evt.nativeEvent.stopImmediatePropagation();
+            evt.preventDefault();
+
+            return;
+        }
+
         selectSong({
             index: listKey,
             ctrl: evt.ctrlKey,
@@ -38,9 +46,10 @@ export function SongListItem(props) {
     };
     const onPlay = () => playSong(song);
     const onMenu = evt => {
-        openMenu(song, evt.clientX, evt.clientY);
-
+        evt.nativeEvent.stopImmediatePropagation();
         evt.preventDefault();
+
+        openMenu(evt.clientX, evt.clientY);
     };
 
     return <span key={song.get('id')} className={className}
@@ -85,7 +94,7 @@ const mapStateToProps = (state, ownProps) => {
 const mapDispatchToProps = dispatch => ({
     selectSong: req => dispatch(songListItemClicked(req)),
     playSong: song => dispatch(audioFileLoaded(song)),
-    openMenu: (song, posX, posY) => dispatch(songListMenuOpened({ song, posX, posY }))
+    openMenu: (posX, posY) => dispatch(songListMenuOpened({ posX, posY }))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SongListItem);
