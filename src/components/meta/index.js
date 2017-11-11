@@ -7,7 +7,7 @@ import React from 'react';
 
 export default function Meta() {
     return <div className="audio-player-outer">
-        <AudioControls visualisationEnabled={true} />
+        <AudioControls visualisationEnabled={process.env.SKIP_VISUALISER !== 'true'} />
         <CurrentSongInfo />
         <Search />
         <AudioPlayerCore />
