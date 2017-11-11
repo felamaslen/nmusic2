@@ -8,9 +8,7 @@ const config = require('../../common/config');
 const ARTWORK_PATH = path.join(__dirname, '../../.artwork');
 const ARTWORK_UNKNOWN_FILE = `${ARTWORK_PATH}/unknown-artwork.png`;
 
-const {
-    getContentTypeFromFile, getBufferFromFile
-} = require('../../common/buffer-from-file');
+const { getContentTypeFromFile, getBufferFromFile } = require('../../common/buffer-from-file');
 
 function encodeArtistAlbum(artist, album) {
     return Buffer.from(`${artist}/${album}`).toString('base64');
@@ -196,11 +194,19 @@ async function getAlbumArtwork(db, res, artist, album) {
 
 async function serveArtworkFile(res, file) {
     const contentType = getContentTypeFromFile(file);
-    const buffer = await getBufferFromFile(file);
 
-    return res
-        .header('Content-Type', contentType)
-        .send(buffer);
+    try {
+        const buffer = await getBufferFromFile(file);
+
+        return res
+            .header('Content-Type', contentType)
+            .send(buffer);
+    }
+    catch (err) {
+        return res
+            .status(404)
+            .json({ error: 'file not found' });
+    }
 }
 
 async function routeArtwork(req, res) {

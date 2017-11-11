@@ -1,17 +1,12 @@
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const sassLoader = require('./sassLoader');
 
-const babelOptions = JSON.stringify({
-    presets: ['react', 'env']
-});
-const babelLoader = `babel-loader?${babelOptions}`;
-
 module.exports = {
     loaders: [
         {
             test: /\.jsx?$/,
             exclude: /node_modules/,
-            loaders: [babelLoader]
+            loaders: 'babel-loader'
         },
         {
             test: /favicon\.png/,
