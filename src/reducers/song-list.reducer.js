@@ -93,3 +93,6 @@ export function insertSongList(state, { err, data }) {
         .setIn(['songList', 'songs'], sortedSongs);
 }
 
+export const addToQueue = (state, song) => state
+    .set('queue', state.get('queue').push(song));
+

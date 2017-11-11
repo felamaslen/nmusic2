@@ -1,4 +1,4 @@
-import { List as list, Map as map } from 'immutable';
+import { fromJS, List as list, Map as map } from 'immutable';
 import { expect } from 'chai';
 
 import state from '../../../src/initialState';
@@ -91,6 +91,13 @@ describe('Song list reducer', () => {
                 { key1: 'zef', key2: 'rak' },
                 { key1: 'foo', key2: 'zav' }
             ]);
+        });
+    });
+
+    describe('addToQueue', () => {
+        it('should add a song to the queue', () => {
+            expect(R.addToQueue(fromJS({ queue: [] }), 'foo').toJS())
+                .to.deep.equal({ queue: ['foo'] });
         });
     });
 });
