@@ -1,4 +1,4 @@
-import { select, put } from 'redux-saga/effects';
+import { select, put, call } from 'redux-saga/effects';
 
 import axios from 'axios';
 
@@ -7,13 +7,15 @@ import { filterListReceived } from '../actions/filter.actions';
 
 import { getJoinedFilter } from '../helpers';
 
+export const selectArtistFilter = state => state.getIn(['filter', 'artist']);
+
 export function *fetchFilterList({ payload }) {
     const { key } = payload;
 
     const path = [API_PREFIX, `${key}s`];
 
     if (key === 'album') {
-        const artistFilter = yield select(state => state.getIn(['filter', 'artist']));
+        const artistFilter = yield select(selectArtistFilter);
         const selectedKeys = artistFilter.get('selectedKeys');
 
         if (selectedKeys.size) {
@@ -24,7 +26,7 @@ export function *fetchFilterList({ payload }) {
     }
 
     try {
-        const response = yield axios.get(path.join('/'));
+        const response = yield call(axios.get, path.join('/'));
 
         const items = response.data;
 
