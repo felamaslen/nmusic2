@@ -12,7 +12,6 @@
         display: flex;
         flex-flow: row;
         align-items: center;
-        padding: 0.5em 1em;
         background-color: $bg-list-zebra-1;
         @include noselect;
 
@@ -24,24 +23,34 @@
         }
 
         .list-key {
-            flex-basis: 1.5em;
+            flex-basis: 2em;
             flex-grow: 0;
             flex-shrink: 0;
+            text-align: center;
         }
         .info {
             display: flex;
             flex-grow: 1;
             flex-flow: row;
             flex-wrap: wrap;
+            overflow: hidden;
+            line-height: 1.75em;
+        }
+        .title, .artist, .album {
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .title {
+            padding-top: 0.2em;
             width: 100%;
-            line-height: 1.1em;
+            white-space: nowrap;
         }
         .artist, .album {
+            padding-bottom: 0.4em;
             font-size: 0.9em;
+            line-height: 1.2em;
             font-style: italic;
-            line-height: 0.9em;
             color: $color-ultra-dark;
         }
         .artist {

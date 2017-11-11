@@ -14,7 +14,7 @@ export default function QueueItem({ song, active, itemKey }) {
         <span className="info">
             <span className="title">{song.get('title')}</span>
             <span className="artist">{song.get('artist')}</span>
-            <span className="album">{song.get('album')}</span>
+            <span className="album">{song.get('album') || 'Unknown album'}</span>
         </span>
     </li>;
 }
