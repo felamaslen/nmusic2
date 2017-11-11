@@ -5,45 +5,43 @@ import {
 } from '../../actions/audio-player.actions';
 
 import React from 'react';
-import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import AudioScrubber from '../audio-scrubber';
 import AudioVisualisation from '../audio-visualisation';
 
-export class AudioControls extends ImmutableComponent {
-    render() {
-        const playPauseButtonClasses = classNames({
-            'button button-playpause': true,
-            paused: this.props.paused,
-            playing: !this.props.paused
-        });
+export function AudioControls({ paused, previous, playPause, next, visualisationEnabled }) {
+    const playPauseButtonClasses = classNames({
+        'button button-playpause': true,
+        paused,
+        playing: !paused
+    });
 
-        let visualisation = null;
-        if (this.props.visualisationEnabled) {
-            visualisation = <AudioVisualisation />;
-        }
-
-        return <div className="audio-player-controls-outer">
-            <div className="audio-player-controls-buttons">
-                <button className="button button-previous"
-                    onClick={() => this.props.previous()} />
-
-                <button className={playPauseButtonClasses}
-                    onClick={() => this.props.playPause()} />
-
-                <button className="button button-next"
-                    onClick={() => this.props.next()} />
-            </div>
-            <AudioScrubber />
-            {visualisation}
-        </div>;
+    let visualisation = null;
+    if (visualisationEnabled) {
+        visualisation = <AudioVisualisation />;
     }
+
+    return <div className="audio-player-controls-outer">
+        <div className="audio-player-controls-buttons">
+            <button className="button button-previous"
+                onClick={() => previous()} />
+
+            <button className={playPauseButtonClasses}
+                onClick={() => playPause()} />
+
+            <button className="button button-next"
+                onClick={() => next()} />
+        </div>
+        <AudioScrubber />
+        {visualisation}
+    </div>;
 }
 
 AudioControls.propTypes = {
     paused: PropTypes.bool.isRequired,
+    visualisationEnabled: PropTypes.bool.isRequired,
     playPause: PropTypes.func.isRequired,
     previous: PropTypes.func.isRequired,
     next: PropTypes.func.isRequired
