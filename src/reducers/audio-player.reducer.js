@@ -171,7 +171,8 @@ export function handleAudioEnded(state) {
 }
 
 export const playPauseAudio = state => state
-    .setIn(['player', 'paused'], !state.getIn(['player', 'paused']));
+    .setIn(['player', 'paused'], !(state.getIn(['player', 'currentSong']) &&
+        state.getIn(['player', 'paused'])));
 
 function rootOffsetLeft(elem) {
     if (elem.offsetParent) {
