@@ -6,8 +6,18 @@ body {
 
 .nmusic-app-outer {
     display: flex;
-    flex-flow: column;
+    flex-flow: row;
 
-    height: 100vh;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.nmusic-body {
+    display: flex;
+    flex-flow: column;
+    overflow: hidden;
 }
 

@@ -27,6 +27,10 @@ export default fromJS({
             lastClickedKey: -1
         }
     },
+    sidebar: {
+        hidden: false,
+        displayOver: true
+    },
     search: {
         term: '',
         navIndex: -1,

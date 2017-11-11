@@ -3,6 +3,7 @@ import { createReducer } from 'redux-create-reducer';
 import * as AC from '../constants/actions';
 
 import * as uiReset from './ui-reset.reducer';
+import * as sidebar from './sidebar.reducer';
 import * as songList from './song-list.reducer';
 import * as filter from './filter.reducer';
 import * as audio from './audio-player.reducer';
@@ -20,6 +21,9 @@ function createReducerObject(array) {
 
 export default createReducer(initialState, createReducerObject([
     [AC.UI_RESET, uiReset.reset],
+
+    [AC.SIDEBAR_HIDDEN, sidebar.toggleHidden],
+    [AC.SIDEBAR_DISPLAY_OVER_TOGGLED, sidebar.toggleDisplayOver],
 
     [AC.SONG_LIST_REQUESTED, songList.startSongListRequest],
     [AC.SONG_LIST_RETRIEVED, songList.insertSongList],

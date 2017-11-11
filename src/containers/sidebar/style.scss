@@ -1,0 +1,98 @@
+.sidebar-outer {
+    flex-basis: $sidebar-width;
+    flex-grow: 0;
+    flex-shrink: 0;
+    position: relative;
+   
+    &.hidden {
+        flex-basis: $sidebar-width-hidden;
+    }
+    &.display-over {
+        flex-basis: $sidebar-width-hidden;
+        
+        .inner {
+            width: $sidebar-width;
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        &.hidden {
+            .inner {
+                width: $sidebar-width-hidden;
+            }
+        }
+    }
+
+    &, .inner {
+        transition: 0.5s ease;
+        transition-property: flex-basis, width;
+    }
+
+    .inner {
+        display: flex;
+        flex-flow: column;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 101;
+        box-shadow: 3px 0 9px $color-shadow-3;
+        background-color: $bg-sidebar;
+    }
+
+    .sidebar-top-outer {
+        display: flex;
+        padding: 0 1em;
+        align-items: center;
+        flex-basis: $sidebar-top-height;
+        flex-grow: 0;
+        flex-shrink: 0;
+
+        background-color: $color-primary;
+    }
+
+    .button-sidebar-toggle {
+        display: block;
+        width: 28px;
+        height: 24px;
+        position: relative;
+        cursor: pointer;
+
+        .bars {
+            position: absolute;
+            left: 0;
+            top: 10px;
+
+            &, &::before, &::after {
+                width: 100%;
+                height: 4px;
+                background-color: $color-white;
+                border-radius: 2px;
+            }
+            &::before, &::after {
+                display: block;
+                content: '';
+                position: absolute;
+                left: 0;
+            }
+            &::before {
+                top: -8px;
+            }
+            &::after {
+                bottom: -8px;
+            }
+        }
+
+        &:active {
+            .bars {
+                &, &::before, &::after {
+                    background-color: $color-ultra-light;
+                }
+            }
+        }
+    }
+}
+
