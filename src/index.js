@@ -30,7 +30,7 @@ renderApp();
 if (module.hot) {
     module.hot.accept(
         './containers/root',
-        () => renderApp(require('./containers/root'))
+        () => renderApp(require('./containers/root').default)
     );
 }
 

@@ -20,6 +20,7 @@ module.exports = {
                 NODE_ENV: JSON.stringify('development')
             }
         }),
+        new webpack.NamedModulesPlugin(),
         new webpack.HotModuleReplacementPlugin(),
         new Dotenv({ path: '.env' })
     ],
