@@ -19,7 +19,9 @@ export function Sidebar({ hidden, displayOver, onHideToggle, onDisplayOverToggle
     return <div className={className}>
         <div className="inner">
             <SidebarTop onHideToggle={onHideToggle} onDisplayOverToggle={onDisplayOverToggle} />
-            <PlayQueue />
+            <div className="sidebar-body">
+                <PlayQueue />
+            </div>
         </div>
     </div>;
 }

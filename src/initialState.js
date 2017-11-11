@@ -28,7 +28,7 @@ export default fromJS({
         }
     },
     sidebar: {
-        hidden: false,
+        hidden: true,
         displayOver: true
     },
     search: {
