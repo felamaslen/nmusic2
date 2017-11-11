@@ -1,6 +1,6 @@
 {
   "name": "nmusic2",
-  "version": "0.0.3-alpha",
+  "version": "0.0.4",
   "engines": {
     "node": "=8"
   },

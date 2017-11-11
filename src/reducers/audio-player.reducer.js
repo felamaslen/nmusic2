@@ -20,6 +20,12 @@ const getArtworkSrc = song => `${API_PREFIX}/artwork/${encodeArtistAlbum(
 )}`;
 
 export function loadAudioFile(state, song, play = true) {
+    const queueActive = state.getIn(['queue', 'active']);
+    let queue = state.getIn(['queue', 'songs']);
+    if (queueActive > -1) {
+        queue = queue.shift();
+    }
+
     const newState = resetPlayerTimes(state)
         .setIn(['player', 'current'], song.get('id'))
         .setIn(['player', 'currentSong'], song)
@@ -28,7 +34,9 @@ export function loadAudioFile(state, song, play = true) {
         .setIn(['player', 'bufferedRangesRaw'], null)
         .setIn(['player', 'duration'], song.get('duration'))
         .setIn(['artwork', 'src'], getArtworkSrc(song))
-        .setIn(['artwork', 'loaded'], false);
+        .setIn(['artwork', 'loaded'], false)
+        .setIn(['queue', 'songs'], queue)
+        .setIn(['queue', 'active'], -1);
 
     if (play) {
         return newState.setIn(['player', 'paused'], false);
@@ -49,6 +57,14 @@ export const audioStop = state => resetPlayerTimes(state)
 
 const goToSongStart = state => resetPlayerTimes(state)
     .setIn(['player', 'seekTime'], -1);
+
+function getNextQueue(queue, queueActive) {
+    if (queueActive > -1) {
+        return queue.delete(queueActive);
+    }
+
+    return queue;
+}
 
 function nextTrack(state, currentId, currentListIndex, songs, queue, queueActive) {
     if (!currentId) {
@@ -73,26 +89,29 @@ function nextTrack(state, currentId, currentListIndex, songs, queue, queueActive
     const continueQueue = queue.size > queueActive + 1 && queueActive > -1;
     if (continueQueue) {
         return loadAudioFile(state, queue.get(queueActive + 1))
-            .setIn(['queue', 'active'], queueActive + 1);
+            .setIn(['queue', 'songs'], queue.shift())
+            .setIn(['queue', 'active'], 0);
     }
+
+    const nextState = state.setIn(['queue', 'songs'], getNextQueue(queue, queueActive));
 
     const songInList = currentListIndex !== -1;
     if (songInList) {
         const nextSongExists = songs.size > currentListIndex + 1;
         if (nextSongExists) {
-            return loadAudioFile(state, songs.get(currentListIndex + 1), false);
+            return loadAudioFile(nextState, songs.get(currentListIndex + 1), false);
         }
 
         if (songs.size > 0) {
             const repeatList = state.getIn(['player', 'repeat']) === REPEAT_LIST;
 
             if (repeatList) {
-                return loadAudioFile(state, songs.first());
+                return loadAudioFile(nextState, songs.first());
             }
         }
     }
 
-    return audioStop(state);
+    return audioStop(nextState);
 }
 
 function previousTrack(state, currentId, currentListIndex, songs, queue, queueActive) {
@@ -152,12 +171,21 @@ export function handleAudioEnded(state) {
 }
 
 export const playPauseAudio = state => state
-    .setIn(['player', 'paused'], !state.getIn(['player', 'paused']));
+    .setIn(['player', 'paused'], !(state.getIn(['player', 'currentSong']) &&
+        state.getIn(['player', 'paused'])));
+
+function rootOffsetLeft(elem) {
+    if (elem.offsetParent) {
+        return elem.offsetLeft + rootOffsetLeft(elem.offsetParent);
+    }
+
+    return elem.offsetLeft;
+}
 
 function getClickedPlayTime(state, { clientX, target }) {
     const trough = target.parentNode.parentNode;
 
-    const progress = (clientX - trough.offsetLeft) / trough.offsetWidth;
+    const progress = (clientX - rootOffsetLeft(trough)) / trough.offsetWidth;
 
     if (isNaN(progress)) {
         return state.getIn(['player', 'seekTime']);

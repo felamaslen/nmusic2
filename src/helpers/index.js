@@ -1,5 +1,7 @@
 import { List as list } from 'immutable';
 
+import { colorPrimary } from '../constants/styles';
+
 export function handleNaN(value, defaultValue = 0) {
     if (isNaN(value) || typeof value === 'undefined') {
         return defaultValue;
@@ -33,7 +35,7 @@ export function drawLinearVisualiser(ctx, width, height, data) {
     ctx.lineTo(width, height);
 
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = 'orange';
+    ctx.strokeStyle = colorPrimary;
     ctx.stroke();
 }
 
