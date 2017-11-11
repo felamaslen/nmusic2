@@ -26,9 +26,7 @@ export function *fetchFilterList({ payload }) {
     }
 
     try {
-        const response = yield call(axios.get, path.join('/'));
-
-        const items = response.data;
+        const { data: items } = yield call(axios.get, path.join('/'));
 
         yield put(filterListReceived({ items, key }));
     }
