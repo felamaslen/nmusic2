@@ -1,8 +1,11 @@
 const webpack = require('webpack');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const webpackConfig = require('./conf.common');
 const moduleConfigProd = require('./module.prod');
+
+const { version } = require('../package.json');
 
 const envInjectVars = [
 ];
@@ -18,11 +21,10 @@ const injectedEnvVars = {
     }, {})
 }
 
-module.exports = {
+module.exports = (...args) => ({
     ...webpackConfig,
-    devtool: 'cheap-module-source-map',
     plugins: [
-        ...webpackConfig.plugins,
+        ...webpackConfig.plugins(...args),
         new webpack.DefinePlugin({
             'process.env': injectedEnvVars
         }),
@@ -44,9 +46,16 @@ module.exports = {
             cssProcessorOptions: {
                 discardComments: { removeAll: true }
             }
+        }),
+        new HtmlWebpackPlugin({
+            version,
+            analytics: injectedEnvVars.NO_ANALYTICS !== 'true',
+            externalStyles: true,
+            inject: false,
+            template: 'src/templates/index.ejs'
         })
     ],
-    module: moduleConfigProd,
+    module: moduleConfigProd(...args),
     bail: true
-};
+});
 

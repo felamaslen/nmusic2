@@ -1,3 +1,9 @@
+- Release 0.0.3-alpha:
+    - Function to add songs to a queue
+    - Minor UX improvements
+    - Development improvements (hot reloading etc.)
+    - Deployment scripts for dokku etc.
+
 - Release 0.0.2-alpha:
     - React-redux app with hot reloading
     - Redux-saga for side effects

@@ -1,22 +1,24 @@
 import axios from 'axios';
 
-import { select, put } from 'redux-saga/effects';
+import { select, put, call } from 'redux-saga/effects';
 
 import { API_PREFIX } from '../constants/misc';
 
 import { searchResultsReceived } from '../actions/search.actions';
 import { songListReceived } from '../actions/song-list.actions';
 
+export const selectSearchTerm = state => state.getIn(['search', 'term']);
+
 export function *fetchSearchResults({ payload }) {
     const searchTerm = payload;
-    const currentSearchTerm = yield select(state => state.getIn(['search', 'term']));
+    const currentSearchTerm = yield select(selectSearchTerm);
 
-    if (!searchTerm.length || searchTerm === currentSearchTerm) {
+    if (!(searchTerm.length && searchTerm !== currentSearchTerm)) {
         return;
     }
 
     try {
-        const response = yield axios.get(`${API_PREFIX}/search/${searchTerm}`);
+        const response = yield call(axios.get, `${API_PREFIX}/search/${searchTerm}`);
 
         yield put(searchResultsReceived({ response, searchTerm }));
     }
@@ -25,11 +27,15 @@ export function *fetchSearchResults({ payload }) {
     }
 }
 
+export const selectSearch = state => state.get('search');
+
+export const selectSongListLoading = state => state.getIn(['songList', 'loading']);
+
 export function *selectSearchItem() {
     let noTerm = true;
 
-    const search = yield select(state => state.get('search'));
-    const songListLoading = yield select(state => state.getIn(['songList', 'loading']));
+    const search = yield select(selectSearch);
+    const songListLoading = yield select(selectSongListLoading);
 
     const params = ['artist', 'album']
         .reduce((filter, key) => {
@@ -49,7 +55,7 @@ export function *selectSearchItem() {
     }
 
     try {
-        const response = yield axios.get(`${API_PREFIX}/songs`, { params });
+        const response = yield call(axios.get, `${API_PREFIX}/songs`, { params });
 
         yield put(songListReceived({ data: response.data }));
     }

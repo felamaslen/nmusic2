@@ -17,6 +17,23 @@ export class SearchBox extends ImmutableComponent {
         this.fireChange = debounce(value => this.props.onChange(value), 100, true);
 
         this.onChange = evt => this.fireChange(evt.target.value);
+
+        this.onTabTo = evt => {
+            if (evt.key === 'Tab' && !this.props.active) {
+                this.props.setFocus();
+                this.input.focus();
+
+                evt.preventDefault();
+            }
+        };
+
+        this.input = null;
+    }
+    componentDidMount() {
+        window.addEventListener('keydown', this.onTabTo);
+    }
+    componentWillUnmount() {
+        window.removeEventListener('keydown', this.onTabTo);
     }
     render() {
         let searchList = null;
@@ -25,9 +42,12 @@ export class SearchBox extends ImmutableComponent {
         }
 
         const onFocus = () => this.props.setFocus(true);
+        const inputRef = input => {
+            this.input = input;
+        };
 
         return <div className="search-box-outer">
-            <input className="search-box"
+            <input className="search-box" ref={inputRef}
                 type="text"
                 defaultValue={this.props.value}
                 onChange={this.onChange}
@@ -51,7 +71,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     onChange: value => dispatch(searchChanged(value)),
-    setFocus: status => dispatch(searchFocusSet(status))
+    setFocus: (status = true) => dispatch(searchFocusSet(status))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SearchBox);

@@ -90,6 +90,25 @@ export function insertSongList(state, { err, data }) {
 
     return state
         .setIn(['songList', 'loading'], false)
-        .setIn(['songList', 'songs'], sortedSongs);
+        .setIn(['songList', 'songs'], sortedSongs)
+        .setIn(['songList', 'menu', 'hidden'], true);
 }
+
+export function addToQueue(state, song = null) {
+    let songs = list.of(song);
+    if (!song) {
+        const selectedIds = state.getIn(['songList', 'selectedIds']);
+
+        songs = state
+            .getIn(['songList', 'songs'])
+            .filter(item => selectedIds.indexOf(item.get('id')) !== -1);
+    }
+
+    return state
+        .setIn(['queue', 'songs'], state.getIn(['queue', 'songs']).concat(songs))
+        .setIn(['songList', 'menu', 'hidden'], true);
+}
+
+export const openMenu = (state, { posX, posY }) => state
+    .setIn(['songList', 'menu'], map({ posX, posY, hidden: false }));
 
