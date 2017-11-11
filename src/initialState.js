@@ -41,6 +41,7 @@ export default fromJS({
     songList: {
         songs: [],
         loading: false,
+        menu: null,
         selectedIds: [],
         lastClickedId: -1,
         orderKeys: [

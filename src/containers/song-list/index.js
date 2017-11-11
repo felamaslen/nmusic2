@@ -9,6 +9,7 @@ import PropTypes from 'prop-types';
 
 import SongListHead from './list-head';
 import SongListItem from './list-item';
+import SongListMenu from './menu';
 
 export class SongList extends ImmutableComponent {
     render() {
@@ -19,6 +20,7 @@ export class SongList extends ImmutableComponent {
         return <div className="song-list-outer">
             <SongListHead />
             <div className="song-list">{songList}</div>
+            <SongListMenu />
         </div>;
     }
 }

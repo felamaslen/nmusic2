@@ -90,9 +90,13 @@ export function insertSongList(state, { err, data }) {
 
     return state
         .setIn(['songList', 'loading'], false)
-        .setIn(['songList', 'songs'], sortedSongs);
+        .setIn(['songList', 'songs'], sortedSongs)
+        .setIn(['songList', 'menu'], null);
 }
 
 export const addToQueue = (state, song) => state
-    .set('queue', state.get('queue').push(song));
+    .setIn(['queue', 'songs'], state.getIn(['queue', 'songs']).push(song));
+
+export const openMenu = (state, { song, posX, posY }) => state
+    .setIn(['songList', 'menu'], map({ song, posX, posY }));
 

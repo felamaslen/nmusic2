@@ -96,8 +96,23 @@ describe('Song list reducer', () => {
 
     describe('addToQueue', () => {
         it('should add a song to the queue', () => {
-            expect(R.addToQueue(fromJS({ queue: [] }), 'foo').toJS())
-                .to.deep.equal({ queue: ['foo'] });
+            expect(R.addToQueue(fromJS({ queue: { songs: [] } }), 'foo').toJS())
+                .to.deep.equal({ queue: { songs: ['foo'] } });
+        });
+    });
+
+    describe('openMenu', () => {
+        it('should open a menu based on a song and mouse position', () => {
+            expect(R.openMenu(fromJS({ songList: {} }), { song: 'foo', posX: 1, posY: 2 }).toJS())
+                .to.deep.equal({
+                    songList: {
+                        menu: {
+                            song: 'foo',
+                            posX: 1,
+                            posY: 2
+                        }
+                    }
+                });
         });
     });
 });

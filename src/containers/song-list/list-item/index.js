@@ -1,41 +1,60 @@
 import { Map as map } from 'immutable';
 import { connect } from 'react-redux';
 
-import { songListItemClicked } from '../../../actions/song-list.actions';
+import {
+    songListItemClicked, songListQueueAdded, songListMenuOpened
+} from '../../../actions/song-list.actions';
 import { audioFileLoaded } from '../../../actions/audio-player.actions';
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import ImmutableComponent from '../../../ImmutableComponent';
 import classNames from 'classnames';
 
-export class SongListItem extends ImmutableComponent {
-    render() {
-        const className = classNames({
-            song: true,
-            selected: this.props.selected,
-            current: this.props.current,
-            paused: this.props.paused
-        });
+export function SongListItem(props) {
+    const {
+        song,
+        selected,
+        current,
+        paused,
+        listKey,
+        selectSong,
+        playSong,
+        openMenu
+    } = props;
 
-        const onMouseDown = evt => this.props.selectSong({
-            index: this.props.listKey,
+    const className = classNames({
+        song: true,
+        selected,
+        current,
+        paused
+    });
+
+    const onSelect = evt => {
+        selectSong({
+            index: listKey,
             ctrl: evt.ctrlKey,
             shift: evt.shiftKey
         });
+    };
+    const onPlay = () => playSong(song);
+    const onMenu = evt => {
+        openMenu(song, evt.clientX, evt.clientY);
 
-        return <span key={this.props.song.get('id')} className={className}
-            onMouseDown={onMouseDown}
-            onDoubleClick={() => this.props.playSong(this.props.song)}>
+        evt.preventDefault();
+    };
 
-            <span className="status" />
-            <span className="track">{this.props.song.get('trackNo')}</span>
-            <span className="title">{this.props.song.get('title')}</span>
-            <span className="duration">{this.props.song.get('durationFormatted')}</span>
-            <span className="artist">{this.props.song.get('artist')}</span>
-            <span className="album">{this.props.song.get('album')}</span>
-        </span>;
-    }
+    return <span key={song.get('id')} className={className}
+        onMouseDown={onSelect}
+        onDoubleClick={onPlay}
+        onContextMenu={onMenu}>
+
+        <span className="status" />
+        <span className="track">{song.get('trackNo')}</span>
+        <span className="title">{song.get('title')}</span>
+        <span className="duration">{song.get('durationFormatted')}</span>
+        <span className="artist">{song.get('artist')}</span>
+        <span className="album">{song.get('album')}</span>
+    </span>;
 }
 
 SongListItem.propTypes = {
@@ -43,8 +62,10 @@ SongListItem.propTypes = {
     selected: PropTypes.bool.isRequired,
     current: PropTypes.bool.isRequired,
     paused: PropTypes.bool.isRequired,
+    listKey: PropTypes.number.isRequired,
     selectSong: PropTypes.func.isRequired,
-    playSong: PropTypes.func.isRequired
+    playSong: PropTypes.func.isRequired,
+    openMenu: PropTypes.func.isRequired
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -63,7 +84,8 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => ({
     selectSong: req => dispatch(songListItemClicked(req)),
-    playSong: song => dispatch(audioFileLoaded(song))
+    playSong: song => dispatch(audioFileLoaded(song)),
+    openMenu: (song, posX, posY) => dispatch(songListMenuOpened({ song, posX, posY }))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SongListItem);
