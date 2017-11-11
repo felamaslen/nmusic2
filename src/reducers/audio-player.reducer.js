@@ -28,7 +28,8 @@ export function loadAudioFile(state, song, play = true) {
         .setIn(['player', 'bufferedRangesRaw'], null)
         .setIn(['player', 'duration'], song.get('duration'))
         .setIn(['artwork', 'src'], getArtworkSrc(song))
-        .setIn(['artwork', 'loaded'], false);
+        .setIn(['artwork', 'loaded'], false)
+        .setIn(['queue', 'active'], -1);
 
     if (play) {
         return newState.setIn(['player', 'paused'], false);
