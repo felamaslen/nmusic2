@@ -26,6 +26,7 @@ ul {
 .nmusic-body {
     display: flex;
     flex-flow: column;
+    flex-grow: 1;
     overflow: hidden;
 }
 
