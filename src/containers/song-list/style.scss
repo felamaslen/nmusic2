@@ -2,6 +2,39 @@
 .song-list-outer {
     display: flex;
     flex-flow: column;
+
+    .menu {
+        padding: 0.3em 0;
+        position: fixed;
+        z-index: 100;
+        background: $bg-menu;
+        min-width: $context-menu-width;
+        border-radius: 2px;
+        overflow: hidden;
+        box-shadow: 0 3px 9px 2px $color-shadow-3;
+        transition: opacity 0.3s ease;
+
+        &.hidden {
+            opacity: 0;
+        }
+
+        .menu-list {
+            display: flex;
+            flex-flow: column;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        .menu-link {
+            padding: 0.3em 1em;
+            cursor: default;
+
+            &:hover {
+                background: $bg-list-selected;
+                color: $color-list-selected;
+            }
+        }
+    }
 }
 
 .song-list-head, .song-list {

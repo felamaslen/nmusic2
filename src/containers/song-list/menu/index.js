@@ -5,12 +5,9 @@ import { songListQueueAdded } from '../../../actions/song-list.actions';
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
-export function SongListMenu({ active, song, posX, posY, addToQueue }) {
-    if (!active) {
-        return <div className="menu menu-hidden" />;
-    }
-
+export function SongListMenu({ hidden, song, posX, posY, addToQueue }) {
     const menuStyle = {
         left: posX,
         top: posY
@@ -22,7 +19,12 @@ export function SongListMenu({ active, song, posX, posY, addToQueue }) {
         addToQueue(song);
     }
 
-    return <div className="menu" style={menuStyle}>
+    const className = classNames({
+        menu: true,
+        hidden
+    });
+
+    return <div className={className} style={menuStyle}>
         <ul className="menu-list">
             <li className="menu-link" onMouseDown={onAddToQueue}>{'Add to queue'}</li>
         </ul>
@@ -30,7 +32,7 @@ export function SongListMenu({ active, song, posX, posY, addToQueue }) {
 }
 
 SongListMenu.propTypes = {
-    active: PropTypes.bool.isRequired,
+    hidden: PropTypes.bool.isRequired,
     song: PropTypes.instanceOf(map),
     posX: PropTypes.number,
     posY: PropTypes.number,
@@ -38,7 +40,7 @@ SongListMenu.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    active: Boolean(state.getIn(['songList', 'menu'])),
+    hidden: state.getIn(['songList', 'menu', 'hidden']),
     song: state.getIn(['songList', 'menu', 'song']),
     posX: state.getIn(['songList', 'menu', 'posX']),
     posY: state.getIn(['songList', 'menu', 'posY'])

@@ -96,8 +96,15 @@ describe('Song list reducer', () => {
 
     describe('addToQueue', () => {
         it('should add a song to the queue', () => {
-            expect(R.addToQueue(fromJS({ queue: { songs: [] } }), 'foo').toJS())
-                .to.deep.equal({ queue: { songs: ['foo'] } });
+            expect(R.addToQueue(fromJS({ queue: { songs: [] } }), 'foo').get('queue')
+                .toJS()
+            )
+                .to.deep.equal({ songs: ['foo'] });
+        });
+        it('should close the context menu', () => {
+            expect(R.addToQueue(fromJS({ queue: { songs: [] }, songList: { menu: { hidden: false } } }), 'foo')
+                .getIn(['songList', 'menu', 'hidden']))
+                .to.equal(true);
         });
     });
 
@@ -109,7 +116,8 @@ describe('Song list reducer', () => {
                         menu: {
                             song: 'foo',
                             posX: 1,
-                            posY: 2
+                            posY: 2,
+                            hidden: false
                         }
                     }
                 });
