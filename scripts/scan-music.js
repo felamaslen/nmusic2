@@ -8,7 +8,9 @@ const path = require('path');
 const fs = require('fs');
 const musicmetadata = require('music-metadata');
 const Dotenv = require('dotenv');
-Dotenv.config();
+if (process.env.NODE_ENV !== 'production') {
+    Dotenv.config();
+}
 const ProgressBar = require('progress');
 
 const config = require('../common/config');
