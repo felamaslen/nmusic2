@@ -9,6 +9,8 @@ import {
 } from '../../../src/constants/misc';
 
 describe('Audio player reducer', () => {
+    it('should be tested further (for queueing bug fixes)');
+
     describe('changeTrack', () => {
         const stateWithoutQueue = fromJS({
             player: {
