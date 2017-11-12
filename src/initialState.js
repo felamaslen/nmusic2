@@ -12,6 +12,11 @@ function getAudioContext() {
 
 export default fromJS({
     settingsLoaded: false,
+    cloud: {
+        error: null,
+        clients: {},
+        localState: {}
+    },
     filter: {
         artist: {
             loaded: false,

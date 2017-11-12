@@ -8,6 +8,7 @@ const moduleConfigProd = require('./module.prod');
 const { version } = require('../package.json');
 
 const envInjectVars = [
+    'WEB_URI',
     'SKIP_VISUALISER'
 ];
 

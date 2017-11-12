@@ -23,8 +23,6 @@ const getSettings = () => PERSISTENT_SETTINGS.reduce((object, storeKey) => {
 export function *loadSettings() {
     const settings = yield call(getSettings);
 
-    console.log(settings);
-
     yield put(settingsInserted(settings));
 }
 

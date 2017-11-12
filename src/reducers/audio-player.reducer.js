@@ -1,4 +1,4 @@
-import { List as list } from 'immutable';
+import { List as list, Map as map } from 'immutable';
 
 import {
     API_PREFIX, REPEAT_TRACK, REPEAT_LIST, REWIND_START_TIME
@@ -29,6 +29,11 @@ export function loadAudioFile(state, song, play = true) {
     const newState = resetPlayerTimes(state)
         .setIn(['player', 'current'], song.get('id'))
         .setIn(['player', 'currentSong'], song)
+        .setIn(['cloud', 'localState', 'currentSong'], map({
+            artist: song.get('artist'),
+            album: song.get('album'),
+            title: song.get('title')
+        }))
         .setIn(['player', 'url'], `${API_PREFIX}/play/${song.get('id')}`)
         .setIn(['player', 'bufferedRanges'], list.of())
         .setIn(['player', 'bufferedRangesRaw'], null)
@@ -39,13 +44,16 @@ export function loadAudioFile(state, song, play = true) {
         .setIn(['queue', 'active'], -1);
 
     if (play) {
-        return newState.setIn(['player', 'paused'], false);
+        return newState
+            .setIn(['player', 'paused'], false)
+            .setIn(['cloud', 'localState', 'paused'], false);
     }
 
     return newState;
 }
 
 export const audioStop = state => resetPlayerTimes(state)
+    .setIn(['cloud', 'localState', 'currentSong'], null)
     .setIn(['player', 'current'], null)
     .setIn(['player', 'currentSong'], null)
     .setIn(['player', 'url'], null)
@@ -170,9 +178,13 @@ export function handleAudioEnded(state) {
     return changeTrack(state, 1);
 }
 
-export const playPauseAudio = state => state
-    .setIn(['player', 'paused'], !(state.getIn(['player', 'currentSong']) &&
-        state.getIn(['player', 'paused'])));
+export function playPauseAudio(state) {
+    const paused = !(state.getIn(['player', 'currentSong']) && state.getIn(['player', 'paused']));
+
+    return state
+        .setIn(['player', 'paused'], paused)
+        .setIn(['cloud', 'localState', 'paused'], paused);
+}
 
 function rootOffsetLeft(elem) {
     if (elem.offsetParent) {

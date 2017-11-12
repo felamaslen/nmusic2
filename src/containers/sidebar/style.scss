@@ -159,5 +159,12 @@
         flex-grow: 1;
         transition: opacity 0.3s ease;
     }
+
+    .sidebar-title {
+        margin: 0.5em 1em;
+        padding: 0 0 0.3em 0;
+        border-bottom: 1px solid $color-very-light;
+        white-space: nowrap;
+    }
 }
 

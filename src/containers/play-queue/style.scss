@@ -1,9 +1,5 @@
 .play-queue-outer {
     .play-queue-title {
-        margin: 0.5em 1em;
-        padding: 0 0 0.3em 0;
-        border-bottom: 1px solid $color-very-light;
-        white-space: nowrap;
     }
 
     .play-queue {
@@ -12,12 +8,10 @@
         display: flex;
         flex-flow: row;
         align-items: center;
-        background-color: $bg-list-zebra-1;
         @include noselect;
-
-        &:nth-child(2n) {
-            background-color: $bg-list-zebra-2;
-        }
+        @include zebra-list-row;
+        @include song-item-brief;
+        
         &.active {
             background-color: $bg-list-current;
         }
@@ -27,39 +21,6 @@
             flex-grow: 0;
             flex-shrink: 0;
             text-align: center;
-        }
-        .info {
-            display: flex;
-            flex-grow: 1;
-            flex-flow: row;
-            flex-wrap: wrap;
-            overflow: hidden;
-            line-height: 1.75em;
-        }
-        .title, .artist, .album {
-            display: inline-block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .title {
-            padding-top: 0.2em;
-            width: 100%;
-            white-space: nowrap;
-        }
-        .artist, .album {
-            padding-bottom: 0.4em;
-            font-size: 0.9em;
-            line-height: 1.2em;
-            font-style: italic;
-            color: $color-ultra-dark;
-        }
-        .artist {
-            &::after {
-                content: '\00a0/\00a0';
-            }
-        }
-        .album {
-            padding-right: 0.4em;
         }
     }
 }

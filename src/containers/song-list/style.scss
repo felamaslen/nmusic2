@@ -98,11 +98,8 @@
         flex-flow: row nowrap;
 
         .status {
-            position: relative;
-
             &:before, &:after {
                 display: block;
-                position: absolute;
                 top: 50%;
                 margin-top: -5px;
             }

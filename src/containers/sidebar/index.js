@@ -8,6 +8,7 @@ import classNames from 'classnames';
 import SidebarTop from './sidebar-top';
 
 import PlayQueue from '../play-queue';
+import CloudClients from '../cloud-clients';
 
 export function Sidebar({ hidden, displayOver, onHideToggle, onDisplayOverToggle }) {
     const className = classNames({
@@ -21,6 +22,7 @@ export function Sidebar({ hidden, displayOver, onHideToggle, onDisplayOverToggle
             <SidebarTop onHideToggle={onHideToggle} onDisplayOverToggle={onDisplayOverToggle} />
             <div className="sidebar-body">
                 <PlayQueue />
+                <CloudClients />
             </div>
         </div>
     </div>;
