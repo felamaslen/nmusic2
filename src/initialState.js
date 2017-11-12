@@ -11,6 +11,7 @@ function getAudioContext() {
 }
 
 export default fromJS({
+    settingsLoaded: false,
     filter: {
         artist: {
             loaded: false,
