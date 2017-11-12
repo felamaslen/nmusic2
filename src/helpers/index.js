@@ -97,3 +97,13 @@ export const getNavIndex = state => (itemKey, category) => {
         state.getIn(['search', 'albums']).size;
 };
 
+export function getWSUrl(webUrl) {
+    const url = new URL(webUrl);
+
+    const protocol = url.protocol === 'https:'
+        ? 'wss'
+        : 'ws';
+
+    return `${protocol}://${url.host}`;
+}
+

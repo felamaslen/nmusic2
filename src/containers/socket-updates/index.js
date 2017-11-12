@@ -2,6 +2,7 @@ import { Map as map } from 'immutable';
 import { connect } from 'react-redux';
 import { w3cwebsocket as WebSocket } from 'websocket';
 
+import { getWSUrl } from '../../helpers';
 import { socketErrorOccurred, socketStateUpdated } from '../../actions/socket.actions';
 
 import PureComponent from '../../ImmutableComponent';
@@ -17,7 +18,9 @@ export class SocketUpdates extends PureComponent {
 
         this.mounted = false;
 
-        this.socket = new WebSocket(`ws://${process.env.WEB_URI}`, 'echo-protocol');
+        const wsUrl = getWSUrl(process.env.WEB_URI);
+
+        this.socket = new WebSocket(wsUrl, 'echo-protocol');
 
         this.socket.onopen = () => this.mounted && this.setState({ open: true });
 
