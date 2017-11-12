@@ -133,7 +133,11 @@
     "request": "^2.83.0",
     "sass-loader": "^6.0.6",
     "send-seekable": "^1.0.4",
+    "short-unique-id": "^1.1.0",
+    "url-loader": "^0.6.2",
     "webpack": "^3.6.0",
-    "webpack-spritesmith": "^0.3.3"
+    "webpack-spritesmith": "^0.3.3",
+    "websocket": "^1.0.25",
+    "winston": "^2.4.0"
   }
 }

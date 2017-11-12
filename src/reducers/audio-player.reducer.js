@@ -1,4 +1,4 @@
-import { List as list } from 'immutable';
+import { List as list, Map as map } from 'immutable';
 
 import {
     API_PREFIX, REPEAT_TRACK, REPEAT_LIST, REWIND_START_TIME
@@ -29,6 +29,11 @@ export function loadAudioFile(state, song, play = true) {
     const newState = resetPlayerTimes(state)
         .setIn(['player', 'current'], song.get('id'))
         .setIn(['player', 'currentSong'], song)
+        .setIn(['cloud', 'localState', 'currentSong'], map({
+            artist: song.get('artist'),
+            album: song.get('album'),
+            title: song.get('title')
+        }))
         .setIn(['player', 'url'], `${API_PREFIX}/play/${song.get('id')}`)
         .setIn(['player', 'bufferedRanges'], list.of())
         .setIn(['player', 'bufferedRangesRaw'], null)

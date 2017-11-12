@@ -15,6 +15,9 @@ module.exports = {
     resolveLoader: {
         modules: ['node_modules', __dirname]
     },
+    node: {
+        fs: 'empty'
+    },
     plugins
 };
 

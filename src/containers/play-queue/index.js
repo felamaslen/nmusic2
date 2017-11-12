@@ -13,7 +13,7 @@ export function PlayQueue({ queue, active }) {
     );
 
     return <div className="play-queue-outer">
-        <h3 className="play-queue-title">{'Play queue'}</h3>
+        <h3 className="sidebar-title play-queue-title">{'Play queue'}</h3>
         <ul className="play-queue">
             {queueItems}
         </ul>
