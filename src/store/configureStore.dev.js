@@ -11,7 +11,9 @@ import rootReducer from '../reducers';
 const sagaMiddleware = createSagaMiddleware();
 
 const SKIP_LOG_ACTIONS = [
-    actions.AUDIO_TIME_UPDATED
+    actions.AUDIO_TIME_UPDATED,
+    actions.UI_RESET,
+    actions.AUDIO_SEEKED
 ];
 
 const logger = createLogger({

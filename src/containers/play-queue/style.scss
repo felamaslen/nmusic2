@@ -1,0 +1,26 @@
+.play-queue-outer {
+    .play-queue-title {
+    }
+
+    .play-queue {
+    }
+    .play-queue-song {
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        @include noselect;
+        @include zebra-list-row;
+        @include song-item-brief;
+        
+        &.active {
+            background-color: $bg-list-current;
+        }
+
+        .list-key {
+            flex-basis: 2em;
+            flex-grow: 0;
+            flex-shrink: 0;
+            text-align: center;
+        }
+    }
+}

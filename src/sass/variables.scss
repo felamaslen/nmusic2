@@ -16,6 +16,8 @@ $color-very-light: rgb(221, 221, 221);
 $color-ultra-light: rgb(238, 238, 238);
 $color-white: rgb(255, 255, 255);
 
+$color-primary: #{$colorPrimary};
+
 $color-shadow-1: rgba(0, 0, 0, 0.1);
 $color-shadow-3: rgba(0, 0, 0, 0.3);
 $color-shadow-4: rgba(0, 0, 0, 0.4);
@@ -55,11 +57,16 @@ $color-button-bg: rgb(245, 245, 220);
 $color-button-active-bg: rgb(222, 222, 195);
 $color-button-fg: $color-very-dark;
 
+$bg-sidebar: $color-white;
+
 // sizes
 $filter-height: 240px;
 $list-row-height: 24px;
 $controls-height: 58px;
 $context-menu-width: 200px;
+$sidebar-width: 300px;
+$sidebar-width-hidden: 60px;
+$sidebar-top-height: 48px;
 
 // calculations (no need to modify after here)
 $button-size-large: $controls-height * 0.75;

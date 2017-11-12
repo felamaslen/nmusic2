@@ -1,15 +1,13 @@
 import React from 'react';
 
 import UIReset from '../../containers/ui-reset';
-import Meta from '../meta';
-import Filter from '../filter';
-import SongList from '../../containers/song-list';
+import SocketUpdates from '../../containers/socket-updates';
+import Body from '../../containers/body';
 
 export default function App() {
-    return <div className="nmusic-app-outer">
+    return <div className="nmusic-app-root">
         <UIReset />
-        <Meta />
-        <Filter />
-        <SongList />
+        <SocketUpdates />
+        <Body />
     </div>;
 }

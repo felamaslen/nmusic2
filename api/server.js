@@ -1,9 +1,11 @@
 const path = require('path');
+const http = require('http');
 const express = require('express');
 const requestLogger = require('morgan');
 
 const logger = require('../common/logger');
 const setupApi = require('./routes');
+const setupClientInteraction = require('./client-interaction');
 const version = require('../package.json').version;
 
 function setupClient(app) {
@@ -44,7 +46,11 @@ function init() {
     });
 
     const port = process.env.PORT || 3000;
-    app.listen(port, () => {
+    const server = http.createServer(app);
+
+    setupClientInteraction.init(server);
+
+    server.listen(port, () => {
         logger('MSG', 'Server listening on port', port);
     });
 }

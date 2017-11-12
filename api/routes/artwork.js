@@ -165,6 +165,20 @@ async function fetchNewAlbumArtwork(db, res, artist, album) {
     return { file, cacheable };
 }
 
+const fileExists = file => new Promise((resolve, reject) => {
+    fs.stat(file, err => {
+        if (err) {
+            if (err.code === 'ENOENT') {
+                return resolve(false);
+            }
+
+            return reject(err);
+        }
+
+        return resolve(true);
+    });
+});
+
 async function getAlbumArtwork(db, res, artist, album) {
     let file = null;
     let cacheable = true;
@@ -179,10 +193,16 @@ async function getAlbumArtwork(db, res, artist, album) {
             cacheable = false;
         }
         else {
-            file = localCopy.file;
+            // don't try to serve a file which doesn't exist
+            const localCopyExists = await fileExists(localCopy.file);
+
+            if (localCopyExists) {
+                file = localCopy.file;
+            }
         }
     }
-    else {
+
+    if (!file) {
         const result = await fetchNewAlbumArtwork(db, res, artist, album);
 
         file = result.file;
@@ -195,18 +215,11 @@ async function getAlbumArtwork(db, res, artist, album) {
 async function serveArtworkFile(res, file) {
     const contentType = getContentTypeFromFile(file);
 
-    try {
-        const buffer = await getBufferFromFile(file);
+    const buffer = await getBufferFromFile(file);
 
-        return res
-            .header('Content-Type', contentType)
-            .send(buffer);
-    }
-    catch (err) {
-        return res
-            .status(404)
-            .json({ error: 'file not found' });
-    }
+    return res
+        .header('Content-Type', contentType)
+        .send(buffer);
 }
 
 async function routeArtwork(req, res) {
@@ -248,16 +261,26 @@ async function routeArtwork(req, res) {
     try {
         const { file } = await getAlbumArtwork(req.db, res, artist, album);
 
-        req.db.close();
-
         if (file) {
-            return serveArtworkFile(res, file);
+            try {
+                await serveArtworkFile(res, file);
+            }
+            catch (fileErr) {
+                // the file was deleted, we should delete it in the database too
+                await req.db
+                    .collection(config.collections.artwork)
+                    .deleteOne({ artist, album });
+
+                throw fileErr;
+            }
         }
+
+        req.db.close();
     }
     catch (err) {
         return res
             .status(404)
-            .json({ error: true, status: 'Not found', err });
+            .json({ error: true, status: 'Not found' });
     }
 
     return null;

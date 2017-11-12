@@ -1,3 +1,10 @@
+- Release 0.0.5:
+    - List of currently-connected remote clients on the sidebar
+    - Non-interactive status on each client, including song info and paused status
+
+- Release 0.0.4:
+    - Toggleable sidebar with play queue
+
 - Release 0.0.3-alpha:
     - Function to add songs to a queue
     - Minor UX improvements

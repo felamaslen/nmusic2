@@ -3,6 +3,8 @@ import { createReducer } from 'redux-create-reducer';
 import * as AC from '../constants/actions';
 
 import * as uiReset from './ui-reset.reducer';
+import * as socket from './socket.reducer';
+import * as sidebar from './sidebar.reducer';
 import * as songList from './song-list.reducer';
 import * as filter from './filter.reducer';
 import * as audio from './audio-player.reducer';
@@ -20,6 +22,13 @@ function createReducerObject(array) {
 
 export default createReducer(initialState, createReducerObject([
     [AC.UI_RESET, uiReset.reset],
+    [AC.SETTINGS_INSERTED, uiReset.loadSettings],
+
+    [AC.SOCKET_ERROR_OCCURRED, socket.onError],
+    [AC.SOCKET_STATE_UPDATED, socket.onUpdate],
+
+    [AC.SIDEBAR_HIDDEN, sidebar.toggleHidden],
+    [AC.SIDEBAR_DISPLAY_OVER_TOGGLED, sidebar.toggleDisplayOver],
 
     [AC.SONG_LIST_REQUESTED, songList.startSongListRequest],
     [AC.SONG_LIST_RETRIEVED, songList.insertSongList],
