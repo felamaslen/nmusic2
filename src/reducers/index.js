@@ -21,6 +21,7 @@ function createReducerObject(array) {
 
 export default createReducer(initialState, createReducerObject([
     [AC.UI_RESET, uiReset.reset],
+    [AC.SETTINGS_INSERTED, uiReset.loadSettings],
 
     [AC.SIDEBAR_HIDDEN, sidebar.toggleHidden],
     [AC.SIDEBAR_DISPLAY_OVER_TOGGLED, sidebar.toggleDisplayOver],
