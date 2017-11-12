@@ -101,6 +101,7 @@
     "css-loader": "^0.28.7",
     "dateformat": "^3.0.2",
     "disconnect": "^1.2.1",
+    "dns": "^0.2.2",
     "dotenv": "^4.0.0",
     "dotenv-webpack": "^1.5.4",
     "ejs": "^2.5.7",

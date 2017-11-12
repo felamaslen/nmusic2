@@ -2,6 +2,11 @@ const WebSocketServer = require('websocket').server;
 const ShortUniqueId = require('short-unique-id');
 const uid = new ShortUniqueId();
 const winston = require('winston');
+const dns = require('dns');
+
+if (process.env.DNS_SERVERS) {
+    dns.setServers([process.env.DNS_SERVERS]);
+}
 
 const uuid = () => uid.randomUUID(6);
 
@@ -86,14 +91,36 @@ function getPlatform(req) {
     return userAgent;
 }
 
-function getOrigin(req) {
-    const origin = req.origin;
-    const platform = getPlatform(req);
+function getRemoteIp(req) {
+    if (req.httpRequest.headers && req.httpRequest.headers['x-forwarded-for']) {
+        return req.httpRequest.headers['x-forwarded-for'];
+    }
 
-    return `${origin} (${platform})`;
+    return req.httpRequest.connection.remoteAddress;
 }
 
-function onConnection(req) {
+function getRemoteHostname(req) {
+    const ip = getRemoteIp(req);
+
+    return new Promise(resolve => {
+        dns.reverse(ip, (err, hostnames) => {
+            if (err) {
+                return resolve(ip);
+            }
+
+            return resolve(hostnames[0]);
+        });
+    });
+}
+
+async function getOrigin(req) {
+    const hostname = await getRemoteHostname(req);
+    const platform = getPlatform(req);
+
+    return `${hostname} (${platform})`;
+}
+
+async function onConnection(req) {
     if (!originIsAllowed(req.origin)) {
         req.reject();
         winston.log('warn', 'Rejected client due to bad origin');
@@ -102,7 +129,7 @@ function onConnection(req) {
     }
 
     const id = uuid();
-    const origin = getOrigin(req);
+    const origin = await getOrigin(req);
 
     const socket = req.accept('echo-protocol', origin);
 
