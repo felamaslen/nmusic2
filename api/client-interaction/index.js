@@ -4,6 +4,10 @@ const uid = new ShortUniqueId();
 const winston = require('winston');
 const dns = require('dns');
 
+if (process.env.NODE_ENV === 'production') {
+    winston.remove(winston.transports.Console);
+}
+
 if (process.env.DNS_SERVERS) {
     dns.setServers([process.env.DNS_SERVERS]);
 }
@@ -157,8 +161,11 @@ async function onConnection(req) {
 }
 
 function setupWebSockets(httpServer) {
+    const secure = process.env.WEB_URI.indexOf('https://') === 0;
+
     const wss = new WebSocketServer({
         httpServer,
+        secure,
         autoAcceptConnections: false
     });
 
