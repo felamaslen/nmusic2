@@ -44,21 +44,24 @@
     border-right-color: $color-button-fg;
 }
 
+@mixin zebra-list-row {
+    background-color: $bg-list-zebra-1;
+    &:nth-child(2n) {
+        background-color: $bg-list-zebra-2;
+    }
+}
+
 @mixin zebra-selectable-list-row {
     height: $list-row-height;
     line-height: $list-row-height;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
-    background-color: $bg-list-zebra-1;
     color: $color-list;
     border-bottom: 1px solid $border-color-list;
+    
+    @include zebra-list-row;
 
-    &:nth-child(2n) {
-        background-color: $bg-list-zebra-2;
-    }
-        
     &.current {
         background-color: $bg-list-current;
         color: $color-list;
@@ -134,5 +137,42 @@
         flex-grow: 4;
     }
 
+}
+
+@mixin song-item-brief {
+    .info {
+        display: flex;
+        flex-grow: 1;
+        flex-flow: row;
+        flex-wrap: wrap;
+        overflow: hidden;
+        line-height: 1.75em;
+        
+        .title, .artist, .album {
+            display: inline-block;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .title {
+            padding-top: 0.2em;
+            width: 100%;
+            white-space: nowrap;
+        }
+        .artist, .album {
+            padding-bottom: 0.4em;
+            font-size: 0.9em;
+            line-height: 1.2em;
+            font-style: italic;
+            color: $color-ultra-dark;
+        }
+        .artist {
+            &::after {
+                content: '\00a0/\00a0';
+            }
+        }
+        .album {
+            padding-right: 0.4em;
+        }
+    }
 }
 
