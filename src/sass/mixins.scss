@@ -44,6 +44,39 @@
     border-right-color: $color-button-fg;
 }
 
+@mixin status-icon-pause($width: 16px, $height: 10px) {
+    position: relative;
+
+    $section-width: $width * 1 / 4;
+
+    &::before, &::after {
+        content: "";
+        width: 0;
+        height: $height;
+        position: absolute;
+        border-left: $section-width solid $color-ultra-dark;
+    }
+    &::before {
+        left: $width * 1 / 5;
+    }
+    &::after {
+        left: $width * (1 / 5 + 1 / 4 + 1 / 10);
+    }
+}
+@mixin status-icon-play($width: 10px) {
+    position: relative;
+    
+    &::before {
+        content: "";
+        position: absolute;
+        width: 0;
+        height: 0;
+        border: solid transparent;
+        border-width: ($width * 0.6) $width;
+        border-left-color: $color-very-dark;
+    }
+}
+
 @mixin zebra-list-row {
     background-color: $bg-list-zebra-1;
     &:nth-child(2n) {
@@ -68,31 +101,13 @@
 
         &:not(.paused) {
             .status {
-                &:before {
-                    content: "";
-                    width: 0;
-                    height: 0;
-                    border: solid transparent;
-                    border-width: 6px 10px;
-                    border-left-color: #222;
-                }
+                @include status-icon-play;
             }
         }
 
         &.paused {
             .status {
-                &:before, &:after {
-                    content: "";
-                    width: 0;
-                    height: 10px;
-                    border-left: 4px solid #222;
-                }
-                &:before {
-                    left: 3px;
-                }
-                &:after {
-                    left: 9px;
-                }
+                @include status-icon-pause;
             }
         }
     }

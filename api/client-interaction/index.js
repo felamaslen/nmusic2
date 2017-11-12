@@ -18,8 +18,7 @@ class Client {
 
         this.state = {
             origin,
-            currentSong: null,
-            playTime: null
+            currentSong: null
         };
     }
     setState(state) {
@@ -42,19 +41,23 @@ function notifyClients(clientId, clientState, type = 'update') {
 
 const validState = () => true;
 
-function onMessage(id) {
+function onMessage(clientId) {
     return message => {
         try {
             const state = JSON.parse(message.utf8Data);
 
-            winston.log('info', `Message from client #${id}: state -> `, JSON.stringify(state));
+            winston.log('info', `Message from client #${clientId}: state -> `, JSON.stringify(state));
 
             if (validState(state)) {
-                notifyClients(id, state);
+                const clientIndex = globalState.clients.findIndex(client => client.id === clientId);
+
+                globalState.clients[clientIndex].setState(state);
+
+                notifyClients(clientId, state);
             }
         }
         catch (err) {
-            winston.log('warn', `Error processing message from client #${id}:`, err.message);
+            winston.log('warn', `Error processing message from client #${clientId}:`, err.message);
         }
     };
 }

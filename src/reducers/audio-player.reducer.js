@@ -44,13 +44,16 @@ export function loadAudioFile(state, song, play = true) {
         .setIn(['queue', 'active'], -1);
 
     if (play) {
-        return newState.setIn(['player', 'paused'], false);
+        return newState
+            .setIn(['player', 'paused'], false)
+            .setIn(['cloud', 'localState', 'paused'], false);
     }
 
     return newState;
 }
 
 export const audioStop = state => resetPlayerTimes(state)
+    .setIn(['cloud', 'localState', 'currentSong'], null)
     .setIn(['player', 'current'], null)
     .setIn(['player', 'currentSong'], null)
     .setIn(['player', 'url'], null)
@@ -175,9 +178,13 @@ export function handleAudioEnded(state) {
     return changeTrack(state, 1);
 }
 
-export const playPauseAudio = state => state
-    .setIn(['player', 'paused'], !(state.getIn(['player', 'currentSong']) &&
-        state.getIn(['player', 'paused'])));
+export function playPauseAudio(state) {
+    const paused = !(state.getIn(['player', 'currentSong']) && state.getIn(['player', 'paused']));
+
+    return state
+        .setIn(['player', 'paused'], paused)
+        .setIn(['cloud', 'localState', 'paused'], paused);
+}
 
 function rootOffsetLeft(elem) {
     if (elem.offsetParent) {

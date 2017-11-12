@@ -8,6 +8,7 @@
     .cloud-client {
         display: flex;
         flex-flow: column;
+        flex-wrap: wrap;
         margin: 0.5em;
         width: 90%;
         overflow: hidden;
@@ -27,13 +28,50 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        .info-outer {
+            display: flex;
+            flex-flow: row;
+        }
+
         .info {
             display: none;
             padding: 0 1em;
         }
+
+        .play-pause {
+            display: flex;
+            flex: 0 0 32px;
+            align-items: center;
+            justify-content: center;
+
+            .status {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 0.5em;
+                position: relative;
+            }
+        }
+
         &.active {
             .info {
                 display: block;
+            }
+        }
+        &.paused {
+            .play-pause {
+                .status {
+                    @include status-icon-pause(24px, 16px);
+                }
+            }
+        }
+        &.playing {
+            .play-pause {
+                .status {
+                    @include status-icon-play(16px);
+                    margin-right: -24px;
+                }
             }
         }
     }
