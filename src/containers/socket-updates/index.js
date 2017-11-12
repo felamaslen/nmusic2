@@ -15,22 +15,28 @@ export class SocketUpdates extends PureComponent {
             open: false
         };
 
+        this.mounted = false;
+
         this.socket = new WebSocket(`ws://${process.env.WEB_URI}`, 'echo-protocol');
 
-        this.socket.onopen = () => this.setState({ open: true });
+        this.socket.onopen = () => this.mounted && this.setState({ open: true });
 
         this.socket.onerror = err => this.props.onError(err);
 
         this.socket.onmessage = evt => this.props.onMessage(evt);
 
-        this.socket.onclose = () => this.setState({ open: false });
+        this.socket.onclose = () => this.mounted && this.setState({ open: false });
     }
     componentDidUpdate(prevProps, prevState) {
         if (this.state.open && prevState.open && this.socket.readyState === this.socket.OPEN) {
             this.socket.send(JSON.stringify(this.props.localState.toJS()));
         }
     }
+    componentDidMount() {
+        this.mounted = true;
+    }
     componentWillUnmount() {
+        this.mounted = false;
         this.socket.close();
     }
     render() {
