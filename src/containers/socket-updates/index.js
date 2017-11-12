@@ -30,6 +30,9 @@ export class SocketUpdates extends PureComponent {
             this.socket.send(JSON.stringify(this.props.localState.toJS()));
         }
     }
+    componentWillUnmount() {
+        this.socket.close();
+    }
     render() {
         return null;
     }
