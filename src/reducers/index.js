@@ -26,6 +26,7 @@ export default createReducer(initialState, createReducerObject([
 
     [AC.SOCKET_ERROR_OCCURRED, socket.onError],
     [AC.SOCKET_STATE_UPDATED, socket.onUpdate],
+    [AC.REMOTE_CLIENT_UPDATED, socket.sendUpdateToRemoteClient],
 
     [AC.SIDEBAR_HIDDEN, sidebar.toggleHidden],
     [AC.SIDEBAR_DISPLAY_OVER_TOGGLED, sidebar.toggleDisplayOver],

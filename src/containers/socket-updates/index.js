@@ -1,4 +1,4 @@
-import { Map as map } from 'immutable';
+import { Map as map, List as list } from 'immutable';
 import { connect } from 'react-redux';
 import { w3cwebsocket as WebSocket } from 'websocket';
 
@@ -29,7 +29,12 @@ export class SocketUpdates extends PureComponent {
     }
     componentDidUpdate(prevProps, prevState) {
         if (this.state.open && prevState.open && this.socket.readyState === this.socket.OPEN) {
-            this.socket.send(JSON.stringify(this.props.localState.toJS()));
+            if (!this.props.localState.equals(prevProps.localState)) {
+                this.socket.send(JSON.stringify(this.props.localState.toJS()));
+            }
+            else if (!this.props.newStates.equals(prevProps.newStates)) {
+                this.socket.send(JSON.stringify(this.props.newStates.toJS()));
+            }
         }
     }
     componentDidMount() {
@@ -45,13 +50,15 @@ export class SocketUpdates extends PureComponent {
 }
 
 SocketUpdates.propTypes = {
-    localState: PropTypes.instanceOf(map),
+    localState: PropTypes.instanceOf(map).isRequired,
+    newStates: PropTypes.instanceOf(list).isRequired,
     onError: PropTypes.func.isRequired,
     onMessage: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
-    localState: state.getIn(['cloud', 'localState'])
+    localState: state.getIn(['cloud', 'localState']),
+    newStates: state.getIn(['cloud', 'newStates'])
 });
 
 const mapDispatchToProps = dispatch => ({

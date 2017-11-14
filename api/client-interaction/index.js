@@ -36,10 +36,21 @@ function notifyClients(clientId, clientState, type = 'update') {
     winston.log('info', `Notifying clients of ${type} client:`, { clientId, clientState });
 
     globalState.clients
-        .filter(client => client.id !== clientId)
-        .forEach(client => client.socket.send(JSON.stringify(
-            [{ type, clientId, clientState }]
-        )));
+        .forEach(client => {
+            const clientUpdated = client.id === clientId;
+
+            if (clientUpdated) {
+                if (type === 'new') {
+                    return;
+                }
+
+                client.socket.send(JSON.stringify([{ type, clientState, local: true }]));
+            }
+            else {
+                client.socket.send(JSON.stringify([{ type, clientId, clientState }]));
+            }
+        });
+
 }
 
 function validateState(raw) {
@@ -174,11 +185,13 @@ async function onConnection(req) {
     winston.log('info', 'New client', { id, origin });
 
     // send list of connected clients to the new client
-    socket.send(JSON.stringify(globalState.clients.map(client => ({
-        type: 'new',
-        clientId: client.id,
-        clientState: client.state
-    }))));
+    if (globalState.clients.length > 0) {
+        socket.send(JSON.stringify(globalState.clients.map(client => ({
+            type: 'new',
+            clientId: client.id,
+            clientState: client.state
+        }))));
+    }
 
     // add new client to the state and notify existing clients of the addition
     globalState.clients.push(newClient);
