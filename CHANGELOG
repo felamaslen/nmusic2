@@ -1,3 +1,6 @@
+- Release 0.0.6:
+    - Play and pause remote clients by clicking the icon on the sidebar
+
 - Release 0.0.5:
     - List of currently-connected remote clients on the sidebar
     - Non-interactive status on each client, including song info and paused status
