@@ -37,11 +37,18 @@ function notifyClients(clientId, clientState, type = 'update') {
 
     globalState.clients
         .filter(client => client.id !== clientId)
-        .forEach(client => client.socket.send(JSON.stringify([{ type, clientId, clientState }])));
+        .forEach(client => client.socket.send(JSON.stringify(
+            [{ type, clientId, clientState }]
+        )));
 }
 
 function validateState(raw) {
-    const schema = joi.object().keys({
+    const rawAsArray = Array.isArray(raw)
+        ? raw
+        : [raw];
+
+    const itemSchema = joi.object().keys({
+        clientId: joi.string(),
         currentSong: joi.object().keys({
             title: joi.string().required(),
             artist: joi.string().required(),
@@ -50,8 +57,10 @@ function validateState(raw) {
         paused: joi.boolean()
     });
 
+    const schema = joi.array().items(itemSchema);
+
     return new Promise((resolve, reject) => {
-        joi.validate(raw, schema, (err, value) => {
+        joi.validate(rawAsArray, schema, (err, value) => {
             if (err) {
                 return reject(err);
             }
@@ -61,18 +70,24 @@ function validateState(raw) {
     });
 }
 
+function updateState(newState, fromClientId) {
+    const clientId = newState.clientId || fromClientId;
+
+    const clientIndex = globalState.clients.findIndex(client => client.id === clientId);
+
+    globalState.clients[clientIndex].setState(newState);
+
+    notifyClients(clientId, newState);
+}
+
 function onMessage(clientId) {
     return async message => {
         try {
-            const state = await validateState(JSON.parse(message.utf8Data));
+            const states = await validateState(JSON.parse(message.utf8Data), clientId);
 
-            winston.log('info', `Message from client #${clientId}: state -> `, JSON.stringify(state));
+            winston.log('info', `Message from client #${clientId}:`, JSON.stringify(states));
 
-            const clientIndex = globalState.clients.findIndex(client => client.id === clientId);
-
-            globalState.clients[clientIndex].setState(state);
-
-            notifyClients(clientId, state);
+            states.forEach(state => updateState(state, clientId));
         }
         catch (err) {
             winston.log('warn', `Error processing message from client #${clientId}:`, err.message);
