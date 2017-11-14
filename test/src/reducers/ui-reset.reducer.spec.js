@@ -22,7 +22,7 @@ describe('UIReset reducer', () => {
             const state = fromJS({});
 
             expect(R.loadSettings(state, { [key]: 'foo' }).toJS())
-                .to.deep.equal(expectedState);
+                .to.deep.equal({ settingsLoaded: true, ...expectedState });
         })
     })
 })

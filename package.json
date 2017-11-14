@@ -1,6 +1,6 @@
 {
   "name": "nmusic2",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "engines": {
     "node": "=8"
   },
@@ -112,6 +112,7 @@
     "http-https": "^1.0.0",
     "immutable": "^3.8.2",
     "import-glob-loader": "^1.1.0",
+    "joi": "^13.0.2",
     "mime-types": "^2.1.17",
     "mongodb": "^2.2.31",
     "morgan": "^1.9.0",
