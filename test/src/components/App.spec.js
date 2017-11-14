@@ -11,7 +11,7 @@ describe('<App />', () => {
     it('should render a container div', () => {
         const result = shallow(<App />);
 
-        expect(result.find('div.nmusic-app-outer')).to.have.length(1);
+        expect(result.find('div.nmusic-app-root')).to.have.length(1);
     });
 });
 
