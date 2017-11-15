@@ -7,9 +7,17 @@
     }
 }
 
+@keyframes animate-pulse {
+    from, to {
+    }
+    30% {
+        background-color: $color-highlight;
+    }
+}
+
 @mixin loading-indicator($spinner-size) {
     &:after {
-        content: "";
+        content: '';
         width: $spinner-size;
         height: $spinner-size;
         border: 3px solid transparent;
@@ -45,35 +53,65 @@
 }
 
 @mixin status-icon-pause($width: 16px, $height: 10px) {
-    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
-    $section-width: $width * 1 / 4;
+    $section-width: $width * 0.25;
+    $inner-width: $width * 0.1;
 
     &::before, &::after {
-        content: "";
-        width: 0;
+        display: block;
+        content: '';
+        width: $section-width;
         height: $height;
-        position: absolute;
-        border-left: $section-width solid $color-ultra-dark;
+        background: $color-ultra-dark;
     }
     &::before {
-        left: $width * 1 / 5;
+        margin-right: $inner-width / 2;
     }
     &::after {
-        left: $width * (1 / 5 + 1 / 4 + 1 / 10);
+        margin-left: $inner-width / 2;
     }
 }
 @mixin status-icon-play($width: 10px) {
     position: relative;
     
+    $play-icon-width: $width * 0.3;
+    
     &::before {
-        content: "";
+        margin-left: -$play-icon-width * 1.5;
+        margin-top: -$width / 2;
+        content: '';
         position: absolute;
+        left: 50%;
+        top: 50%;
         width: 0;
         height: 0;
         border: solid transparent;
-        border-width: ($width * 0.6) $width;
+        border-width: $play-icon-width * 2 $width;
         border-left-color: $color-very-dark;
+    }
+}
+
+@mixin status-icon-play-animate($size) {
+    @include status-icon-play($size);
+
+    $circle-size: $size * 1.8;
+
+    &::after {
+        display: block;
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        margin-top: -$circle-size / 2;
+        margin-left: -$circle-size / 2;
+        width: $circle-size;
+        height: $circle-size;
+        border-radius: 100%;
+        background-color: $color-shadow-3;
+        animation: animate-pulse 2s ease infinite;
     }
 }
 
@@ -120,8 +158,6 @@
 
 @mixin song-list-row {
     span {
-        flex-basis: 0;
-        padding-left: 5px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -129,29 +165,28 @@
             border-right: 1px solid $border-color-list;
         }
     }
+    .title, .duration, .artist, .album {
+        padding-left: 5px;
+    }
 
     .status {
-        flex-grow: 0;
-        flex-basis: 12px;
+        flex: 0 0 16px;
     }
     .track {
-        flex-grow: 0;
-        flex-basis: 30px;
+        padding-right: 5px;
+        flex: 0 0 30px;
+        text-align: right;
     }
     .title {
-        flex-grow: 6;
+        flex: 6 0 0;
     }
     .duration {
-        flex-grow: 1;
+        flex: 1 0 0;
         padding-right: 10px;
     }
-    .artist {
-        flex-grow: 4;
+    .artist, .album {
+        flex: 4 0 0;
     }
-    .album {
-        flex-grow: 4;
-    }
-
 }
 
 @mixin song-item-brief {

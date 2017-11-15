@@ -96,14 +96,6 @@
     .song {
         display: flex;
         flex-flow: row nowrap;
-
-        .status {
-            &:before, &:after {
-                display: block;
-                top: 50%;
-                margin-top: -5px;
-            }
-        }
         
         @include zebra-selectable-list-row;
         @include song-list-row;
