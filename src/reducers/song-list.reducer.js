@@ -91,7 +91,8 @@ export function insertSongList(state, { err, data }) {
     return state
         .setIn(['songList', 'loading'], false)
         .setIn(['songList', 'songs'], sortedSongs)
-        .setIn(['songList', 'menu', 'hidden'], true);
+        .setIn(['songList', 'menu', 'hidden'], true)
+        .setIn(['songList', 'selectedIds'], list.of());
 }
 
 export function addToQueue(state, song = null) {
