@@ -105,8 +105,17 @@ export function addToQueue(state, song = null) {
             .filter(item => selectedIds.indexOf(item.get('id')) !== -1);
     }
 
+    const newSongs = songs
+        .filterNot(item => state
+            .getIn(['queue', 'songs'])
+            .find(compare => compare.get('id') === item.get('id'))
+        );
+
     return state
-        .setIn(['queue', 'songs'], state.getIn(['queue', 'songs']).concat(songs))
+        .setIn(['queue', 'songs'], state
+            .getIn(['queue', 'songs'])
+            .concat(newSongs)
+        )
         .setIn(['songList', 'menu', 'hidden'], true);
 }
 
