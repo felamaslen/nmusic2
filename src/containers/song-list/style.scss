@@ -2,6 +2,7 @@
 .song-list-outer {
     display: flex;
     flex-flow: column;
+    flex: 1 0 0;
 
     .menu {
         padding: 0.3em 0;
@@ -91,7 +92,10 @@
 }
 
 .song-list {
+    flex: 1 0 0;
+    overflow-y: auto;
     overflow-y: overlay;
+    padding-bottom: 2em;
 
     .song {
         display: flex;
