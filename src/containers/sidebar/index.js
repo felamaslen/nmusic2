@@ -18,11 +18,13 @@ export function Sidebar({ hidden, displayOver, onHideToggle, onDisplayOverToggle
     });
 
     return <div className={className}>
-        <div className="inner">
-            <SidebarTop onHideToggle={onHideToggle} onDisplayOverToggle={onDisplayOverToggle} />
-            <div className="sidebar-body">
-                <PlayQueue />
-                <CloudClients />
+        <div className="sidebar">
+            <div className="inner">
+                <SidebarTop onHideToggle={onHideToggle} onDisplayOverToggle={onDisplayOverToggle} />
+                <div className="sidebar-body">
+                    <PlayQueue />
+                    <CloudClients />
+                </div>
             </div>
         </div>
     </div>;

@@ -1,27 +1,45 @@
 .sidebar-outer {
-    flex-basis: $sidebar-width;
-    flex-grow: 0;
-    flex-shrink: 0;
+    flex: 0 0 $sidebar-width;
     z-index: 102;
     overflow: hidden;
+
+    .sidebar {
+        width: $sidebar-width;
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        z-index: 101;
+        background-color: $bg-sidebar;
+    }
+    .inner {
+        display: flex;
+        flex-flow: column;
+        position: relative;
+    }
    
     &.hidden {
         flex-basis: $sidebar-width-hidden;
-        max-width: $sidebar-width-hidden;
-
-        .inner {
-            .sidebar-body {
-            }
-        }
     }
 
     &:not(.display-over) {
         border-right: 2px solid $color-light;
-        
-        &.hidden {
-            .inner {
-            }
 
+        .sidebar {
+            overflow: hidden;
+        }
+        .inner {
+            width: $sidebar-width;
+        }
+
+        &.hidden {
+            .sidebar {
+                width: $sidebar-width-hidden;
+            }
+            .inner {
+                overflow: hidden;
+            }
+            
             .sidebar-top-outer {
                 .button-sidebar-display-toggle {
                     display: none;
@@ -35,13 +53,11 @@
     }
 
     &.display-over {
-        flex-basis: $sidebar-width-hidden;
-        flex-grow: 0;
-        flex-shrink: 0;
-        width: $sidebar-width-hidden;
+        flex: 0 0 $sidebar-width-hidden;
+        position: relative;
         overflow: visible;
         
-        .inner {
+        .sidebar {
             box-shadow: 3px 0 9px $color-shadow-3;
             transition: left 0.5s ease;
             left: 0;
@@ -59,20 +75,10 @@
         }
 
         &.hidden {
-            .inner {
+            .sidebar {
                 left: -($sidebar-width - $sidebar-width-hidden) - 4px;
             }
         }
-    }
-
-    .inner {
-        display: flex;
-        width: $sidebar-width;
-        flex-flow: column;
-        position: relative;
-        height: 100%;
-        z-index: 101;
-        background-color: $bg-sidebar;
     }
 
     .sidebar-top-outer {
