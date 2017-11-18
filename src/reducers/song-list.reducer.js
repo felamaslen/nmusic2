@@ -119,11 +119,18 @@ export function addToQueue(state, song = null) {
         .setIn(['songList', 'menu', 'hidden'], true);
 }
 
-export const orderQueue = (state, { clicked, delta }) => state
-    .setIn(['queue', 'songs'], state.getIn(['queue', 'songs'])
-        .set(clicked + delta, state.getIn(['queue', 'songs', clicked]))
-        .set(clicked, state.getIn(['queue', 'songs', clicked + delta]))
-    );
+export function orderQueue(state, { clicked, delta }) {
+    let newIndex = clicked + delta;
+    if (delta > 0) {
+        newIndex--;
+    }
+
+    return state
+        .setIn(['queue', 'songs'], state.getIn(['queue', 'songs'])
+            .delete(clicked)
+            .splice(newIndex, 0, state.getIn(['queue', 'songs', clicked]))
+        );
+}
 
 export const openMenu = (state, { posX, posY }) => state
     .setIn(['songList', 'menu'], map({ posX, posY, hidden: false }));

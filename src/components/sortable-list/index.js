@@ -116,9 +116,14 @@ export default class SortableList extends PureComponent {
         let children = this.state.children.slice();
 
         if (this.state.draggingKey) {
+            let newIndex = this.state.dragging + this.state.deltaY;
+            if (this.state.deltaY > 0) {
+                newIndex--;
+            }
+
             children = children
-                .set(this.state.dragging + this.state.deltaY, this.props.children.get(this.state.dragging))
-                .set(this.state.dragging, this.props.children.get(this.state.dragging + this.state.deltaY));
+                .delete(this.state.dragging)
+                .splice(newIndex, 0, this.props.children.get(this.state.dragging));
         }
 
         children = children
