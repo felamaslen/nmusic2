@@ -11,9 +11,9 @@ import QueueItem from '../../components/play-queue-item';
 import SortableList from '../../components/sortable-list';
 
 export function PlayQueue({ queue, active, onOrderQueue }) {
-    const itemProps = (item, itemKey) => ({
+    const itemProps = (item, itemKey, dragging) => ({
         itemKey,
-        active: active === itemKey,
+        active: active === itemKey && !dragging,
         song: item
     });
 
