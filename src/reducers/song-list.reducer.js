@@ -1,7 +1,7 @@
 import { List as list, Map as map } from 'immutable';
 
 import { formatSeconds } from '../helpers/format';
-import { getNewlySelectedKeys } from '../helpers';
+import { getNewlySelectedKeys, orderListItems } from '../helpers';
 
 export const startSongListRequest = state => state
     .setIn(['songList', 'loading'], true);
@@ -120,16 +120,20 @@ export function addToQueue(state, song = null) {
 }
 
 export function orderQueue(state, { clicked, delta }) {
-    let newIndex = clicked + delta;
-    if (delta > 0) {
-        newIndex--;
+    const newQueue = orderListItems(state.getIn(['queue', 'songs']), clicked, delta);
+
+    let newQueueActive = -1;
+
+    const queueActive = state.getIn(['queue', 'active']);
+    if (queueActive > -1) {
+        const queueActiveId = state.getIn(['queue', 'songs', queueActive, 'id']);
+
+        newQueueActive = newQueue.findIndex(song => song.get('id') === queueActiveId);
     }
 
     return state
-        .setIn(['queue', 'songs'], state.getIn(['queue', 'songs'])
-            .delete(clicked)
-            .splice(newIndex, 0, state.getIn(['queue', 'songs', clicked]))
-        );
+        .setIn(['queue', 'songs'], newQueue)
+        .setIn(['queue', 'active'], newQueueActive);
 }
 
 export const openMenu = (state, { posX, posY }) => state

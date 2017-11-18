@@ -4,6 +4,7 @@ import React from 'react';
 import PureComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
+import { orderListItems } from '../../helpers';
 
 export default class SortableList extends PureComponent {
     constructor(props) {
@@ -33,11 +34,11 @@ export default class SortableList extends PureComponent {
         }
 
         const elem = this.childRefs[key];
-        const dragItemWidth = elem.offsetWidth;
-        const dragItemHeight = elem.offsetHeight;
 
-        const offsetX = posX - elem.offsetLeft;
-        const offsetY = posY - elem.offsetTop;
+        const { top, left, width: dragItemWidth, height: dragItemHeight } = elem.getBoundingClientRect();
+
+        const offsetX = posX - left;
+        const offsetY = posY - top;
 
         this.setState({
             dragging: index,
@@ -70,7 +71,9 @@ export default class SortableList extends PureComponent {
             return;
         }
 
-        const deltaY = Math.round((posY - this.state.startY) / this.state.dragItemHeight);
+        const deltaYFloat = (posY - this.state.startY) / this.state.dragItemHeight;
+        const deltaYAbs = Math.abs(deltaYFloat);
+        const deltaY = Math.round(Math.floor(deltaYAbs) * deltaYAbs / deltaYFloat);
 
         this.setState({
             posX, posY, deltaY
@@ -116,14 +119,7 @@ export default class SortableList extends PureComponent {
         let children = this.state.children.slice();
 
         if (this.state.draggingKey) {
-            let newIndex = this.state.dragging + this.state.deltaY;
-            if (this.state.deltaY > 0) {
-                newIndex--;
-            }
-
-            children = children
-                .delete(this.state.dragging)
-                .splice(newIndex, 0, this.props.children.get(this.state.dragging));
+            children = orderListItems(children, this.state.dragging, this.state.deltaY);
         }
 
         children = children
@@ -135,7 +131,7 @@ export default class SortableList extends PureComponent {
                 const onItemDragStart = onDragStart(itemKey, key);
 
                 const props = {
-                    ...this.props.childProps(item, itemKey),
+                    ...this.props.childProps(item, itemKey, Boolean(this.state.draggingKey)),
                     itemRef,
                     className: childClass(key),
                     onMouseDown: onItemDragStart,
@@ -155,7 +151,7 @@ export default class SortableList extends PureComponent {
                 width: this.state.dragItemWidth,
                 height: this.state.dragItemHeight,
                 left: this.state.posX - this.state.offsetX,
-                top: this.state.posY - this.state.offsetY
+                top: this.state.posY - this.state.offsetY - this.state.dragItemHeight
             };
 
             dragItem = <this.props.ListItem className="drag-item" {...dragItemProps} style={dragItemStyle} />;
