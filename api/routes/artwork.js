@@ -17,13 +17,13 @@ function encodeArtistAlbum(artist, album) {
 function decodeArtistAlbum(encoded) {
     const decoded = String(Buffer.from(encoded, 'base64'));
 
-    const match = decoded.match(/^(.+)\/(.+)$/);
+    const match = decoded.match(/^(.+?)\/(.*)$/);
 
     const artist = decodeURIComponent(match[1]);
-    const album = decodeURIComponent(match[2]);
+    const album = decodeURIComponent(match[2]) || '';
 
-    if (!(artist.length && album.length)) {
-        throw new Error('Must supply artist and album');
+    if (!artist.length) {
+        throw new Error('Must supply artist');
     }
 
     return { artist, album };
@@ -230,6 +230,8 @@ async function routeArtwork(req, res) {
         decoded = decodeArtistAlbum(encoded);
     }
     catch (err) {
+        req.db.close();
+
         return serveArtworkFile(res, ARTWORK_UNKNOWN_FILE);
     }
 
@@ -240,7 +242,7 @@ async function routeArtwork(req, res) {
             .collection(config.collections.music)
             .find({
                 'info.artist': artist,
-                'info.album': album
+                'info.album': album || null
             })
             .toArray();
 

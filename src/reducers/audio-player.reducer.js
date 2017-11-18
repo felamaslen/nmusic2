@@ -12,11 +12,12 @@ const resetPlayerTimes = state => state
 const encodeArtistAlbum = (artist, album) => Buffer
     .from([artist, album]
         .map(item => encodeURIComponent(item))
-        .join('/'))
+        .join('/')
+    )
     .toString('base64');
 
 const getArtworkSrc = song => `${API_PREFIX}/artwork/${encodeArtistAlbum(
-    song.get('artist') || '', song.get('album')
+    song.get('artist') || '', song.get('album') || ''
 )}`;
 
 export function loadAudioFile(state, song, play = true) {
