@@ -65,6 +65,8 @@ export function *selectSearchItem() {
                 filterKey: 'artist',
                 index
             }));
+
+            return;
         }
     }
 
