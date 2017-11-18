@@ -12,7 +12,7 @@
         @include zebra-list-row;
         @include song-item-brief;
         
-        &.active {
+        &.active:not(.dragging) {
             background-color: $bg-list-current;
         }
 

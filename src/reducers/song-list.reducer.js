@@ -1,7 +1,7 @@
 import { List as list, Map as map } from 'immutable';
 
 import { formatSeconds } from '../helpers/format';
-import { getNewlySelectedKeys } from '../helpers';
+import { getNewlySelectedKeys, orderListItems } from '../helpers';
 
 export const startSongListRequest = state => state
     .setIn(['songList', 'loading'], true);
@@ -105,9 +105,35 @@ export function addToQueue(state, song = null) {
             .filter(item => selectedIds.indexOf(item.get('id')) !== -1);
     }
 
+    const newSongs = songs
+        .filterNot(item => state
+            .getIn(['queue', 'songs'])
+            .find(compare => compare.get('id') === item.get('id'))
+        );
+
     return state
-        .setIn(['queue', 'songs'], state.getIn(['queue', 'songs']).concat(songs))
+        .setIn(['queue', 'songs'], state
+            .getIn(['queue', 'songs'])
+            .concat(newSongs)
+        )
         .setIn(['songList', 'menu', 'hidden'], true);
+}
+
+export function orderQueue(state, { clicked, delta }) {
+    const newQueue = orderListItems(state.getIn(['queue', 'songs']), clicked, delta);
+
+    let newQueueActive = -1;
+
+    const queueActive = state.getIn(['queue', 'active']);
+    if (queueActive > -1) {
+        const queueActiveId = state.getIn(['queue', 'songs', queueActive, 'id']);
+
+        newQueueActive = newQueue.findIndex(song => song.get('id') === queueActiveId);
+    }
+
+    return state
+        .setIn(['queue', 'songs'], newQueue)
+        .setIn(['queue', 'active'], newQueueActive);
 }
 
 export const openMenu = (state, { posX, posY }) => state
