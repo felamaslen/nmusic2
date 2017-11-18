@@ -61,6 +61,12 @@ export class SearchList extends ImmutableComponent {
         });
     }
     render() {
+        if (!this.props.loading && !this.props.artists.size &&
+            !this.props.albums.size && !this.props.songs.size) {
+
+            return null;
+        }
+
         const classNameOuter = classNames({
             'search-list-outer': true,
             loading: this.props.loading
