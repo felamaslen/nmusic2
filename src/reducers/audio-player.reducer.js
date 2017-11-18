@@ -178,7 +178,40 @@ export function handleAudioEnded(state) {
     return changeTrack(state, 1);
 }
 
+function playFirstSong(state) {
+    if (state.getIn(['queue', 'songs']).size > 0) {
+        return loadAudioFile(state, state.getIn(['queue', 'songs']).first())
+            .setIn(['queue', 'active'], 0);
+    }
+
+    if (state.getIn(['songList', 'songs']).size > 0) {
+        if (state.getIn(['songList', 'selectedIds']).size > 0) {
+            const firstId = state.getIn(['songList', 'selectedIds']).first();
+
+            return loadAudioFile(state, state
+                .getIn(['songList', 'songs'])
+                .find(song => song.get('id') === firstId)
+            );
+        }
+
+        return loadAudioFile(state, state.getIn(['songList', 'songs']).first());
+    }
+
+    return null;
+}
+
 export function playPauseAudio(state) {
+    const wasPaused = state.getIn(['player', 'paused']);
+    const haveSong = Boolean(state.getIn(['player', 'currentSong']));
+
+    if (wasPaused && !haveSong) {
+        const nextState = playFirstSong(state);
+
+        if (nextState) {
+            return nextState;
+        }
+    }
+
     const paused = !(state.getIn(['player', 'currentSong']) && state.getIn(['player', 'paused']));
 
     return state
