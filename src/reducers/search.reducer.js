@@ -25,7 +25,7 @@ function selectArtist(state, key) {
 
     return state
         .setIn(['search', 'artistSearch'], item)
-        .setIn(['search', 'albumSearch'], null);
+        .setIn(['search', 'albumSearch'], null)
 }
 
 function selectAlbum(state, key) {
