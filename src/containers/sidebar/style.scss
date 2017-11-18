@@ -16,6 +16,7 @@
         display: flex;
         flex-flow: column;
         position: relative;
+        height: 100%;
     }
    
     &.hidden {
@@ -84,11 +85,9 @@
     .sidebar-top-outer {
         display: flex;
         padding: 0 1em;
+        flex: 0 0 $sidebar-top-height;
         align-items: center;
         justify-content: space-between;
-        flex-basis: $sidebar-top-height;
-        flex-grow: 0;
-        flex-shrink: 0;
 
         background-color: $color-primary;
 
@@ -161,8 +160,10 @@
     }
     
     .sidebar-body {
+        display: flex;
+        flex-flow: column;
         position: relative;
-        flex-grow: 1;
+        flex: 1 0 auto;
         transition: opacity 0.3s ease;
     }
 

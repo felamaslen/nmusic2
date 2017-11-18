@@ -10,6 +10,8 @@ import SidebarTop from './sidebar-top';
 import PlayQueue from '../play-queue';
 import CloudClients from '../cloud-clients';
 
+import Artwork from '../../containers/artwork';
+
 export function Sidebar({ hidden, displayOver, onHideToggle, onDisplayOverToggle }) {
     const className = classNames({
         'sidebar-outer': true,
@@ -24,6 +26,7 @@ export function Sidebar({ hidden, displayOver, onHideToggle, onDisplayOverToggle
                 <div className="sidebar-body">
                     <PlayQueue />
                     <CloudClients />
+                    <Artwork />
                 </div>
             </div>
         </div>
@@ -33,6 +36,7 @@ export function Sidebar({ hidden, displayOver, onHideToggle, onDisplayOverToggle
 Sidebar.propTypes = {
     hidden: PropTypes.bool.isRequired,
     displayOver: PropTypes.bool.isRequired,
+    artworkSrc: PropTypes.string,
     onHideToggle: PropTypes.func.isRequired,
     onDisplayOverToggle: PropTypes.func.isRequired
 };
