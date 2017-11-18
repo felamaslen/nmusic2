@@ -3,13 +3,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-export default function QueueItem({ song, active, itemKey }) {
-    const className = classNames({
+export default function QueueItem({ song, active, itemKey, className, itemRef, ...events }) {
+    const classes = classNames({
         'play-queue-song': true,
+        [className]: true,
         active
     });
 
-    return <li className={className}>
+    return <li ref={itemRef} className={classes} {...events}>
         <span className="list-key">{itemKey + 1}{'.'}</span>
         <span className="info">
             <span className="title">{song.get('title')}</span>
@@ -22,6 +23,10 @@ export default function QueueItem({ song, active, itemKey }) {
 QueueItem.propTypes = {
     song: PropTypes.instanceOf(map).isRequired,
     active: PropTypes.bool.isRequired,
-    itemKey: PropTypes.number.isRequired
+    itemKey: PropTypes.number.isRequired,
+    className: PropTypes.string,
+    itemRef: PropTypes.func,
+    onMouseDown: PropTypes.func,
+    onTouchStart: PropTypes.func
 };
 

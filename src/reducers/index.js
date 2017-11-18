@@ -36,6 +36,7 @@ export default createReducer(initialState, createReducerObject([
     [AC.SONG_LIST_ITEM_CLICKED, songList.selectSongListItem],
     [AC.SONG_LIST_SORTED, songList.sortSongList],
     [AC.SONG_LIST_QUEUE_ADDED, songList.addToQueue],
+    [AC.SONG_LIST_QUEUE_ORDERED, songList.orderQueue],
     [AC.SONG_LIST_MENU_OPENED, songList.openMenu],
 
     [AC.FILTER_LIST_REQUESTED, filter.requestFilterList],

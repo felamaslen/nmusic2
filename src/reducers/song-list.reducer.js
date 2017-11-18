@@ -91,7 +91,8 @@ export function insertSongList(state, { err, data }) {
     return state
         .setIn(['songList', 'loading'], false)
         .setIn(['songList', 'songs'], sortedSongs)
-        .setIn(['songList', 'menu', 'hidden'], true);
+        .setIn(['songList', 'menu', 'hidden'], true)
+        .setIn(['songList', 'selectedIds'], list.of());
 }
 
 export function addToQueue(state, song = null) {
@@ -108,6 +109,12 @@ export function addToQueue(state, song = null) {
         .setIn(['queue', 'songs'], state.getIn(['queue', 'songs']).concat(songs))
         .setIn(['songList', 'menu', 'hidden'], true);
 }
+
+export const orderQueue = (state, { clicked, delta }) => state
+    .setIn(['queue', 'songs'], state.getIn(['queue', 'songs'])
+        .set(clicked + delta, state.getIn(['queue', 'songs', clicked]))
+        .set(clicked, state.getIn(['queue', 'songs', clicked + delta]))
+    );
 
 export const openMenu = (state, { posX, posY }) => state
     .setIn(['songList', 'menu'], map({ posX, posY, hidden: false }));

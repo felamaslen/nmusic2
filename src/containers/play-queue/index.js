@@ -1,28 +1,42 @@
 import { List as list } from 'immutable';
+
 import { connect } from 'react-redux';
+
+import { songListQueueOrdered } from '../../actions/song-list.actions';
 
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import QueueItem from './queue-item';
+import QueueItem from '../../components/play-queue-item';
+import SortableList from '../../components/sortable-list';
 
-export function PlayQueue({ queue, active }) {
-    const queueItems = queue.map(
-        (item, itemKey) => <QueueItem key={itemKey} active={active === itemKey} song={item}
-            itemKey={itemKey} />
-    );
+export function PlayQueue({ queue, active, onOrderQueue }) {
+    const itemProps = (item, itemKey) => ({
+        itemKey,
+        active: active === itemKey,
+        song: item
+    });
+
+    const itemKey = item => item.get('id');
 
     return <div className="play-queue-outer">
         <h3 className="sidebar-title play-queue-title">{'Play queue'}</h3>
-        <ul className="play-queue">
-            {queueItems}
-        </ul>
+        <SortableList
+            className={{ 'play-queue': true }}
+            ListItem={QueueItem}
+            childProps={itemProps}
+            childKey={itemKey}
+            onOrder={onOrderQueue}
+        >
+            {queue}
+        </SortableList>
     </div>;
 }
 
 PlayQueue.propTypes = {
     queue: PropTypes.instanceOf(list).isRequired,
-    active: PropTypes.number.isRequired
+    active: PropTypes.number.isRequired,
+    onOrderQueue: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
@@ -30,5 +44,9 @@ const mapStateToProps = state => ({
     active: state.getIn(['queue', 'active'])
 });
 
-export default connect(mapStateToProps)(PlayQueue);
+const mapDispatchToProps = dispatch => ({
+    onOrderQueue: (clicked, delta) => dispatch(songListQueueOrdered({ clicked, delta }))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(PlayQueue);
 
