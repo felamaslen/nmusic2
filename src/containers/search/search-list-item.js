@@ -17,7 +17,7 @@ export class SearchListItem extends ImmutableComponent {
         const className = classNames({ selected: this.props.selected });
 
         return <li className={className}>
-            <div onClick={onClick} onMouseOver={onMouseOver}>
+            <div className="search-result-inner" onClick={onClick} onMouseOver={onMouseOver}>
                 {this.props.children}
             </div>
         </li>;
