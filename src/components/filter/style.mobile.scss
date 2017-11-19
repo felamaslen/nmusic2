@@ -1,0 +1,30 @@
+.filter-outer {
+    .filter-section-outer {
+        display: flex;
+        flex-flow: column;
+    }
+
+    .filter-title {
+        margin: 0;
+        flex: 0 0 2em;
+        line-height: 2em;
+        text-align: center;
+        border-bottom: 1px solid $color-ultra-light;
+        font-size: 1.1em;
+    }
+
+    .filter-list-inner {
+        flex: 1 0 0;
+
+        li {
+            @include zebra-list-row-mobile;
+        }
+    }
+
+    .filter-artist {
+        .select-all {
+            display: none;
+        }
+    }
+}
+

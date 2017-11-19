@@ -19,8 +19,5 @@
     position: relative;
     overflow-y: scroll;
 
-    li {
-        @include zebra-selectable-list-row;
-    }
 }
 

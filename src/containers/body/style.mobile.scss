@@ -1,0 +1,50 @@
+.nmusic-app-outer {
+    .nmusic-body {
+        position: relative;
+    }
+
+    .audio-player-outer {
+        display: none;
+    }
+
+    .filter-artist, .filter-album, .song-list-outer {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+
+        transition: right 0.5s ease;
+    }
+
+    .song-list-outer {
+        right: -100%;
+    }
+
+    &.needs-artist {
+        .filter-outer {
+            .filter-album {
+                right: -100%;
+            }
+        }
+    }
+
+    &.needs-album {
+        .filter-outer {
+            .filter-artist {
+                right: 100%;
+            }
+        }
+    }
+
+    &.display-songs {
+        .filter-artist, .filter-album {
+            right: 100%;
+        }
+
+        .song-list-outer {
+            right: 0;
+        }
+    }
+}
+

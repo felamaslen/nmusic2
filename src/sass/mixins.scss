@@ -122,6 +122,15 @@
     }
 }
 
+@mixin zebra-list-row-mobile {
+    padding: 0 0.3em;
+    line-height: 2em;
+    background-color: $color-white;
+    &:nth-child(2n) {
+        background-color: $color-almost-white;
+    }
+}
+
 @mixin zebra-selectable-list-row {
     height: $list-row-height;
     line-height: $list-row-height;

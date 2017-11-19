@@ -20,7 +20,9 @@ export class FilterList extends ImmutableComponent {
         this.props.loadInitialList();
     }
     componentDidUpdate(prevProps) {
-        if (prevProps.lastClickedKey !== this.props.lastClickedKey) {
+        if (this.itemList && this.itemList.scrollTo &&
+            prevProps.lastClickedKey !== this.props.lastClickedKey) {
+
             // make sure the item is scrolled into view
             const item = this.itemList.childNodes[this.props.lastClickedKey + 1];
 
@@ -65,6 +67,7 @@ export class FilterList extends ImmutableComponent {
         });
 
         const selectAllClassName = classNames({
+            'select-all': true,
             selected: this.props.selectedKeys.size === 0
         });
 
@@ -73,6 +76,7 @@ export class FilterList extends ImmutableComponent {
         };
 
         return <div className={className}>
+            <h3 className="filter-title">{'Select an '}{this.props.filterKey}</h3>
             <ul ref={listRef} className="filter-list-inner">
                 <li key={-1} className={selectAllClassName} onClick={onClick(-1)}>All</li>
                 {items}

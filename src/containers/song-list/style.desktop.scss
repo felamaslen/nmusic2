@@ -1,0 +1,54 @@
+.song-list-head {
+    display: flex;
+    flex: 0 0 auto;
+
+    height: 22px;
+    line-height: 22px;
+    background: $bg-head;
+    color: $color-head;
+    font-weight: bold;
+
+    @include song-list-row;
+
+    .selected {
+        background: $bg-head-selected;
+    }
+
+    .sort-asc, .sort-desc {
+        display: flex;
+        flex-flow: column wrap;
+
+        &:after {
+            content: "";
+            display: block;
+            align-self: flex-end;
+            width: 0;
+            height: 0;
+            border-color: transparent;
+            border-width: 10px 6px;
+            border-style: solid;
+            margin-right: 5px;
+        }
+    }
+    .sort-asc:after {
+        border-bottom-color: $color-head-arrow;
+        margin-top: -5px;
+    }
+    .sort-desc:after {
+        border-top-color: $color-head-arrow;
+        margin-top: 5px;
+    }
+
+    span {
+        &:not(:last-child) {
+            border-color: $border-color-head;
+        }
+    }
+}
+
+.song-list {
+    .song {
+        @include zebra-selectable-list-row;
+        @include song-list-row;
+    }
+}

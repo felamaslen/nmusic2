@@ -1,0 +1,16 @@
+.song-list-outer {
+    .song-list-head {
+        display: none;
+    }
+
+    .song-list {
+        .status, .duration, .artist, .album {
+            display: none;
+        }
+
+        .song {
+            @include zebra-list-row-mobile;
+        }
+    }
+}
+

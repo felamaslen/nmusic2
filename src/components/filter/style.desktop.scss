@@ -1,0 +1,12 @@
+.filter-outer {
+    .filter-title {
+        display: none;
+    }
+
+    .filter-list-inner {
+        li {
+            @include zebra-selectable-list-row;
+        }
+    }
+}
+

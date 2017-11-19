@@ -11,10 +11,13 @@ export function startFilterSongList(state, { filterKey, index, ...evt }) {
     const albumsListLoaded = state.getIn(['filter', 'album', 'loaded']) &&
         !(filterKey === 'artist' && !selectedKeys.equals(newlySelectedKeys));
 
+    const allAlbumsSelected = filterKey === 'album' && index === -1;
+
     return state
         .setIn(['filter', filterKey, 'lastClickedKey'], index)
         .setIn(['filter', filterKey, 'selectedKeys'], newlySelectedKeys)
-        .setIn(['filter', 'album', 'loaded'], albumsListLoaded);
+        .setIn(['filter', 'album', 'loaded'], albumsListLoaded)
+        .setIn(['filter', 'album', 'allSelected'], allAlbumsSelected);
 }
 
 export const requestFilterList = (state, { key }) => state
@@ -25,7 +28,8 @@ export function receiveFilterList(state, { err, items, key }) {
     const nextState = state
         .setIn(['filter', key, 'loading'], false)
         .setIn(['filter', key, 'selectedKeys'], list.of())
-        .setIn(['filter', key, 'lastClickedKey'], -1);
+        .setIn(['filter', key, 'lastClickedKey'], -1)
+        .setIn(['filter', 'album', 'allSelected'], false);
 
     if (err) {
         return nextState;
@@ -33,7 +37,6 @@ export function receiveFilterList(state, { err, items, key }) {
 
     const loadedState = nextState
         .setIn(['filter', key, 'loaded'], true);
-
 
     if (!items) {
         return loadedState;

@@ -31,7 +31,8 @@ export default fromJS({
             loading: false,
             items: [],
             selectedKeys: [],
-            lastClickedKey: -1
+            lastClickedKey: -1,
+            allSelected: false
         }
     },
     sidebar: {
