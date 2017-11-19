@@ -103,6 +103,9 @@ export function selectSearchItem(state, { index, ...req }) {
     throw new Error('value for "category" out of range');
 }
 
+export const focusSearchBox = state => state
+    .setIn(['search', 'focus'], state.getIn(['search', 'focus']) ^ 1);
+
 export function navigateSearch(state, { itemKey, category, key, shift, ctrl }) {
     if (typeof itemKey !== 'undefined' && category) {
         const navIndex = getNavIndex(state)(itemKey, category);
@@ -135,9 +138,15 @@ export function navigateSearch(state, { itemKey, category, key, shift, ctrl }) {
 
     const newNavIndex = (navIndex + delta + 1 + numItems + 1) % (numItems + 1) - 1;
 
-    return state
+    const nextState = state
         .setIn(['search', 'active'], true)
         .setIn(['search', 'navIndex'], newNavIndex);
+
+    if (newNavIndex === -1) {
+        return focusSearchBox(nextState);
+    }
+
+    return nextState;
 }
 
 export function handleSearchResults(state, { response, err, searchTerm }) {
