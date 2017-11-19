@@ -59,6 +59,7 @@ export default createReducer(initialState, createReducerObject([
     [AC.SEARCH_NAVIGATED, search.navigateSearch],
     [AC.SEARCH_SELECTED, search.selectSearchItem],
     [AC.SEARCH_RESULTS_RECEIVED, search.handleSearchResults],
-    [AC.SEARCH_FOCUS_SET, search.setFocusStatus]
+    [AC.SEARCH_FOCUS_SET, search.setFocusStatus],
+    [AC.SEARCH_BOX_FOCUSED, search.focusSearchBox]
 ]));
 

@@ -42,6 +42,7 @@ export default fromJS({
         term: '',
         navIndex: -1,
         active: false,
+        focus: 0,
         loading: false,
         artists: [],
         artistSearch: null,

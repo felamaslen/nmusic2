@@ -65,7 +65,8 @@ export const audioStop = state => resetPlayerTimes(state)
     .setIn(['player', 'paused'], true)
     .setIn(['player', 'audioSource'], null)
     .setIn(['player', 'bufferedRangesRaw'], null)
-    .setIn(['player', 'bufferedRanges'], list.of());
+    .setIn(['player', 'bufferedRanges'], list.of())
+    .setIn(['artwork', 'src'], null);
 
 const goToSongStart = state => resetPlayerTimes(state)
     .setIn(['player', 'seekTime'], -1);

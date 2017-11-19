@@ -24,6 +24,7 @@ export class SearchBox extends ImmutableComponent {
                 this.input.focus();
 
                 evt.preventDefault();
+                evt.stopPropagation();
             }
         };
 
@@ -34,6 +35,11 @@ export class SearchBox extends ImmutableComponent {
     }
     componentWillUnmount() {
         window.removeEventListener('keydown', this.onTabTo);
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.focus !== this.props.focus && this.input) {
+            this.input.focus();
+        }
     }
     render() {
         let searchList = null;
@@ -60,12 +66,14 @@ export class SearchBox extends ImmutableComponent {
 
 SearchBox.propTypes = {
     active: PropTypes.bool.isRequired,
+    focus: PropTypes.number.isRequired,
     value: PropTypes.string.isRequired,
     setFocus: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
     active: state.getIn(['search', 'active']),
+    focus: state.getIn(['search', 'focus']),
     value: state.getIn(['search', 'term'])
 });
 

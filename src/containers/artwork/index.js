@@ -28,14 +28,15 @@ export class Artwork extends PureComponent {
     componentDidUpdate(prevProps) {
         if (prevProps.src !== this.props.src) {
             this.setState({
-                loading: true
+                loading: Boolean(this.props.src)
             });
         }
     }
     render() {
         const className = classNames({
             artwork: true,
-            loading: this.state.loading
+            loading: this.state.loading,
+            inactive: !this.props.src
         });
 
         const onLoad = () => this.onLoad();

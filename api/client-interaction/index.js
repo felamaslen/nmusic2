@@ -68,7 +68,8 @@ function validateState(raw) {
             title: joi.string().required(),
             artist: joi.string().required(),
             album: joi.string().required()
-        }),
+        })
+            .allow(null),
         paused: joi.boolean()
     });
 
