@@ -4,3 +4,13 @@
 @import '../containers/**/style.scss';
 @import '../components/**/style.scss';
 
+@media only screen and (max-width: $width-mobile) {
+    @import '../containers/**/style.mobile.scss';
+    @import '../components/**/style.mobile.scss';
+}
+
+@media only screen and (min-width: $width-mobile) {
+    @import '../containers/**/style.desktop.scss';
+    @import '../components/**/style.desktop.scss';
+}
+
