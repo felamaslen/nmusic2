@@ -28,7 +28,7 @@ export class Artwork extends PureComponent {
     componentDidUpdate(prevProps) {
         if (prevProps.src !== this.props.src) {
             this.setState({
-                loading: true
+                loading: Boolean(this.props.src)
             });
         }
     }
