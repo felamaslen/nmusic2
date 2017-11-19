@@ -51,6 +51,7 @@ $search-width: 280px;
     padding-bottom: 1em;
     width: 100%;
     flex: 0 0 auto;
+    z-index: 100;
     max-width: $search-width;
     flex-flow: row wrap;
     align-items: center;
