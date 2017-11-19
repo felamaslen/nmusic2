@@ -1,3 +1,12 @@
+- Release 0.0.7:
+    - Major layout fixes on Firefox
+    - Load artist in filter from search results
+    - Drag and drop capability in play queue
+    - Move artwork to sidebar
+
+- Release 0.0.6:
+    - Play and pause remote clients by clicking the icon on the sidebar
+
 - Release 0.0.5:
     - List of currently-connected remote clients on the sidebar
     - Non-interactive status on each client, including song info and paused status

@@ -3,6 +3,7 @@ const ShortUniqueId = require('short-unique-id');
 const uid = new ShortUniqueId();
 const winston = require('winston');
 const dns = require('dns');
+const joi = require('joi');
 
 if (process.env.NODE_ENV === 'production') {
     winston.remove(winston.transports.Console);
@@ -39,26 +40,69 @@ function notifyClients(clientId, clientState, type = 'update') {
     winston.log('info', `Notifying clients of ${type} client:`, { clientId, clientState });
 
     globalState.clients
-        .filter(client => client.id !== clientId)
-        .forEach(client => client.socket.send(JSON.stringify([{ type, clientId, clientState }])));
+        .forEach(client => {
+            const clientUpdated = client.id === clientId;
+
+            if (clientUpdated) {
+                if (type === 'new') {
+                    return;
+                }
+
+                client.socket.send(JSON.stringify([{ type, clientState, local: true }]));
+            }
+            else {
+                client.socket.send(JSON.stringify([{ type, clientId, clientState }]));
+            }
+        });
+
 }
 
-const validState = () => true;
+function validateState(raw) {
+    const rawAsArray = Array.isArray(raw)
+        ? raw
+        : [raw];
+
+    const itemSchema = joi.object().keys({
+        clientId: joi.string(),
+        currentSong: joi.object().keys({
+            title: joi.string().required(),
+            artist: joi.string().required(),
+            album: joi.string().required()
+        }),
+        paused: joi.boolean()
+    });
+
+    const schema = joi.array().items(itemSchema);
+
+    return new Promise((resolve, reject) => {
+        joi.validate(rawAsArray, schema, (err, value) => {
+            if (err) {
+                return reject(err);
+            }
+
+            return resolve(value);
+        });
+    });
+}
+
+function updateState(newState, fromClientId) {
+    const clientId = newState.clientId || fromClientId;
+
+    const clientIndex = globalState.clients.findIndex(client => client.id === clientId);
+
+    globalState.clients[clientIndex].setState(newState);
+
+    notifyClients(clientId, newState);
+}
 
 function onMessage(clientId) {
-    return message => {
+    return async message => {
         try {
-            const state = JSON.parse(message.utf8Data);
+            const states = await validateState(JSON.parse(message.utf8Data), clientId);
 
-            winston.log('info', `Message from client #${clientId}: state -> `, JSON.stringify(state));
+            winston.log('info', `Message from client #${clientId}:`, JSON.stringify(states));
 
-            if (validState(state)) {
-                const clientIndex = globalState.clients.findIndex(client => client.id === clientId);
-
-                globalState.clients[clientIndex].setState(state);
-
-                notifyClients(clientId, state);
-            }
+            states.forEach(state => updateState(state, clientId));
         }
         catch (err) {
             winston.log('warn', `Error processing message from client #${clientId}:`, err.message);
@@ -145,11 +189,13 @@ async function onConnection(req) {
     winston.log('info', 'New client', { id, origin });
 
     // send list of connected clients to the new client
-    socket.send(JSON.stringify(globalState.clients.map(client => ({
-        type: 'new',
-        clientId: client.id,
-        clientState: client.state
-    }))));
+    if (globalState.clients.length > 0) {
+        socket.send(JSON.stringify(globalState.clients.map(client => ({
+            type: 'new',
+            clientId: client.id,
+            clientState: client.state
+        }))));
+    }
 
     // add new client to the state and notify existing clients of the addition
     globalState.clients.push(newClient);

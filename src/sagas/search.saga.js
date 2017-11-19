@@ -6,6 +6,9 @@ import { API_PREFIX } from '../constants/misc';
 
 import { searchResultsReceived } from '../actions/search.actions';
 import { songListReceived } from '../actions/song-list.actions';
+import { filterItemClicked } from '../actions/filter.actions';
+
+import { selectArtistFilter } from './filter.saga';
 
 export const selectSearchTerm = state => state.getIn(['search', 'term']);
 
@@ -49,6 +52,23 @@ export function *selectSearchItem() {
 
             return filter;
         }, {});
+
+    const artistSearch = search.get('artistSearch');
+    if (artistSearch) {
+        const artistFilter = yield select(selectArtistFilter);
+
+        const index = artistFilter.get('items')
+            .findIndex(filterItem => filterItem === artistSearch);
+
+        if (index > -1) {
+            yield put(filterItemClicked({
+                filterKey: 'artist',
+                index
+            }));
+
+            return;
+        }
+    }
 
     if (noTerm || !songListLoading) {
         return;

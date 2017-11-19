@@ -46,11 +46,15 @@
             justify-content: center;
 
             .status {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0 0.5em;
-                position: relative;
+                width: 28px;
+                height: 28px;
+                background: transparent;
+                border-radius: 100%;
+                margin: 4px;
+
+                &::after {
+                    content: '';
+                }
             }
         }
 
@@ -62,15 +66,16 @@
         &.paused {
             .play-pause {
                 .status {
-                    @include status-icon-pause(24px, 16px);
+                    @include status-icon-pause;
                 }
             }
         }
         &.playing {
             .play-pause {
                 .status {
-                    @include status-icon-play(16px);
-                    margin-right: -24px;
+                    animation: animate-pulse infinite 2s ease;
+
+                    @include status-icon-play;
                 }
             }
         }

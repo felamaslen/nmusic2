@@ -11,8 +11,35 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 export class FilterList extends ImmutableComponent {
+    constructor(props) {
+        super(props);
+
+        this.itemList = null;
+    }
     componentDidMount() {
         this.props.loadInitialList();
+    }
+    componentDidUpdate(prevProps) {
+        if (prevProps.lastClickedKey !== this.props.lastClickedKey) {
+            // make sure the item is scrolled into view
+            const item = this.itemList.childNodes[this.props.lastClickedKey + 1];
+
+            if (!item) {
+                return;
+            }
+
+            const listTop = this.itemList.scrollTop;
+            const listBottom = listTop + this.itemList.offsetHeight;
+
+            const itemTop = item.offsetTop;
+            const itemBottom = itemTop + item.offsetHeight;
+
+            const itemVisible = itemBottom <= listBottom && itemTop >= listTop;
+
+            if (!itemVisible) {
+                this.itemList.scrollTo(0, itemTop - 10);
+            }
+        }
     }
     render() {
         const onClick = index => evt => this.props.onClick({
@@ -41,8 +68,12 @@ export class FilterList extends ImmutableComponent {
             selected: this.props.selectedKeys.size === 0
         });
 
+        const listRef = elem => {
+            this.itemList = elem;
+        };
+
         return <div className={className}>
-            <ul className="filter-list-inner">
+            <ul ref={listRef} className="filter-list-inner">
                 <li key={-1} className={selectAllClassName} onClick={onClick(-1)}>All</li>
                 {items}
             </ul>
@@ -56,6 +87,7 @@ FilterList.propTypes = {
     loading: PropTypes.bool.isRequired,
     items: PropTypes.instanceOf(list),
     selectedKeys: PropTypes.instanceOf(list),
+    lastClickedKey: PropTypes.number.isRequired,
     loadInitialList: PropTypes.func.isRequired
 }
 
@@ -63,7 +95,8 @@ const mapStateToProps = (state, ownProps) => ({
     loaded: state.getIn(['filter', ownProps.filterKey, 'loaded']),
     loading: state.getIn(['filter', ownProps.filterKey, 'loading']),
     items: state.getIn(['filter', ownProps.filterKey, 'items']),
-    selectedKeys: state.getIn(['filter', ownProps.filterKey, 'selectedKeys'])
+    selectedKeys: state.getIn(['filter', ownProps.filterKey, 'selectedKeys']),
+    lastClickedKey: state.getIn(['filter', ownProps.filterKey, 'lastClickedKey'])
 });
 
 const mapDispatchToProps = (dispatch, ownProps) => ({

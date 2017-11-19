@@ -51,6 +51,7 @@ $search-width: 280px;
     padding-bottom: 1em;
     width: 100%;
     flex: 0 0 auto;
+    z-index: 100;
     max-width: $search-width;
     flex-flow: row wrap;
     align-items: center;
@@ -84,10 +85,19 @@ $search-width: 280px;
         content: "Songs";
     }
 
+    .search-result-inner {
+        display: flex;
+        justify-content: space-between;
+    }
+
     .search-list-songs, .search-list-albums {
+        .title {
+            flex: 1 0 0;
+        }
         .artist {
-            float: right;
-            margin-right: 0.5em;
+            flex: 1 1 0;
+            margin: 0 0.5em;
+            text-align: right;
             font-size: 0.85em;
             color: #333;
             font-style: italic;

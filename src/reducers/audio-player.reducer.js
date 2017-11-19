@@ -12,18 +12,22 @@ const resetPlayerTimes = state => state
 const encodeArtistAlbum = (artist, album) => Buffer
     .from([artist, album]
         .map(item => encodeURIComponent(item))
-        .join('/'))
+        .join('/')
+    )
     .toString('base64');
 
 const getArtworkSrc = song => `${API_PREFIX}/artwork/${encodeArtistAlbum(
-    song.get('artist') || '', song.get('album')
+    song.get('artist') || '', song.get('album') || ''
 )}`;
 
 export function loadAudioFile(state, song, play = true) {
+    let newQueue = state.getIn(['queue', 'songs']);
     const queueActive = state.getIn(['queue', 'active']);
-    let queue = state.getIn(['queue', 'songs']);
     if (queueActive > -1) {
-        queue = queue.shift();
+        const queueActiveId = state.getIn(['queue', 'songs', queueActive, 'id']);
+
+        newQueue = state.getIn(['queue', 'songs'])
+            .filterNot(item => item.get('id') === queueActiveId);
     }
 
     const newState = resetPlayerTimes(state)
@@ -40,7 +44,7 @@ export function loadAudioFile(state, song, play = true) {
         .setIn(['player', 'duration'], song.get('duration'))
         .setIn(['artwork', 'src'], getArtworkSrc(song))
         .setIn(['artwork', 'loaded'], false)
-        .setIn(['queue', 'songs'], queue)
+        .setIn(['queue', 'songs'], newQueue)
         .setIn(['queue', 'active'], -1);
 
     if (play) {
@@ -94,10 +98,13 @@ function nextTrack(state, currentId, currentListIndex, songs, queue, queueActive
             .setIn(['queue', 'active'], 0);
     }
 
-    const continueQueue = queue.size > queueActive + 1 && queueActive > -1;
+    const continueQueue = queueActive > 0 || (queue.size > queueActive + 1 && queueActive > -1);
     if (continueQueue) {
-        return loadAudioFile(state, queue.get(queueActive + 1))
-            .setIn(['queue', 'songs'], queue.shift())
+        const queueActiveId = queue.getIn([queueActive, 'id']);
+        const newQueue = queue.filterNot(item => item.get('id') === queueActiveId);
+
+        return loadAudioFile(state, newQueue.first())
+            .setIn(['queue', 'songs'], newQueue)
             .setIn(['queue', 'active'], 0);
     }
 
@@ -178,7 +185,40 @@ export function handleAudioEnded(state) {
     return changeTrack(state, 1);
 }
 
+function playFirstSong(state) {
+    if (state.getIn(['queue', 'songs']).size > 0) {
+        return loadAudioFile(state, state.getIn(['queue', 'songs']).first())
+            .setIn(['queue', 'active'], 0);
+    }
+
+    if (state.getIn(['songList', 'songs']).size > 0) {
+        if (state.getIn(['songList', 'selectedIds']).size > 0) {
+            const firstId = state.getIn(['songList', 'selectedIds']).first();
+
+            return loadAudioFile(state, state
+                .getIn(['songList', 'songs'])
+                .find(song => song.get('id') === firstId)
+            );
+        }
+
+        return loadAudioFile(state, state.getIn(['songList', 'songs']).first());
+    }
+
+    return null;
+}
+
 export function playPauseAudio(state) {
+    const wasPaused = state.getIn(['player', 'paused']);
+    const haveSong = Boolean(state.getIn(['player', 'currentSong']));
+
+    if (wasPaused && !haveSong) {
+        const nextState = playFirstSong(state);
+
+        if (nextState) {
+            return nextState;
+        }
+    }
+
     const paused = !(state.getIn(['player', 'currentSong']) && state.getIn(['player', 'paused']));
 
     return state

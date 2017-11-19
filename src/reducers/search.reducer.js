@@ -6,6 +6,7 @@ import { loadAudioFile } from './audio-player.reducer';
 
 const resetSearch = state => state
     .setIn(['search', 'loading'], false)
+    .setIn(['search', 'active'], false)
     .setIn(['search', 'term'], '')
     .setIn(['search', 'artists'], list.of())
     .setIn(['search', 'albums'], list.of())
@@ -25,7 +26,7 @@ function selectArtist(state, key) {
 
     return state
         .setIn(['search', 'artistSearch'], item)
-        .setIn(['search', 'albumSearch'], null);
+        .setIn(['search', 'albumSearch'], null)
 }
 
 function selectAlbum(state, key) {
@@ -154,9 +155,11 @@ export function handleSearchResults(state, { response, err, searchTerm }) {
 
     const { artists, albums, titles } = response.data;
 
+    const active = Boolean(artists.length || albums.length || titles.length);
+
     return state
         .setIn(['search', 'term'], searchTerm)
-        .setIn(['search', 'active'], true)
+        .setIn(['search', 'active'], active)
         .setIn(['search', 'loading'], false)
         .setIn(['search', 'artists'], fromJS(artists))
         .setIn(['search', 'albums'], fromJS(albums))

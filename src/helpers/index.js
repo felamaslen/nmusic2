@@ -107,3 +107,11 @@ export function getWSUrl(webUrl) {
     return `${protocol}://${url.host}`;
 }
 
+export function orderListItems(items, index, delta) {
+    const newIndex = Math.max(0, index + delta);
+
+    return items
+        .delete(index)
+        .splice(newIndex, 0, items.get(index));
+}
+

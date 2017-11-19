@@ -26,6 +26,7 @@ export default createReducer(initialState, createReducerObject([
 
     [AC.SOCKET_ERROR_OCCURRED, socket.onError],
     [AC.SOCKET_STATE_UPDATED, socket.onUpdate],
+    [AC.REMOTE_CLIENT_UPDATED, socket.sendUpdateToRemoteClient],
 
     [AC.SIDEBAR_HIDDEN, sidebar.toggleHidden],
     [AC.SIDEBAR_DISPLAY_OVER_TOGGLED, sidebar.toggleDisplayOver],
@@ -35,6 +36,7 @@ export default createReducer(initialState, createReducerObject([
     [AC.SONG_LIST_ITEM_CLICKED, songList.selectSongListItem],
     [AC.SONG_LIST_SORTED, songList.sortSongList],
     [AC.SONG_LIST_QUEUE_ADDED, songList.addToQueue],
+    [AC.SONG_LIST_QUEUE_ORDERED, songList.orderQueue],
     [AC.SONG_LIST_MENU_OPENED, songList.openMenu],
 
     [AC.FILTER_LIST_REQUESTED, filter.requestFilterList],

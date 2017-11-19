@@ -15,7 +15,8 @@ export default fromJS({
     cloud: {
         error: null,
         clients: {},
-        localState: {}
+        localState: {},
+        newStates: []
     },
     filter: {
         artist: {
