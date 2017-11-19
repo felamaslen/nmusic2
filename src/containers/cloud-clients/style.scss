@@ -1,4 +1,7 @@
 .cloud-clients-outer {
+    flex: 0 1 auto;
+    overflow: auto;
+
     .cloud-clients {
         display: flex;
         flex-flow: row;
