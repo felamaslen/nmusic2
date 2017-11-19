@@ -19,8 +19,27 @@
             }
 
             @include loading-indicator(30%);
-            &:after {
+            &::after {
                 position: absolute;
+            }
+        }
+
+        &.inactive {
+            height: 100%;
+            align-items: center;
+
+            &::after {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 80%;
+                height: 80%;
+                content: 'Artwork';
+                color: $color-medium-very-light;
+                font-weight: bold;
+                font-size: 2.5em;
+                border: 8px dashed $color-medium-very-light;
+                border-radius: 32px;
             }
         }
     }
