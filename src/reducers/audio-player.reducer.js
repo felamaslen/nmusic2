@@ -58,6 +58,7 @@ export function loadAudioFile(state, song, play = true) {
 
 export const audioStop = state => resetPlayerTimes(state)
     .setIn(['cloud', 'localState', 'currentSong'], null)
+    .setIn(['cloud', 'localState', 'paused'], true)
     .setIn(['player', 'current'], null)
     .setIn(['player', 'currentSong'], null)
     .setIn(['player', 'url'], null)
