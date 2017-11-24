@@ -72,9 +72,16 @@ async function routePlayRandom(req, res) {
             .aggregate([{ $sample: { size: 1 } }])
             .toArray();
 
-        const { _id, info } = row[0];
+        if (row.length === 1) {
+            const { _id, info } = row[0];
 
-        res.json({ id: _id, ...info });
+            res.json({ id: _id, ...info });
+        }
+        else {
+            res
+                .status(404)
+                .json({ error: true, status: 'No songs' });
+        }
     }
     catch (err) {
         res
