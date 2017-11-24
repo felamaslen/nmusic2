@@ -14,7 +14,8 @@ describe('Audio player reducer', () => {
             player: {
                 current: null,
                 paused: true,
-                repeat: M.REPEAT_NONE
+                repeat: M.REPEAT_NONE,
+                shuffle: M.SHUFFLE_NONE
             },
             songList: {
                 songs: [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }]
@@ -27,11 +28,34 @@ describe('Audio player reducer', () => {
 
         describe('Next track', () => {
             describe('while not playing anything', () => {
-                it('should select the first track', () => {
-                    const result = R.changeTrack(stateWithoutQueue, 1);
+                describe('if shuffle mode is set', () => {
+                    it('should select the first item from the queue, if there is one', () => {
+                        const stateWithQueue = stateWithoutQueue
+                            .setIn(['queue', 'songs'], fromJS([{ id: 'q1' }, { id: 'q2' }]))
+                            .setIn(['queue', 'active'], -1)
+                            .setIn(['player', 'shuffle'], M.SHUFFLE_ALL);
 
-                    expect(result.getIn(['player', 'paused'])).to.equal(false);
-                    expect(result.getIn(['player', 'current'])).to.equal('foo');
+                        const result = R.changeTrack(stateWithQueue, 1);
+
+                        expect(result.getIn(['player', 'paused'])).to.equal(false);
+                        expect(result.getIn(['player', 'current'])).to.equal('q1');
+                    });
+
+                    it('should select a track at random from the list, if there is a list', () => {
+                        const result = R.changeTrack(stateWithoutQueue
+                            .setIn(['player', 'shuffle'], M.SHUFFLE_ALL), 1);
+
+                        expect(result.getIn(['player', 'paused'])).to.equal(false);
+                    });
+                });
+
+                describe('otherwise', () => {
+                    it('should select the first track', () => {
+                        const result = R.changeTrack(stateWithoutQueue, 1);
+
+                        expect(result.getIn(['player', 'paused'])).to.equal(false);
+                        expect(result.getIn(['player', 'current'])).to.equal('foo');
+                    });
                 });
             });
 
