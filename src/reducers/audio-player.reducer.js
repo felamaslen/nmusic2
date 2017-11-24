@@ -1,7 +1,7 @@
 import { List as list, Map as map } from 'immutable';
 
 import {
-    API_PREFIX, REPEAT_TRACK, REPEAT_LIST, SHUFFLE_ALL, REWIND_START_TIME
+    API_PREFIX, REPEAT_TRACK, REPEAT_LIST, SHUFFLE_ALL, SHUFFLE_NONE, REWIND_START_TIME
 } from '../constants/misc';
 
 const resetPlayerTimes = state => state
@@ -210,6 +210,16 @@ export function handleAudioEnded(state) {
 }
 
 export function setModeShuffle(state, status) {
+    if (typeof status === 'undefined') {
+        const modes = [SHUFFLE_ALL, SHUFFLE_NONE];
+
+        const currentModeIndex = modes.indexOf(state.getIn(['player', 'shuffle']));
+
+        const nextMode = modes[(currentModeIndex + 1) % modes.length];
+
+        return state.setIn(['player', 'shuffle'], nextMode);
+    }
+
     return state.setIn(['player', 'shuffle'], status);
 }
 
