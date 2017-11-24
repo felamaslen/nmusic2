@@ -4,9 +4,7 @@ import { fromJS } from 'immutable';
 import { expect } from 'chai';
 
 import * as R from '../../../src/reducers/audio-player.reducer';
-import {
-    REPEAT_LIST, REPEAT_TRACK, REPEAT_NONE
-} from '../../../src/constants/misc';
+import * as M from '../../../src/constants/misc';
 
 describe('Audio player reducer', () => {
     it('should be tested further (for queueing bug fixes)');
@@ -16,7 +14,7 @@ describe('Audio player reducer', () => {
             player: {
                 current: null,
                 paused: true,
-                repeat: REPEAT_NONE
+                repeat: M.REPEAT_NONE
             },
             songList: {
                 songs: [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }]
@@ -41,7 +39,7 @@ describe('Audio player reducer', () => {
                 it('should repeat the same track if set to do so', () => {
                     const stateRepeatTrack = stateWithoutQueue
                         .setIn(['player', 'current'], 'foo')
-                        .setIn(['player', 'repeat'], REPEAT_TRACK);
+                        .setIn(['player', 'repeat'], M.REPEAT_TRACK);
 
                     const result = R.changeTrack(stateRepeatTrack, 1);
 
@@ -102,7 +100,7 @@ describe('Audio player reducer', () => {
 
                 it('should repeat from beginning if set to do so', () => {
                     const stateRepeatAll = stateAtEnd
-                        .setIn(['player', 'repeat'], REPEAT_LIST);
+                        .setIn(['player', 'repeat'], M.REPEAT_LIST);
 
                     const result = R.changeTrack(stateRepeatAll, 1);
 
@@ -180,6 +178,14 @@ describe('Audio player reducer', () => {
                     expect(result.getIn(['player', 'current'])).to.equal(null);
                 });
             });
+        });
+    });
+
+    describe('setModeShuffle', () => {
+        it('should set the shuffle mode', () => {
+            expect(R.setModeShuffle(fromJS({ player: { foo: 'bar', shuffle: 'baz' } }), 'foo')
+                .getIn(['player', 'shuffle']))
+                .to.equal('foo');
         });
     });
 });

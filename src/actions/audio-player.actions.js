@@ -4,6 +4,7 @@ import {
     AUDIO_DURATION_SET,
     AUDIO_ENDED,
     AUDIO_PLAY_PAUSED,
+    AUDIO_MODE_SHUFFLE_SET,
     AUDIO_TRACK_CHANGED,
     AUDIO_SEEKED,
     AUDIO_TIME_UPDATED,
@@ -18,6 +19,8 @@ export const audioDurationSet = duration => buildAction(AUDIO_DURATION_SET, dura
 export const audioEnded = () => buildAction(AUDIO_ENDED);
 
 export const audioPlayPaused = () => buildAction(AUDIO_PLAY_PAUSED);
+
+export const audioShuffleSet = status => buildAction(AUDIO_MODE_SHUFFLE_SET, status);
 
 export const audioTrackChanged = req => buildAction(AUDIO_TRACK_CHANGED, req);
 

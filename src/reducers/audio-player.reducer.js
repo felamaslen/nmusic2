@@ -186,6 +186,10 @@ export function handleAudioEnded(state) {
     return changeTrack(state, 1);
 }
 
+export function setModeShuffle(state, status) {
+    return state.setIn(['player', 'shuffle'], status);
+}
+
 function playFirstSong(state) {
     if (state.getIn(['queue', 'songs']).size > 0) {
         return loadAudioFile(state, state.getIn(['queue', 'songs']).first())
