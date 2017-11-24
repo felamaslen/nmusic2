@@ -1,0 +1,8 @@
+.status-bar-outer {
+    display: flex;
+    height: $status-bar-height;
+    background: $color-medium-very-dark;
+    color: $color-very-light;
+    border-top: 1px solid $color-very-dark;
+}
+
