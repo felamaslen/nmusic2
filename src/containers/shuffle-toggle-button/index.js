@@ -12,7 +12,7 @@ export function ShuffleToggleButton({ active, onToggle }) {
     });
 
     return <div className={className}>
-        <button onClick={onToggle}>{'Toggle'}</button>
+        <button className="button" onClick={onToggle}>{'Toggle'}</button>
     </div>;
 }
 

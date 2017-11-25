@@ -1,5 +1,8 @@
 .status-bar-outer {
     display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: hidden;
     height: $status-bar-height;
     background: $color-medium-very-dark;
     color: $color-very-light;
