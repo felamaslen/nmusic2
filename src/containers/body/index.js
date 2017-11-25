@@ -8,6 +8,7 @@ import Filter from '../../components/filter';
 
 import Sidebar from '../sidebar';
 import SongList from '../song-list';
+import StatusBar from '../../components/status-bar';
 
 export function Body({ settingsLoaded }) {
     if (settingsLoaded) {
@@ -17,6 +18,7 @@ export function Body({ settingsLoaded }) {
                 <Meta />
                 <Filter />
                 <SongList />
+                <StatusBar />
             </div>
         </div>;
     }

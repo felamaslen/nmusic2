@@ -1,6 +1,6 @@
 import { fromJS } from 'immutable';
 
-import { REPEAT_NONE } from './constants/misc';
+import { REPEAT_NONE, SHUFFLE_NONE } from './constants/misc';
 
 function getAudioContext() {
     if (typeof AudioContext !== 'undefined') {
@@ -85,7 +85,8 @@ export default fromJS({
         duration: 0,
         bufferedRangesRaw: null,
         bufferedRanges: [],
-        repeat: REPEAT_NONE
+        repeat: REPEAT_NONE,
+        shuffle: SHUFFLE_NONE
     }
 });
 

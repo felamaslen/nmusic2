@@ -1,7 +1,7 @@
 import { List as list, Map as map } from 'immutable';
 
 import {
-    API_PREFIX, REPEAT_TRACK, REPEAT_LIST, REWIND_START_TIME
+    API_PREFIX, REPEAT_TRACK, REPEAT_LIST, SHUFFLE_ALL, SHUFFLE_NONE, REWIND_START_TIME
 } from '../constants/misc';
 
 const resetPlayerTimes = state => state
@@ -58,6 +58,7 @@ export function loadAudioFile(state, song, play = true) {
 
 export const audioStop = state => resetPlayerTimes(state)
     .setIn(['cloud', 'localState', 'currentSong'], null)
+    .setIn(['cloud', 'localState', 'paused'], true)
     .setIn(['player', 'current'], null)
     .setIn(['player', 'currentSong'], null)
     .setIn(['player', 'url'], null)
@@ -79,13 +80,40 @@ function getNextQueue(queue, queueActive) {
     return queue;
 }
 
-function nextTrack(state, currentId, currentListIndex, songs, queue, queueActive) {
-    if (!currentId) {
-        const song = queue.size
-            ? queue.first()
-            : songs.first();
+function nextTrackShuffle(state, songs, currentListIndex) {
+    let nextIndex = null;
+    do {
+        nextIndex = Math.floor(Math.random() * songs.size);
+    } while (nextIndex === currentListIndex);
 
-        return loadAudioFile(state, song);
+    return loadAudioFile(state, songs.get(nextIndex));
+}
+
+function nextTrackFromNone(state, queue, songs) {
+    const song = queue.size
+        ? queue.first()
+        : songs.first();
+
+    return loadAudioFile(state, song);
+}
+
+function nextTrackOnQueue(state, queue, queueActive) {
+    const queueActiveId = queue.getIn([queueActive, 'id']);
+    const newQueue = queue.filterNot(item => item.get('id') === queueActiveId);
+
+    return loadAudioFile(state, newQueue.first())
+        .setIn(['queue', 'songs'], newQueue)
+        .setIn(['queue', 'active'], 0);
+}
+
+function nextTrack(state, currentId, currentListIndex, songs, queue, queueActive) {
+    const shuffle = state.getIn(['player', 'shuffle']) === SHUFFLE_ALL;
+    if (shuffle && !queue.size) {
+        return nextTrackShuffle(state, songs, currentListIndex);
+    }
+
+    if (!currentId) {
+        return nextTrackFromNone(state, queue, songs);
     }
 
     const repeatCurrentTrack = state.getIn(['player', 'repeat']) === REPEAT_TRACK;
@@ -101,12 +129,7 @@ function nextTrack(state, currentId, currentListIndex, songs, queue, queueActive
 
     const continueQueue = queueActive > 0 || (queue.size > queueActive + 1 && queueActive > -1);
     if (continueQueue) {
-        const queueActiveId = queue.getIn([queueActive, 'id']);
-        const newQueue = queue.filterNot(item => item.get('id') === queueActiveId);
-
-        return loadAudioFile(state, newQueue.first())
-            .setIn(['queue', 'songs'], newQueue)
-            .setIn(['queue', 'active'], 0);
+        return nextTrackOnQueue(state, queue, queueActive);
     }
 
     const nextState = state.setIn(['queue', 'songs'], getNextQueue(queue, queueActive));
@@ -184,6 +207,20 @@ export function changeTrack(state, direction) {
 
 export function handleAudioEnded(state) {
     return changeTrack(state, 1);
+}
+
+export function setModeShuffle(state, status) {
+    if (typeof status === 'undefined') {
+        const modes = [SHUFFLE_ALL, SHUFFLE_NONE];
+
+        const currentModeIndex = modes.indexOf(state.getIn(['player', 'shuffle']));
+
+        const nextMode = modes[(currentModeIndex + 1) % modes.length];
+
+        return state.setIn(['player', 'shuffle'], nextMode);
+    }
+
+    return state.setIn(['player', 'shuffle'], status);
 }
 
 function playFirstSong(state) {

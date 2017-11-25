@@ -8,7 +8,7 @@ const Database = require('../../common/db');
 const { routeSongsList } = require('./songs-list');
 const { routeFilterList } = require('./filter-list');
 const { routeSearch } = require('./search');
-const { routePlay } = require('./play');
+const { routePlay, routePlayRandom } = require('./play');
 const { routeArtwork } = require('./artwork');
 
 async function dbMiddleware(req, res, next) {
@@ -28,6 +28,7 @@ function apiRoutes() {
     router.get('/albums/:artist?', routeFilterList('album', 'artist'));
     router.get('/search/:keyword', routeSearch);
 
+    router.get('/play/random', routePlayRandom);
     router.get('/play/:id', routePlay);
 
     router.get('/artwork/:encoded', routeArtwork);

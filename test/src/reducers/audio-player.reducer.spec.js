@@ -4,9 +4,7 @@ import { fromJS } from 'immutable';
 import { expect } from 'chai';
 
 import * as R from '../../../src/reducers/audio-player.reducer';
-import {
-    REPEAT_LIST, REPEAT_TRACK, REPEAT_NONE
-} from '../../../src/constants/misc';
+import * as M from '../../../src/constants/misc';
 
 describe('Audio player reducer', () => {
     it('should be tested further (for queueing bug fixes)');
@@ -16,7 +14,8 @@ describe('Audio player reducer', () => {
             player: {
                 current: null,
                 paused: true,
-                repeat: REPEAT_NONE
+                repeat: M.REPEAT_NONE,
+                shuffle: M.SHUFFLE_NONE
             },
             songList: {
                 songs: [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }]
@@ -29,11 +28,34 @@ describe('Audio player reducer', () => {
 
         describe('Next track', () => {
             describe('while not playing anything', () => {
-                it('should select the first track', () => {
-                    const result = R.changeTrack(stateWithoutQueue, 1);
+                describe('if shuffle mode is set', () => {
+                    it('should select the first item from the queue, if there is one', () => {
+                        const stateWithQueue = stateWithoutQueue
+                            .setIn(['queue', 'songs'], fromJS([{ id: 'q1' }, { id: 'q2' }]))
+                            .setIn(['queue', 'active'], -1)
+                            .setIn(['player', 'shuffle'], M.SHUFFLE_ALL);
 
-                    expect(result.getIn(['player', 'paused'])).to.equal(false);
-                    expect(result.getIn(['player', 'current'])).to.equal('foo');
+                        const result = R.changeTrack(stateWithQueue, 1);
+
+                        expect(result.getIn(['player', 'paused'])).to.equal(false);
+                        expect(result.getIn(['player', 'current'])).to.equal('q1');
+                    });
+
+                    it('should select a track at random from the list, if there is a list', () => {
+                        const result = R.changeTrack(stateWithoutQueue
+                            .setIn(['player', 'shuffle'], M.SHUFFLE_ALL), 1);
+
+                        expect(result.getIn(['player', 'paused'])).to.equal(false);
+                    });
+                });
+
+                describe('otherwise', () => {
+                    it('should select the first track', () => {
+                        const result = R.changeTrack(stateWithoutQueue, 1);
+
+                        expect(result.getIn(['player', 'paused'])).to.equal(false);
+                        expect(result.getIn(['player', 'current'])).to.equal('foo');
+                    });
                 });
             });
 
@@ -41,7 +63,7 @@ describe('Audio player reducer', () => {
                 it('should repeat the same track if set to do so', () => {
                     const stateRepeatTrack = stateWithoutQueue
                         .setIn(['player', 'current'], 'foo')
-                        .setIn(['player', 'repeat'], REPEAT_TRACK);
+                        .setIn(['player', 'repeat'], M.REPEAT_TRACK);
 
                     const result = R.changeTrack(stateRepeatTrack, 1);
 
@@ -102,7 +124,7 @@ describe('Audio player reducer', () => {
 
                 it('should repeat from beginning if set to do so', () => {
                     const stateRepeatAll = stateAtEnd
-                        .setIn(['player', 'repeat'], REPEAT_LIST);
+                        .setIn(['player', 'repeat'], M.REPEAT_LIST);
 
                     const result = R.changeTrack(stateRepeatAll, 1);
 
@@ -180,6 +202,23 @@ describe('Audio player reducer', () => {
                     expect(result.getIn(['player', 'current'])).to.equal(null);
                 });
             });
+        });
+    });
+
+    describe('setModeShuffle', () => {
+        it('should set the shuffle mode', () => {
+            expect(R.setModeShuffle(fromJS({ player: { foo: 'bar', shuffle: 'baz' } }), 'foo')
+                .getIn(['player', 'shuffle']))
+                .to.equal('foo');
+        });
+        it('should toggle the shuffle mode if no status was given', () => {
+            expect(R.setModeShuffle(fromJS({ player: { shuffle: M.SHUFFLE_NONE } }))
+                .getIn(['player', 'shuffle']))
+                .to.equal(M.SHUFFLE_ALL);
+
+            expect(R.setModeShuffle(fromJS({ player: { shuffle: M.SHUFFLE_ALL } }))
+                .getIn(['player', 'shuffle']))
+                .to.equal(M.SHUFFLE_NONE);
         });
     });
 });

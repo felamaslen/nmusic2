@@ -6,38 +6,8 @@ const {
     getContentTypeFromFile, getBufferFromFile
 } = require('../../common/buffer-from-file');
 
-async function routePlay(req, res) {
-    const id = req.params.id;
-
-    if (!id || !id.length) {
-        res
-            .status(400)
-            .json({ error: true, status: 'Invalid ID' });
-
-        return;
-    }
-
-    const _id = new ObjectID(id);
-
-    let row = null;
-    try {
-        row = await req.db
-            .collection(config.collections.music)
-            .find({ _id })
-            .toArray();
-    }
-    catch (err) {
-        res
-            .status(500)
-            .json({ error: true, status: 'Unknown server error' });
-
-        return;
-    }
-    finally {
-        req.db.close();
-    }
-
-    if (!row || row.length !== 1) {
+async function serveSong(row, res) {
+    if (!(row && row.length === 1)) {
         res
             .status(404)
             .json({ error: true, status: 'Not found' });
@@ -63,7 +33,65 @@ async function routePlay(req, res) {
     }
 }
 
-module.exports = {
-    routePlay
-};
+async function routePlay(req, res) {
+    const id = req.params.id;
+    if (!(id && id.length)) {
+        res
+            .status(400)
+            .json({ error: true, status: 'Invalid ID' });
+
+        req.db.close();
+
+        return;
+    }
+
+    const _id = new ObjectID(id);
+
+    try {
+        const row = await req.db
+            .collection(config.collections.music)
+            .find({ _id })
+            .toArray();
+
+        serveSong(row, res);
+    }
+    catch (err) {
+        res
+            .status(500)
+            .json({ error: true, status: 'Unknown server error' });
+    }
+    finally {
+        req.db.close();
+    }
+}
+
+async function routePlayRandom(req, res) {
+    try {
+        const row = await req.db
+            .collection(config.collections.music)
+            .aggregate([{ $sample: { size: 1 } }])
+            .toArray();
+
+        if (row.length === 1) {
+            const { _id, info } = row[0];
+
+            res.json({ id: _id, ...info });
+        }
+        else {
+            res
+                .status(404)
+                .json({ error: true, status: 'No songs' });
+        }
+    }
+    catch (err) {
+        res
+            .status(500)
+            .json({ error: true, status: 'Unknown server error' });
+    }
+    finally {
+        req.db.close();
+    }
+}
+
+module.exports = { routePlay, routePlayRandom };
 
