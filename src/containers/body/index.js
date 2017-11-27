@@ -5,15 +5,17 @@ import PropTypes from 'prop-types';
 
 import Meta from '../../components/meta';
 import Filter from '../../components/filter';
+import StatusBar from '../../components/status-bar';
 
+import EditInfo from '../edit-info';
 import Sidebar from '../sidebar';
 import SongList from '../song-list';
-import StatusBar from '../../components/status-bar';
 
 export function Body({ settingsLoaded }) {
     if (settingsLoaded) {
         return <div className="nmusic-app-outer">
             <Sidebar />
+            <EditInfo />
             <div className="nmusic-body">
                 <Meta />
                 <Filter />

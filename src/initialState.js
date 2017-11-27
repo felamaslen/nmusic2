@@ -63,6 +63,12 @@ export default fromJS({
             { key: 'artist', order: 1 }
         ]
     },
+    editInfo: {
+        hidden: false,
+        loading: false,
+        song: null,
+        newValues: {}
+    },
     audioSource: null,
     audioContext: getAudioContext(),
     queue: {

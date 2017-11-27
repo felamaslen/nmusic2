@@ -9,6 +9,7 @@ import * as songList from './song-list.reducer';
 import * as filter from './filter.reducer';
 import * as audio from './audio-player.reducer';
 import * as search from './search.reducer';
+import * as edit from './edit.reducer';
 
 import initialState from '../initialState';
 
@@ -61,6 +62,10 @@ export default createReducer(initialState, createReducerObject([
     [AC.SEARCH_SELECTED, search.selectSearchItem],
     [AC.SEARCH_RESULTS_RECEIVED, search.handleSearchResults],
     [AC.SEARCH_FOCUS_SET, search.setFocusStatus],
-    [AC.SEARCH_BOX_FOCUSED, search.focusSearchBox]
+    [AC.SEARCH_BOX_FOCUSED, search.focusSearchBox],
+
+    [AC.EDIT_INFO_OPENED, edit.open],
+    [AC.EDIT_INFO_CLOSED, edit.close],
+    [AC.EDIT_INFO_VALUE_CHANGED, edit.changeEditValue]
 ]));
 

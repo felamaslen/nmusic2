@@ -12,8 +12,10 @@ async function routeEdit(req, res) {
     const { error, value: fields } = joi.validate(req.body, schema);
 
     if (error || Object.keys(fields).length === 0) {
-        return res.status(400)
+        res.status(400)
             .json({ error: true, status: 'Bad data input' });
+
+        return;
     }
 
     const _id = new ObjectID(req.params.id);

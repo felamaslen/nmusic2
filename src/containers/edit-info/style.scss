@@ -1,0 +1,76 @@
+.edit-info-outer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    z-index: 200;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    &.hidden {
+        z-index: -1;
+
+        .edit-info {
+            opacity: 0;
+        }
+    }
+
+    .edit-info {
+        position: relative;
+        width: 90%;
+        height: 90%;
+        max-width: 600px;
+        max-height: 500px;
+        background: $color-trans-9;
+        box-shadow: 0 6px 13px $color-shadow-1;
+        border: 1px solid $color-very-light;
+        border-bottom-color: $color-light;
+        border-radius: 2px;
+        opacity: 1;
+        transition: 0.2s opacity ease;
+
+        .inner {
+            display: flex;
+            height: 100%;
+            flex-flow: column;
+            justify-content: space-between;
+        }
+        .info-outer {
+            padding: 1em;
+            flex: 1 0 0;
+        }
+        .buttons {
+            padding: 1em;
+            flex: 0 0 32px;
+            display: flex;
+            justify-content: flex-end;
+
+            .button-cancel, .button-ok {
+                margin: 0 0.3em;
+                outline: none;
+                border: 2px solid $color-slightly-dark;
+                font-weight: bold;
+                color: $color-dark;
+                background: $color-white;
+                border-radius: 3px;
+                cursor: pointer;
+            }
+            .button-cancel:active {
+                background: $color-very-light;
+            }
+            .button-ok {
+                background: $color-selected;
+                border-color: $color-selected;
+                color: $color-white;
+
+                &:active {
+                    background: $color-light-selected-active;
+                    border-color: $color-light-selected-active;
+                }
+            }
+        }
+    }
+}
+

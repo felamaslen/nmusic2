@@ -1,7 +1,7 @@
-import { Map as map } from 'immutable';
 import { connect } from 'react-redux';
 
 import { songListQueueAdded } from '../../../actions/song-list.actions';
+import { editInfoOpened } from '../../../actions/edit-info.actions';
 
 import React from 'react';
 import PureComponent from '../../../ImmutableComponent';
@@ -30,18 +30,24 @@ export class SongListMenu extends PureComponent {
         }
     }
     render() {
-        const { hidden, posX, posY, addToQueue } = this.props;
+        const { hidden, posX, posY, addToQueue, edit } = this.props;
 
         const menuStyle = {
             left: posX,
             top: posY
         };
 
-        const onAddToQueue = evt => {
-            evt.nativeEvent.stopImmediatePropagation();
+        const stopEvent = callback => evt => {
+            if (evt && evt.nativeEvent) {
+                evt.nativeEvent.stopImmediatePropagation();
+            }
 
-            addToQueue();
-        }
+            callback();
+        };
+
+        const onAddToQueue = stopEvent(addToQueue);
+
+        const onEdit = stopEvent(edit);
 
         const className = classNames({
             menu: true,
@@ -52,6 +58,7 @@ export class SongListMenu extends PureComponent {
         return <div className={className} style={menuStyle}>
             <ul className="menu-list">
                 <li className="menu-link" onMouseDown={onAddToQueue}>{'Add to queue'}</li>
+                <li className="menu-link" onMouseDown={onEdit}>{'Edit'}</li>
             </ul>
         </div>;
     }
@@ -59,21 +66,21 @@ export class SongListMenu extends PureComponent {
 
 SongListMenu.propTypes = {
     hidden: PropTypes.bool.isRequired,
-    song: PropTypes.instanceOf(map),
     posX: PropTypes.number,
     posY: PropTypes.number,
-    addToQueue: PropTypes.func.isRequired
+    addToQueue: PropTypes.func.isRequired,
+    edit: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => ({
     hidden: state.getIn(['songList', 'menu', 'hidden']),
-    song: state.getIn(['songList', 'menu', 'song']),
     posX: state.getIn(['songList', 'menu', 'posX']),
     posY: state.getIn(['songList', 'menu', 'posY'])
 });
 
 const mapDispatchToProps = dispatch => ({
-    addToQueue: () => dispatch(songListQueueAdded())
+    addToQueue: () => dispatch(songListQueueAdded()),
+    edit: () => dispatch(editInfoOpened())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(SongListMenu);
