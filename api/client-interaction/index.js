@@ -208,7 +208,7 @@ async function onConnection(req) {
 }
 
 function setupWebSockets(httpServer) {
-    const secure = process.env.WEB_URI.indexOf('https://') === 0;
+    const secure = (process.env.WEB_URI || '').indexOf('https://') === 0;
 
     const wss = new WebSocketServer({
         httpServer,
