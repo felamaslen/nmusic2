@@ -21,8 +21,8 @@
         position: relative;
         width: 90%;
         height: 90%;
-        max-width: 600px;
-        max-height: 500px;
+        max-width: 500px;
+        max-height: 400px;
         background: $color-trans-9;
         box-shadow: 0 6px 13px $color-shadow-1;
         border: 1px solid $color-very-light;
@@ -38,8 +38,51 @@
             justify-content: space-between;
         }
         .info-outer {
+            display: flex;
             padding: 1em;
             flex: 1 0 0;
+
+            .artwork-outer {
+                display: flex;
+                flex: 0 0 auto;
+                align-items: center;
+            }
+            .info {
+                display: flex;
+                flex: 1 0 0;
+                flex-flow: column;
+            }
+
+            .field-outer {
+                $margin: 3px;
+
+                display: flex;
+                margin: $margin 0;
+                padding: 0 1em;
+                align-items: center;
+                padding-bottom: $margin * 2;
+
+                .field-label {
+                    padding-right: 1em;
+                    flex: 1 0 0;
+                    text-align: right;
+                    font-weight: bold;
+                    &::after {
+                        content: ':';
+                    }
+                }
+                .field-input-outer {
+                    flex: 3 0 0;
+
+                    input {
+                        width: 100%;
+                        line-height: 32px;
+                        padding: 0 0.3em;
+                        border: 1px solid $color-very-light;
+                        border-radius: 2px;
+                    }
+                }
+            }
         }
         .buttons {
             padding: 1em;
