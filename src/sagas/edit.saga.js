@@ -18,10 +18,26 @@ export function *updateSongInfo({ payload }) {
 
     const { id, ...fields } = yield select(selectEditValues);
 
-    const { artist, album, title } = fields;
+    const fieldTypes = {
+        track: 'number',
+        artist: 'string',
+        album: 'string',
+        title: 'string'
+    };
+
+    const data = Object.keys(fieldTypes)
+        .reduce((next, key) => {
+            const type = fieldTypes[key];
+
+            if (type === 'number') {
+                return { ...next, [key]: Number(fields[key]) };
+            }
+
+            return { ...next, [key]: String(fields[key]) };
+        }, {});
 
     try {
-        const response = yield call(axios.patch, `${API_PREFIX}/edit/${id}`, { artist, album, title });
+        const response = yield call(axios.patch, `${API_PREFIX}/edit/${id}`, data);
 
         yield put(editInfoValuesUpdated(response));
     }

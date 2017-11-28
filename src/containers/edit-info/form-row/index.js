@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-export default function EditInfoFormRow({ label, field, values, onChange }) {
+export default function EditInfoFormRow({ label, field, values, onChange, ...inputProps }) {
     const className = classNames({
         'field-outer': true,
         [`field-${field}`]: true
@@ -13,7 +13,7 @@ export default function EditInfoFormRow({ label, field, values, onChange }) {
         <div className="field-label">{label}</div>
         <div className="field-input-outer">
             <input className="field-input" value={values.get(field)}
-                onChange={onChange(field)} />
+                onChange={onChange(field)} {...inputProps} />
         </div>
     </div>;
 }

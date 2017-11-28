@@ -1,4 +1,6 @@
 import { Map as map } from 'immutable';
+import { trackNo } from '../helpers';
+import { getOrderedSongList } from './song-list.reducer';
 
 export function open(state) {
     const id = state.getIn(['songList', 'lastClickedId']);
@@ -45,17 +47,20 @@ export function receiveUpdatedEditValues(state, { data }) {
         return nextState;
     }
 
-    const updated = state.getIn(['editInfo', 'newValues']);
+    const updated = state
+        .getIn(['editInfo', 'newValues'])
+        .set('trackNo', trackNo(state.getIn(['editInfo', 'newValues', 'track'])));
+
+    const newSongs = state.getIn(['songList', 'songs'])
+        .map(song => {
+            if (song.get('id') === updated.get('id')) {
+                return song.mergeDeep(updated);
+            }
+
+            return song;
+        });
 
     return nextState
-        .setIn(['songList', 'songs'], state.getIn(['songList', 'songs'])
-            .map(song => {
-                if (song.get('id') === updated.get('id')) {
-                    return song.mergeDeep(updated);
-                }
-
-                return song;
-            })
-        );
+        .setIn(['songList', 'songs'], getOrderedSongList(nextState, newSongs));
 }
 

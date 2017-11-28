@@ -43,5 +43,16 @@ describe('<EditInfoFormRow />', () => {
 
         expect(changeValue).to.have.property('title', 'bar');
     });
+
+    it('should render a number input', () => {
+        const propsNumber = { ...props, type: 'number', step: 1 };
+
+        const wrapper = shallow(<EditInfoFormRow {...propsNumber} />);
+
+        const input = wrapper.childAt(1).childAt(0);
+
+        expect(input.props()).to.have.property('type', 'number');
+        expect(input.props()).to.have.property('step', 1);
+    });
 });
 

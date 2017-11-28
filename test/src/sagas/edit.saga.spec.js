@@ -15,6 +15,7 @@ describe('Edit saga', () => {
                         id: '19123'
                     },
                     newValues: {
+                        track: 10,
                         title: 'foo',
                         artist: 'bar',
                         album: 'baz'
@@ -22,6 +23,7 @@ describe('Edit saga', () => {
                 }
             }))).to.deep.equal({
                 id: '19123',
+                track: 10,
                 title: 'foo',
                 artist: 'bar',
                 album: 'baz'
@@ -40,8 +42,8 @@ describe('Edit saga', () => {
             testSaga(saga.updateSongInfo, { payload: { cancel: false } })
                 .next()
                 .select(saga.selectEditValues)
-                .next({ id: '19123', title: 'foo', artist: 'bar', album: 'baz' })
-                .call(axios.patch, 'api/v1/edit/19123', { title: 'foo', artist: 'bar', album: 'baz' })
+                .next({ id: '19123', track: 10, title: 'foo', artist: 'bar', album: 'baz' })
+                .call(axios.patch, 'api/v1/edit/19123', { track: 10, title: 'foo', artist: 'bar', album: 'baz' })
                 .next({ data: { success: true } })
                 .put(actions.editInfoValuesUpdated({ data: { success: true } }))
                 .next()
@@ -52,8 +54,8 @@ describe('Edit saga', () => {
             testSaga(saga.updateSongInfo, { payload: { cancel: false } })
                 .next()
                 .select(saga.selectEditValues)
-                .next({ id: '19123', title: 'foo', artist: 'bar', album: 'baz' })
-                .call(axios.patch, 'api/v1/edit/19123', { title: 'foo', artist: 'bar', album: 'baz' })
+                .next({ id: '19123', track: 10, title: 'foo', artist: 'bar', album: 'baz' })
+                .call(axios.patch, 'api/v1/edit/19123', { track: 10, title: 'foo', artist: 'bar', album: 'baz' })
                 .throw(new Error('some error occurred'))
                 .put(actions.editInfoClosed(true))
                 .next()

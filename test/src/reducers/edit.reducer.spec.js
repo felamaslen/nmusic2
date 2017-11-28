@@ -103,7 +103,8 @@ describe('Edit reducer', () => {
                 songs: [
                     { id: 'foo', field1: 'f1', field2: 'f2' },
                     { id: 'bar', field1: 'g1', field2: 'g2' }
-                ]
+                ],
+                orderKeys: []
             }
         };
 
@@ -133,9 +134,10 @@ describe('Edit reducer', () => {
                         },
                         songList: {
                             songs: [
-                                { id: 'foo', field1: 'f1', field2: 'f2new' },
+                                { id: 'foo', field1: 'f1', field2: 'f2new', trackNo: '' },
                                 { id: 'bar', field1: 'g1', field2: 'g2' }
-                            ]
+                            ],
+                            orderKeys: []
                         }
                     });
             });

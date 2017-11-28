@@ -11,7 +11,7 @@ import classNames from 'classnames';
 
 import EditInfoFormRow from './form-row';
 
-export function EditInfo({ newValues, active, hidden, onClose, onChange }) {
+export function EditInfo({ newValues, active, hidden, onClose, onChange, onChangeNumber }) {
     if (!active) {
         return null;
     }
@@ -28,6 +28,8 @@ export function EditInfo({ newValues, active, hidden, onClose, onChange }) {
                     <div className="artwork-outer">
                     </div>
                     <div className="info">
+                        <EditInfoFormRow label="Track" field="track" type="number"
+                            values={newValues} onChange={onChangeNumber} />
                         <EditInfoFormRow label="Title" field="title" values={newValues} onChange={onChange} />
                         <EditInfoFormRow label="Artist" field="artist" values={newValues} onChange={onChange} />
                         <EditInfoFormRow label="Album" field="album" values={newValues} onChange={onChange} />
@@ -48,7 +50,8 @@ EditInfo.propTypes = {
     hidden: PropTypes.bool.isRequired,
     newValues: PropTypes.instanceOf(map),
     onClose: PropTypes.func.isRequired,
-    onChange: PropTypes.func.isRequired
+    onChange: PropTypes.func.isRequired,
+    onChangeNumber: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -60,7 +63,8 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
     onClose: cancel => dispatch(editInfoClosed(cancel)),
-    onChange: key => evt => dispatch(editInfoValueChanged(key, evt.target.value))
+    onChange: key => evt => dispatch(editInfoValueChanged(key, evt.target.value)),
+    onChangeNumber: key => evt => dispatch(editInfoValueChanged(key, Number(evt.target.value)))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditInfo);

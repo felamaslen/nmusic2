@@ -57,7 +57,7 @@ describe('Song list reducer', () => {
                 map({ key1: 'zef', key2: 'rak' })
             ]);
 
-            const resultSimple = R.getOrderedSongList(testSongs, list([
+            const resultSimple = R.getOrderedSongList(null, testSongs, list([
                 map({ key: 'key1', order: 1 })
             ]));
 
@@ -68,7 +68,7 @@ describe('Song list reducer', () => {
                 { key1: 'zef', key2: 'rak' }
             ]);
 
-            const resultTwo = R.getOrderedSongList(testSongs, list([
+            const resultTwo = R.getOrderedSongList(null, testSongs, list([
                 map({ key: 'key2', order: 1 }),
                 map({ key: 'key1', order: 1 })
             ]));
@@ -80,7 +80,7 @@ describe('Song list reducer', () => {
                 { key1: 'zef', key2: 'rak' }
             ]);
 
-            const resultReverse = R.getOrderedSongList(testSongs, list([
+            const resultReverse = R.getOrderedSongList(null, testSongs, list([
                 map({ key: 'key1', order: -1 }),
                 map({ key: 'key2', order: 1 })
             ]));

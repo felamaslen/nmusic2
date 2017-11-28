@@ -45,7 +45,7 @@ describe('<EditInfo />', () => {
         expect(infoOuter.children()).to.have.length(2);
         expect(infoOuter.childAt(0).is('div.artwork-outer')).to.equal(true);
         expect(infoOuter.childAt(1).is('div.info')).to.equal(true);
-        expect(infoOuter.childAt(1).children()).to.have.length(3);
+        expect(infoOuter.childAt(1).children()).to.have.length(4);
 
         expect(buttons.is('div.buttons')).to.equal(true);
         expect(buttons.children()).to.have.length(2);
@@ -71,10 +71,11 @@ describe('<EditInfo />', () => {
         let key = 0;
 
         it.each([
+            { label: 'Track', field: 'track', type: 'number' },
             { label: 'Title', field: 'title' },
             { label: 'Artist', field: 'artist' },
             { label: 'Album', field: 'album' }
-        ], 'should be rendered', ({ label, field }) => {
+        ], 'should be rendered', ({ label, field, type }) => {
 
             expect(info.childAt(key).is(EditInfoFormRow)).to.equal(true);
 
@@ -82,6 +83,10 @@ describe('<EditInfo />', () => {
 
             expect(props).to.have.property('label', label);
             expect(props).to.have.property('field', field);
+
+            if (type) {
+                expect(props).to.have.property('type', type);
+            }
 
             key++;
         });
