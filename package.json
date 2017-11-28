@@ -14,7 +14,8 @@
     "test:api": "NODE_ENV=test ./node_modules/.bin/mocha \"test/api/**/*.spec.js\"",
     "test:scripts": "NODE_ENV=test ./node_modules/.bin/mocha \"test/scripts/**/*.spec.js\"",
     "test:client": "NODE_ENV=test ./node_modules/.bin/mocha --require babel-core/register \"test/src/**/*.spec.js\"",
-    "test": "NODE_ENV=test ./node_modules/.bin/mocha --require babel-core/register \"test/**/*.spec.js\""
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha --require babel-core/register \"test/**/*.spec.js\"",
+    "lint": "NODE_ENV=test ./node_modules/.bin/eslint api src test webpack webpack.config.js"
   },
   "repository": {
     "type": "git",
