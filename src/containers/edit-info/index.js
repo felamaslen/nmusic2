@@ -9,6 +9,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
+import EditInfoFormRow from './form-row';
+
 export function EditInfo({ newValues, active, hidden, onClose, onChange }) {
     if (!active) {
         return null;
@@ -26,13 +28,9 @@ export function EditInfo({ newValues, active, hidden, onClose, onChange }) {
                     <div className="artwork-outer">
                     </div>
                     <div className="info">
-                        <div className="field-outer">
-                            <div className="field-label">{'Title'}</div>
-                            <div className="field-input-outer">
-                                <input className="field-input" value={newValues.get('title')}
-                                    onChange={onChange('title')} />
-                            </div>
-                        </div>
+                        <EditInfoFormRow label="Title" field="title" values={newValues} onChange={onChange} />
+                        <EditInfoFormRow label="Artist" field="artist" values={newValues} onChange={onChange} />
+                        <EditInfoFormRow label="Album" field="album" values={newValues} onChange={onChange} />
                     </div>
                 </div>
                 <div className="buttons">
