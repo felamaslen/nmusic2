@@ -29,7 +29,9 @@ async function serveSong(row, res) {
     }
 }
 
-export async function routePlay(req, res, next) {
+export function *routePlay(req, res, next) {
+    req.dbInit = true;
+
     const id = req.params.id;
     if (!(id && id.length)) {
         res
@@ -53,7 +55,7 @@ export async function routePlay(req, res, next) {
     }
 
     try {
-        const row = await req.db
+        const row = yield req.db
             .collection(config.collections.music)
             .find({ _id })
             .toArray();
@@ -69,9 +71,11 @@ export async function routePlay(req, res, next) {
     return next();
 }
 
-export async function routePlayRandom(req, res, next) {
+export function *routePlayRandom(req, res, next) {
+    req.dbInit = true;
+
     try {
-        const row = await req.db
+        const row = yield req.db
             .collection(config.collections.music)
             .aggregate([{ $sample: { size: 1 } }])
             .toArray();

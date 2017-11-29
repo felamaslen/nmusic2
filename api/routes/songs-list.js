@@ -2,7 +2,9 @@ import config from '../../common/config';
 
 import { getInfoFilterQuery } from '../helpers';
 
-export default async function routeSongsList(req, res, next) {
+export default function *routeSongsList(req, res, next) {
+    req.dbInit = true;
+
     const query = ['artist', 'album'].reduce((filter, item) => {
         if (req.query[item]) {
             if (!filter.$and) {
@@ -16,7 +18,7 @@ export default async function routeSongsList(req, res, next) {
     }, {});
 
     try {
-        const results = await req.db
+        const results = yield req.db
             .collection(config.collections.music)
             .find(query)
             .toArray();

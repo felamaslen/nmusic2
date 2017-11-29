@@ -225,7 +225,9 @@ async function serveArtworkFile(res, file) {
         .send(buffer);
 }
 
-export default async function routeArtwork(req, res, next) {
+export default function *routeArtwork(req, res, next) {
+    req.dbInit = true;
+
     const encoded = req.params.encoded;
 
     let decoded = null;
@@ -241,7 +243,7 @@ export default async function routeArtwork(req, res, next) {
     const { artist, album } = decoded;
 
     try {
-        const existsInDatabaseResult = await req.db
+        const existsInDatabaseResult = yield req.db
             .collection(config.collections.music)
             .find({
                 'info.artist': artist,
@@ -264,15 +266,15 @@ export default async function routeArtwork(req, res, next) {
     }
 
     try {
-        const { file } = await getAlbumArtwork(req.db, res, artist, album);
+        const { file } = yield getAlbumArtwork(req.db, res, artist, album);
 
         if (file) {
             try {
-                await serveArtworkFile(res, file);
+                yield serveArtworkFile(res, file);
             }
             catch (fileErr) {
                 // the file was deleted, we should delete it in the database too
-                await req.db
+                yield req.db
                     .collection(config.collections.artwork)
                     .deleteOne({ artist, album });
 

@@ -99,13 +99,15 @@ async function getSortedSongs(db, keyword) {
         .map(row => ({ id: row._id, ...row.info }));
 }
 
-export default async function routeSearch(req, res, next) {
+export default function *routeSearch(req, res, next) {
+    req.dbInit = true;
+
     const keyword = req.params.keyword;
 
     try {
-        const artists = await getSortedArtists(req.db, keyword);
-        const albums = await getSortedAlbums(req.db, keyword);
-        const titles = await getSortedSongs(req.db, keyword);
+        const artists = yield getSortedArtists(req.db, keyword);
+        const albums = yield getSortedAlbums(req.db, keyword);
+        const titles = yield getSortedSongs(req.db, keyword);
 
         res.json({ artists, albums, titles });
     }

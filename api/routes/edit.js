@@ -1,7 +1,9 @@
 import joi from 'joi';
 import { ObjectID } from 'mongodb';
 
-export default async function routeEdit(req, res, next) {
+export default function *routeEdit(req, res, next) {
+    req.dbInit = true;
+
     const schema = joi.object().keys({
         track: joi.number(),
         title: joi.string(),
@@ -24,7 +26,7 @@ export default async function routeEdit(req, res, next) {
         .reduce((fieldsObj, key) => ({ ...fieldsObj, [`info.${key}`]: fields[key] }), {});
 
     try {
-        await req.db.collection('music')
+        yield req.db.collection('music')
             .updateOne({ _id }, { $set: fieldsDeep });
 
         res.json({ success: true });

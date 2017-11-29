@@ -4,6 +4,7 @@ import sendSeekable from 'send-seekable';
 
 import config from '../../common/config';
 import Database from '../../common/db';
+import { generatorToPromise as asyncGen } from '../helpers/effects';
 
 import routeSongsList from './songs-list';
 import routeFilterList from './filter-list';
@@ -23,20 +24,24 @@ function apiRoutes() {
 
     router.use(dbMiddleware);
 
-    router.get('/songs', routeSongsList);
-    router.get('/artists', routeFilterList('artist'));
-    router.get('/albums/:artist?', routeFilterList('album', 'artist'));
-    router.get('/search/:keyword', routeSearch);
+    router.get('/songs', asyncGen(routeSongsList));
+    router.get('/artists', asyncGen(routeFilterList('artist')));
+    router.get('/albums/:artist?', asyncGen(routeFilterList('album', 'artist')));
+    router.get('/search/:keyword', asyncGen(routeSearch));
 
-    router.get('/play/random', routePlayRandom);
-    router.get('/play/:id', sendSeekable, routePlay);
+    router.get('/play/random', asyncGen(routePlayRandom));
+    router.get('/play/:id', sendSeekable, asyncGen(routePlay));
 
-    router.get('/artwork/:encoded', routeArtwork);
+    router.get('/artwork/:encoded', asyncGen(routeArtwork));
 
-    router.patch('/edit/:id', routeEdit);
+    router.patch('/edit/:id', asyncGen(routeEdit));
 
-    router.use(req => {
-        req.db.close();
+    router.use((req, res, next) => {
+        if (req.dbInit) {
+            return req.db.close();
+        }
+
+        return next();
     });
 
     return router;
