@@ -1,3 +1,11 @@
+- Release 0.0.9:
+    - Shuffle mode
+    - Basic single-song editing
+    - Development environment improvements (unified express server)
+
+- Release 0.0.8:
+    - Bug fixes
+
 - Release 0.0.7:
     - Major layout fixes on Firefox
     - Load artist in filter from search results
