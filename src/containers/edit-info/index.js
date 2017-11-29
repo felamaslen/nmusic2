@@ -26,9 +26,7 @@ export function EditInfo({ newValues, active, hidden, artworkSrc, onClose, onCha
         <div className="edit-info">
             <div className="inner">
                 <div className="info-outer">
-                    <div className="artwork-outer">
-                        <Artwork src={artworkSrc} />
-                    </div>
+                    <Artwork src={artworkSrc} />
                     <div className="info">
                         <EditInfoFormRow label="Track" field="track" type="number"
                             values={newValues} onChange={onChangeNumber} />

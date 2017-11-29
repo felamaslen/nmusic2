@@ -9,6 +9,7 @@
         display: flex;
         align-items: flex-end;
         justify-content: center;
+        position: relative;
     
         &.loading {
             height: 100%;
