@@ -115,3 +115,11 @@ export function orderListItems(items, index, delta) {
         .splice(newIndex, 0, items.get(index));
 }
 
+export const trackNo = track => {
+    if (track > 0) {
+        return track.toString();
+    }
+
+    return '';
+}
+

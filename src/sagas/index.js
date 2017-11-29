@@ -6,6 +6,8 @@ import * as app from './app.saga';
 import * as filter from './filter.saga';
 import * as songList from './song-list.saga';
 import * as search from './search.saga';
+import * as audio from './audio.saga';
+import * as edit from './edit.saga';
 
 export function *watchSettings() {
     yield takeEvery(actions.SETTINGS_LOADED, app.loadSettings);
@@ -30,6 +32,14 @@ export function *watchSearchSelected() {
     yield takeEvery(actions.SEARCH_SELECTED, search.selectSearchItem);
 }
 
+export function *watchAudioPlayed() {
+    yield takeEvery(actions.AUDIO_PLAY_PAUSED, audio.playRandomSong);
+}
+
+export function *watchEdit() {
+    yield takeEvery(actions.EDIT_INFO_CLOSED, edit.updateSongInfo);
+}
+
 export default function *rootSaga() {
     yield fork(watchSettings);
 
@@ -38,5 +48,9 @@ export default function *rootSaga() {
 
     yield fork(watchSearchChanged);
     yield fork(watchSearchSelected);
+
+    yield fork(watchAudioPlayed);
+
+    yield fork(watchEdit);
 }
 

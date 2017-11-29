@@ -71,9 +71,12 @@ function downloadArtwork(url, artist, album) {
                 });
             })
             .on('error', fileErr => {
-                fs.unlink(dest);
-
-                reject(fileErr);
+                try {
+                    fs.unlink(dest);
+                }
+                finally {
+                    reject(fileErr);
+                }
             });
     });
 }

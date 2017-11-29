@@ -1,7 +1,11 @@
+/* eslint-disable global-require */
+
 const path = require('path');
 const http = require('http');
 const express = require('express');
 const requestLogger = require('morgan');
+const webpack = require('webpack');
+const webpackConfig = require('../webpack.config');
 
 const logger = require('../common/logger');
 const setupApi = require('./routes');
@@ -19,7 +23,31 @@ function setupClient(app) {
             }
         }
     }));
-    app.use(express.static(path.join(__dirname, '../build')));
+
+    if (process.env.NODE_ENV === 'development') {
+        const conf = webpackConfig();
+
+        const compiler = webpack(conf);
+
+        app.use(require('webpack-dev-middleware')(compiler, {
+            publicPath: conf.output.publicPath,
+            stats: {
+                colors: true,
+                modules: false,
+                chunks: false,
+                reasons: false
+            },
+            hot: true,
+            quiet: false,
+            noInfo: false
+        }));
+
+        app.use(require('webpack-hot-middleware')(compiler, {
+            log: console.log
+        }));
+    }
+
+    app.use(express.static(path.join(__dirname, '../static')));
 }
 
 function init() {

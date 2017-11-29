@@ -1,0 +1,19 @@
+.shuffle-toggle-button {
+    @include retina-sprite($shuffle-inactive-group);
+
+    &.active {
+        @include retina-sprite($shuffle-active-group);
+    }
+    
+    .button {
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+        outline: none;
+        background: none;
+        position: relative;
+        text-indent: -9999px;
+    }
+}
+

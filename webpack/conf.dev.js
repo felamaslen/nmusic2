@@ -1,20 +1,25 @@
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
+const sassLoader = require('./sass-loader');
 
 const webpackConfig = require('./conf.common');
-const moduleConfigDev = require('./module.dev');
 
-module.exports = (...args) => ({
+module.exports = () => ({
     ...webpackConfig,
     devtool: 'cheap-module-eval-source-map',
     entry: [
-        `webpack-dev-server/client?http://0.0.0.0:${process.env.PORT_WDS}`,
         'webpack/hot/only-dev-server',
+        'webpack-hot-middleware/client',
         'react-hot-loader/patch',
         ...webpackConfig.entry
     ],
+    output: {
+        path: '/',
+        publicPath: '/',
+        filename: 'js/bundle.js'
+    },
     plugins: [
-        ...webpackConfig.plugins(...args),
+        ...webpackConfig.plugins,
         new webpack.DefinePlugin({
             'process.env': {
                 NODE_ENV: JSON.stringify('development')
@@ -24,27 +29,27 @@ module.exports = (...args) => ({
         new webpack.NamedModulesPlugin(),
         new Dotenv({ path: '.env' })
     ],
-    module: moduleConfigDev,
-    devServer: {
-        stats: {
-            colors: true,
-            modules: false,
-            chunks: false,
-            reasons: true
-        },
-        hot: true,
-        quiet: false,
-        noInfo: false,
-        publicPath: '/',
-        port: process.env.PORT_WDS,
-        proxy: {
-            '/': {
-                target: `http://localhost:${process.env.PORT}`,
-                secure: false
+    module: {
+        ...webpackConfig.module,
+        loaders: [
+            ...webpackConfig.module.loaders,
+            {
+                test: /\.js$/,
+                enforce: 'pre',
+                exclude: /node_modules/,
+                loaders: `strip-loader?${JSON.stringify({ env: ['PROD'] })}`
+            },
+            {
+                test: /\.scss$/,
+                exclude: [/fonts\.scss$/, /node_modules/],
+                loaders: sassLoader()
+            },
+            {
+                test: /fonts\.scss$/,
+                exclude: /node_modules/,
+                loaders: 'style-loader!css-loader!sass-loader'
             }
-        },
-        host: '0.0.0.0',
-        public: process.env.PUBLIC_WDS || ''
+        ]
     }
 });
 

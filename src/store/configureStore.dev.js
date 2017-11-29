@@ -34,11 +34,24 @@ const newStore = initialState => {
         })
     );
 
-    sagaMiddleware.run(rootSaga);
+    let sagaTask = sagaMiddleware.run(function *getSagas() {
+        yield rootSaga();
+    });
 
     if (module.hot) {
         module.hot.accept('../reducers', () => {
             store.replaceReducer(require('../reducers').default);
+        });
+
+        module.hot.accept('../sagas', () => {
+            const getNewSagas = require('../sagas').default;
+
+            sagaTask.cancel();
+            sagaTask.done.then(() => {
+                sagaTask = sagaMiddleware.run(function *replacedSaga() {
+                    yield getNewSagas();
+                });
+            });
         });
     }
 

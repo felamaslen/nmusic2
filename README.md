@@ -17,7 +17,7 @@ Node-based music player and organiser
     - MongoDB
 
 - Set environment variables
-    - These are in `.env.example`, which you should copy to `.env` and edit with the appropriate values (see below).
+    - On development, these are in `.env.example`, which you should copy to `.env` and edit with the appropriate values (see below).
 
 Run `npm install` to install Node dependencies
     - This will also build the web app into `build`
@@ -32,9 +32,7 @@ Run `npm install` to install Node dependencies
 
 ### Development
 
-- Run `npm run dev:wds` to run a development web app
-
-- Run `npm run dev:api` to run a development backend server
+- Run `npm run dev` to run a development server
 
 ## Environment variables:
 
