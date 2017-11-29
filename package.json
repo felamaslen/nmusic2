@@ -9,7 +9,7 @@
   "scripts": {
     "postinstall": "NODE_ENV=production ./node_modules/.bin/webpack",
     "start": "NODE_ENV=production node ./api/index.js",
-    "dev": "NODE_ENV=development ./node_modules/.bin/nodemon -w ./api ./api/index.js",
+    "dev": "NODE_ENV=development BABEL_ENV=api CLIENT_BABEL_ENV=development ./node_modules/.bin/nodemon --exec ./node_modules/.bin/babel-node -w ./api ./api/index.js",
     "scan_music": "NODE_ENV=production node ./scripts/scan-music.js",
     "test:api": "NODE_ENV=test ./node_modules/.bin/mocha \"test/api/**/*.spec.js\"",
     "test:scripts": "NODE_ENV=test ./node_modules/.bin/mocha \"test/scripts/**/*.spec.js\"",
@@ -46,6 +46,10 @@
           "stage-0"
         ]
       },
+      "api": {
+        "plugins": ["transform-es2015-modules-commonjs"],
+        "presets": ["stage-2"]
+      },
       "development": {
         "presets": [
           "react",
@@ -70,6 +74,7 @@
     }
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "chai": "^4.1.2",
     "enzyme": "^3.1.0",
     "enzyme-adapter-react-16": "^1.0.1",
@@ -106,8 +111,8 @@
     "dotenv-webpack": "^1.5.4",
     "ejs": "^2.5.7",
     "eslint": "^4.8.0",
-    "eslint-plugin-react": "^7.4.0",
     "eslint-loader": "^1.9.0",
+    "eslint-plugin-react": "^7.4.0",
     "express": "^4.16.1",
     "extract-text-webpack-plugin": "^3.0.1",
     "file-loader": "^1.1.5",

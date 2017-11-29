@@ -1,16 +1,16 @@
-const { Router } = require('express');
-const bodyParser = require('body-parser');
-const sendSeekable = require('send-seekable');
+import { Router } from 'express';
+import bodyParser from 'body-parser';
+import sendSeekable from 'send-seekable';
 
-const config = require('../../common/config');
-const Database = require('../../common/db');
+import config from '../../common/config';
+import Database from '../../common/db';
 
-const { routeSongsList } = require('./songs-list');
-const { routeFilterList } = require('./filter-list');
-const { routeSearch } = require('./search');
-const { routePlay, routePlayRandom } = require('./play');
-const { routeArtwork } = require('./artwork');
-const { routeEdit } = require('./edit');
+import routeSongsList from './songs-list';
+import routeFilterList from './filter-list';
+import routeSearch from './search';
+import { routePlay, routePlayRandom } from './play';
+import routeArtwork from './artwork';
+import routeEdit from './edit';
 
 async function dbMiddleware(req, res, next) {
     req.db = await Database.dbConnect(config.dbUri);
@@ -42,11 +42,9 @@ function apiRoutes() {
     return router;
 }
 
-function setup(app) {
+export default function setup(app) {
     app.use(bodyParser.json());
 
     app.use(`/api/v${config.apiVersion}`, apiRoutes());
 }
-
-module.exports = setup;
 

@@ -1,14 +1,14 @@
-const path = require('path');
-const fs = require('fs');
-const request = require('request');
-const DiscogsClient = require('disconnect').Client;
+import path from 'path';
+import fs from 'fs';
+import request from 'request';
+import { Client as DiscogsClient } from 'disconnect';
 
-const config = require('../../common/config');
+import config from '../../common/config';
 
 const ARTWORK_PATH = path.join(__dirname, '../../.artwork');
 const ARTWORK_UNKNOWN_FILE = `${ARTWORK_PATH}/unknown-artwork.png`;
 
-const { getContentTypeFromFile, getBufferFromFile } = require('../../common/buffer-from-file');
+import { getContentTypeFromFile, getBufferFromFile } from '../../common/buffer-from-file';
 
 function encodeArtistAlbum(artist, album) {
     return Buffer.from(`${artist}/${album}`).toString('base64');
@@ -225,7 +225,7 @@ async function serveArtworkFile(res, file) {
         .send(buffer);
 }
 
-async function routeArtwork(req, res, next) {
+export default async function routeArtwork(req, res, next) {
     const encoded = req.params.encoded;
 
     let decoded = null;
@@ -288,8 +288,4 @@ async function routeArtwork(req, res, next) {
 
     return next();
 }
-
-module.exports = {
-    routeArtwork
-};
 

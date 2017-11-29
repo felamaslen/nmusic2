@@ -34,7 +34,12 @@ module.exports = {
             {
                 test: /\.js$/,
                 exclude: /node_modules/,
-                loaders: 'babel-loader'
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        forceEnv: process.env.CLIENT_BABEL_ENV
+                    }
+                }
             },
             {
                 test: /favicon\.png/,

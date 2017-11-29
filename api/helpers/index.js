@@ -4,7 +4,7 @@ function getSortString(item) {
         .toLowerCase();
 }
 
-function sortCaseInsensitiveIgnorePrefix(prev, next) {
+export function sortCaseInsensitiveIgnorePrefix(prev, next) {
     const prevSortString = getSortString(prev);
     const nextSortString = getSortString(next);
 
@@ -19,16 +19,11 @@ function sortCaseInsensitiveIgnorePrefix(prev, next) {
     return 0;
 }
 
-function getInfoFilterQuery(itemString, key) {
+export function getInfoFilterQuery(itemString, key) {
     const filter = itemString
         .split(',')
         .map(item => ({ [`info.${key}`]: decodeURIComponent(item) }));
 
     return { $or: filter };
 }
-
-module.exports = {
-    sortCaseInsensitiveIgnorePrefix,
-    getInfoFilterQuery
-};
 

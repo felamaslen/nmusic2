@@ -1,8 +1,8 @@
-const config = require('../../common/config');
+import config from '../../common/config';
 
-const { getInfoFilterQuery, sortCaseInsensitiveIgnorePrefix } = require('../helpers');
+import { getInfoFilterQuery, sortCaseInsensitiveIgnorePrefix } from '../helpers';
 
-function routeFilterList(key, subKey = null) {
+export default function routeFilterList(key, subKey = null) {
     return async (req, res, next) => {
         let query = {};
         if (subKey && req.params[subKey]) {
@@ -29,8 +29,4 @@ function routeFilterList(key, subKey = null) {
         return next();
     };
 }
-
-module.exports = {
-    routeFilterList
-};
 

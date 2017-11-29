@@ -1,9 +1,10 @@
-const WebSocketServer = require('websocket').server;
-const ShortUniqueId = require('short-unique-id');
+import { server as WebSocketServer } from 'websocket';
+import ShortUniqueId from 'short-unique-id';
+import winston from 'winston';
+import dns from 'dns';
+import joi from 'joi';
+
 const uid = new ShortUniqueId();
-const winston = require('winston');
-const dns = require('dns');
-const joi = require('joi');
 
 if (process.env.NODE_ENV === 'production') {
     winston.remove(winston.transports.Console);
@@ -219,11 +220,7 @@ function setupWebSockets(httpServer) {
     wss.on('request', onConnection);
 }
 
-function init(app) {
+export default function init(app) {
     setupWebSockets(app);
 }
-
-module.exports = {
-    init
-};
 

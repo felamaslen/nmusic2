@@ -1,7 +1,7 @@
-const joi = require('joi');
-const { ObjectID } = require('mongodb');
+import joi from 'joi';
+import { ObjectID } from 'mongodb';
 
-async function routeEdit(req, res, next) {
+export default async function routeEdit(req, res, next) {
     const schema = joi.object().keys({
         track: joi.number(),
         title: joi.string(),
@@ -36,8 +36,4 @@ async function routeEdit(req, res, next) {
 
     return next();
 }
-
-module.exports = {
-    routeEdit
-};
 

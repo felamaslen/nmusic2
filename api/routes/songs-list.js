@@ -1,8 +1,8 @@
-const config = require('../../common/config');
+import config from '../../common/config';
 
-const { getInfoFilterQuery } = require('../helpers');
+import { getInfoFilterQuery } from '../helpers';
 
-async function routeSongsList(req, res, next) {
+export default async function routeSongsList(req, res, next) {
     const query = ['artist', 'album'].reduce((filter, item) => {
         if (req.query[item]) {
             if (!filter.$and) {
@@ -42,8 +42,4 @@ async function routeSongsList(req, res, next) {
 
     return next();
 }
-
-module.exports = {
-    routeSongsList
-};
 

@@ -1,10 +1,8 @@
-const { ObjectID } = require('mongodb');
+import { ObjectID } from 'mongodb';
 
-const config = require('../../common/config');
+import config from '../../common/config';
 
-const {
-    getContentTypeFromFile, getBufferFromFile
-} = require('../../common/buffer-from-file');
+import { getContentTypeFromFile, getBufferFromFile } from '../../common/buffer-from-file';
 
 async function serveSong(row, res) {
     if (!(row && row.length === 1)) {
@@ -31,7 +29,7 @@ async function serveSong(row, res) {
     }
 }
 
-async function routePlay(req, res, next) {
+export async function routePlay(req, res, next) {
     const id = req.params.id;
     if (!(id && id.length)) {
         res
@@ -71,7 +69,7 @@ async function routePlay(req, res, next) {
     return next();
 }
 
-async function routePlayRandom(req, res, next) {
+export async function routePlayRandom(req, res, next) {
     try {
         const row = await req.db
             .collection(config.collections.music)
@@ -97,6 +95,4 @@ async function routePlayRandom(req, res, next) {
 
     return next();
 }
-
-module.exports = { routePlay, routePlayRandom };
 
