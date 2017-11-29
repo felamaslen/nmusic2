@@ -11,8 +11,6 @@ async function serveSong(row, res) {
         res
             .status(404)
             .json({ error: true, status: 'Not found' });
-
-        return;
     }
 
     const file = row[0].file;
@@ -33,19 +31,28 @@ async function serveSong(row, res) {
     }
 }
 
-async function routePlay(req, res) {
+async function routePlay(req, res, next) {
     const id = req.params.id;
     if (!(id && id.length)) {
         res
             .status(400)
             .json({ error: true, status: 'Invalid ID' });
 
-        req.db.close();
-
-        return;
+        return next();
     }
 
-    const _id = new ObjectID(id);
+    let _id = null;
+
+    try {
+        _id = new ObjectID(id);
+    }
+    catch (err) {
+        res
+            .status(400)
+            .json({ error: true, status: 'Bad ID' });
+
+        return next();
+    }
 
     try {
         const row = await req.db
@@ -60,12 +67,11 @@ async function routePlay(req, res) {
             .status(500)
             .json({ error: true, status: 'Unknown server error' });
     }
-    finally {
-        req.db.close();
-    }
+
+    return next();
 }
 
-async function routePlayRandom(req, res) {
+async function routePlayRandom(req, res, next) {
     try {
         const row = await req.db
             .collection(config.collections.music)
@@ -88,9 +94,8 @@ async function routePlayRandom(req, res) {
             .status(500)
             .json({ error: true, status: 'Unknown server error' });
     }
-    finally {
-        req.db.close();
-    }
+
+    return next();
 }
 
 module.exports = { routePlay, routePlayRandom };

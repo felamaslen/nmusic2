@@ -1,7 +1,7 @@
 const joi = require('joi');
 const { ObjectID } = require('mongodb');
 
-async function routeEdit(req, res) {
+async function routeEdit(req, res, next) {
     const schema = joi.object().keys({
         track: joi.number(),
         title: joi.string(),
@@ -15,7 +15,7 @@ async function routeEdit(req, res) {
         res.status(400)
             .json({ error: true, status: 'Bad data input' });
 
-        return;
+        return next();
     }
 
     const _id = new ObjectID(req.params.id);
@@ -33,9 +33,8 @@ async function routeEdit(req, res) {
         res.status(500)
             .json({ error: true, status: 'Server error' });
     }
-    finally {
-        req.db.close();
-    }
+
+    return next();
 }
 
 module.exports = {

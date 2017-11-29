@@ -225,7 +225,7 @@ async function serveArtworkFile(res, file) {
         .send(buffer);
 }
 
-async function routeArtwork(req, res) {
+async function routeArtwork(req, res, next) {
     const encoded = req.params.encoded;
 
     let decoded = null;
@@ -233,9 +233,9 @@ async function routeArtwork(req, res) {
         decoded = decodeArtistAlbum(encoded);
     }
     catch (err) {
-        req.db.close();
+        serveArtworkFile(res, ARTWORK_UNKNOWN_FILE);
 
-        return serveArtworkFile(res, ARTWORK_UNKNOWN_FILE);
+        return next();
     }
 
     const { artist, album } = decoded;
@@ -256,11 +256,11 @@ async function routeArtwork(req, res) {
         }
     }
     catch (err) {
-        req.db.close();
-
-        return res
+        res
             .status(500)
             .json({ error: true, status: 'Unknown error' });
+
+        return next();
     }
 
     try {
@@ -279,16 +279,14 @@ async function routeArtwork(req, res) {
                 throw fileErr;
             }
         }
-
-        req.db.close();
     }
     catch (err) {
-        return res
+        res
             .status(404)
             .json({ error: true, status: 'Not found' });
     }
 
-    return null;
+    return next();
 }
 
 module.exports = {
