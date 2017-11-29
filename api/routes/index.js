@@ -22,7 +22,6 @@ function apiRoutes() {
     const router = new Router();
 
     router.use(dbMiddleware);
-    router.use(sendSeekable);
 
     router.get('/songs', routeSongsList);
     router.get('/artists', routeFilterList('artist'));
@@ -30,7 +29,7 @@ function apiRoutes() {
     router.get('/search/:keyword', routeSearch);
 
     router.get('/play/random', routePlayRandom);
-    router.get('/play/:id', routePlay);
+    router.get('/play/:id', sendSeekable, routePlay);
 
     router.get('/artwork/:encoded', routeArtwork);
 
