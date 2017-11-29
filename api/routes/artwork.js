@@ -1,20 +1,21 @@
 import path from 'path';
 import fs from 'fs';
 import request from 'request';
+import { call } from '../helpers/effects';
 import { Client as DiscogsClient } from 'disconnect';
 
 import config from '../../common/config';
 
-const ARTWORK_PATH = path.join(__dirname, '../../.artwork');
-const ARTWORK_UNKNOWN_FILE = `${ARTWORK_PATH}/unknown-artwork.png`;
+export const ARTWORK_PATH = path.join(__dirname, '../../.artwork');
+export const ARTWORK_UNKNOWN_FILE = `${ARTWORK_PATH}/unknown-artwork.png`;
 
 import { getContentTypeFromFile, getBufferFromFile } from '../../common/buffer-from-file';
 
-function encodeArtistAlbum(artist, album) {
+export function encodeArtistAlbum(artist, album) {
     return Buffer.from(`${artist}/${album}`).toString('base64');
 }
 
-function decodeArtistAlbum(encoded) {
+export function decodeArtistAlbum(encoded) {
     const decoded = String(Buffer.from(encoded, 'base64'));
 
     const match = decoded.match(/^(.+?)\/(.*)$/);
@@ -29,7 +30,7 @@ function decodeArtistAlbum(encoded) {
     return { artist, album };
 }
 
-function getExtension(filename) {
+export function getExtension(filename) {
     const lastDotIndex = filename.lastIndexOf('.');
 
     if (lastDotIndex === -1) {
@@ -39,7 +40,7 @@ function getExtension(filename) {
     return filename.substring(lastDotIndex + 1);
 }
 
-function downloadArtwork(url, artist, album) {
+export function *downloadArtwork(url, artist, album) {
     const dest = `${ARTWORK_PATH}/${encodeArtistAlbum(artist, album)}.${getExtension(url)}`;
 
     const req = request.defaults({
@@ -48,18 +49,18 @@ function downloadArtwork(url, artist, album) {
         followAllRedirects: true
     });
 
-    return new Promise((resolve, reject) => {
-        const file = fs.createWriteStream(dest);
+    const file = yield call(fs.createWriteStream, dest);
 
-        req
-            .get({
-                url,
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36'
-                }
-            })
-            .pipe(file);
+    const result = yield call(req.get, {
+        url,
+        headers: {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36'
+        }
+    });
 
+    yield call(result.pipe, file);
+
+    const waitForFile = () => new Promise((resolve, reject) => {
         file
             .on('finish', () => {
                 file.close(fileCloseErr => {
@@ -79,14 +80,18 @@ function downloadArtwork(url, artist, album) {
                 }
             });
     });
+
+    yield call(waitForFile);
 }
 
-async function getDiscogsReleaseId(discogs, artist, album) {
+export function *getDiscogsReleaseId(discogs, artist, album) {
     const searchString = `${artist} - ${album}`;
 
-    const data = await discogs.database().search(searchString);
+    const database = yield call(discogs.database);
 
-    if (!data || !data.results) {
+    const data = yield call(database.search, searchString);
+
+    if (!(data && data.results)) {
         throw new Error('Bad result data from Discogs');
     }
 
@@ -100,10 +105,12 @@ async function getDiscogsReleaseId(discogs, artist, album) {
     return releaseId;
 }
 
-async function getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album) {
-    const data = await discogs.database().getRelease(releaseId);
+export function *getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album) {
+    const database = yield call(discogs.database);
 
-    if (!data || !data.images || !Array.isArray(data.images)) {
+    const data = yield call(database.getRelease, releaseId);
+
+    if (!(data && data.images && Array.isArray(data.images))) {
         throw new Error('Bad result data from Discogs');
     }
 
@@ -115,7 +122,7 @@ async function getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album)
     const imageUrl = validImages[0].resource_url;
 
     try {
-        const file = await downloadArtwork(imageUrl, artist, album);
+        const file = yield downloadArtwork(imageUrl, artist, album);
 
         return file;
     }
@@ -124,31 +131,29 @@ async function getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album)
     }
 }
 
-async function getDiscogsArtwork(artist, album) {
-    const discogs = new DiscogsClient({
+export function *getDiscogsArtwork(artist, album) {
+    const discogs = yield call(DiscogsClient, {
         consumerKey: config.discogs.consumerKey,
         consumerSecret: config.discogs.consumerSecret
     });
 
-    const releaseId = await getDiscogsReleaseId(discogs, artist, album);
+    const releaseId = yield getDiscogsReleaseId(discogs, artist, album);
 
-    const artwork = await getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album);
+    const artwork = yield getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album);
 
     return artwork;
 }
 
-async function fetchNewAlbumArtwork(db, res, artist, album) {
+export function *fetchNewAlbumArtwork(db, res, artist, album) {
     let file = null;
     let dbFile = null;
     let cacheable = true;
     let errorResult = false;
 
-    await db
-        .collection(config.collections.artwork)
-        .insertOne({ artist, album, loading: true });
+    yield call(db.collection(config.collections.artwork).insertOne, { artist, album, loading: true });
 
     try {
-        file = await getDiscogsArtwork(artist, album);
+        file = yield getDiscogsArtwork(artist, album);
 
         dbFile = file;
     }
@@ -159,11 +164,9 @@ async function fetchNewAlbumArtwork(db, res, artist, album) {
         errorResult = true;
     }
 
-    await db
-        .collection(config.collections.artwork)
-        .updateOne({ artist, album }, {
-            $set: { loading: false, error: errorResult, file: dbFile }
-        });
+    yield call(db.collection(config.collections.artwork).updateOne, { artist, album }, {
+        $set: { loading: false, error: errorResult, file: dbFile }
+    });
 
     return { file, cacheable };
 }
@@ -182,13 +185,11 @@ const fileExists = file => new Promise((resolve, reject) => {
     });
 });
 
-async function getAlbumArtwork(db, res, artist, album) {
+export function *getAlbumArtwork(db, res, artist, album) {
     let file = null;
     let cacheable = true;
 
-    const localCopy = await db
-        .collection(config.collections.artwork)
-        .findOne({ artist, album });
+    const localCopy = yield call(db.collection(config.collections.artwork).findOne, { artist, album });
 
     if (localCopy) {
         if (localCopy.loading || localCopy.error) {
@@ -197,7 +198,7 @@ async function getAlbumArtwork(db, res, artist, album) {
         }
         else {
             // don't try to serve a file which doesn't exist
-            const localCopyExists = await fileExists(localCopy.file);
+            const localCopyExists = yield call(fileExists, localCopy.file);
 
             if (localCopyExists) {
                 file = localCopy.file;
@@ -206,7 +207,7 @@ async function getAlbumArtwork(db, res, artist, album) {
     }
 
     if (!file) {
-        const result = await fetchNewAlbumArtwork(db, res, artist, album);
+        const result = yield fetchNewAlbumArtwork(db, res, artist, album);
 
         file = result.file;
         cacheable = result.cacheable;
@@ -215,10 +216,10 @@ async function getAlbumArtwork(db, res, artist, album) {
     return { file, cacheable };
 }
 
-async function serveArtworkFile(res, file) {
+export function *serveArtworkFile(res, file) {
     const contentType = getContentTypeFromFile(file);
 
-    const buffer = await getBufferFromFile(file);
+    const buffer = yield call(getBufferFromFile, file);
 
     return res
         .header('Content-Type', contentType)
