@@ -45,12 +45,25 @@
             .artwork-outer {
                 display: flex;
                 flex: 0 0 auto;
+                height: 100%;
                 align-items: center;
+                justify-content: center;
+
+                .artwork {
+                    width: 128px;
+                    height: 128px;
+                }
+
+                .artwork-image {
+                    width: auto;
+                    max-height: 100%;
+                }
             }
             .info {
                 display: flex;
                 flex: 1 0 0;
                 flex-flow: column;
+                justify-content: center;
             }
 
             .field-outer {

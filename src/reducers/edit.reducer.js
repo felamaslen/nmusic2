@@ -1,6 +1,7 @@
 import { Map as map } from 'immutable';
 import { trackNo } from '../helpers';
 import { getOrderedSongList } from './song-list.reducer';
+import { getArtworkSrc } from './audio-player.reducer';
 
 export function open(state) {
     const id = state.getIn(['songList', 'lastClickedId']);
@@ -16,6 +17,7 @@ export function open(state) {
 
     return state
         .setIn(['editInfo', 'song'], song)
+        .setIn(['editInfo', 'artwork'], getArtworkSrc(song))
         .setIn(['editInfo', 'newValues'], song)
         .setIn(['editInfo', 'hidden'], false)
         .setIn(['songList', 'menu', 'hidden'], true);

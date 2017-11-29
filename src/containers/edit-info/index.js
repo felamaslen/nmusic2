@@ -10,8 +10,9 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 import EditInfoFormRow from './form-row';
+import { Artwork } from '../artwork';
 
-export function EditInfo({ newValues, active, hidden, onClose, onChange, onChangeNumber }) {
+export function EditInfo({ newValues, active, hidden, artworkSrc, onClose, onChange, onChangeNumber }) {
     if (!active) {
         return null;
     }
@@ -26,6 +27,7 @@ export function EditInfo({ newValues, active, hidden, onClose, onChange, onChang
             <div className="inner">
                 <div className="info-outer">
                     <div className="artwork-outer">
+                        <Artwork src={artworkSrc} />
                     </div>
                     <div className="info">
                         <EditInfoFormRow label="Track" field="track" type="number"
@@ -45,7 +47,7 @@ export function EditInfo({ newValues, active, hidden, onClose, onChange, onChang
 }
 
 EditInfo.propTypes = {
-    song: PropTypes.instanceOf(map),
+    artworkSrc: PropTypes.string,
     active: PropTypes.bool.isRequired,
     hidden: PropTypes.bool.isRequired,
     newValues: PropTypes.instanceOf(map),
@@ -55,7 +57,7 @@ EditInfo.propTypes = {
 }
 
 const mapStateToProps = state => ({
-    song: state.getIn(['editInfo', 'song']),
+    artworkSrc: state.getIn(['editInfo', 'artwork']),
     active: Boolean(state.getIn(['editInfo', 'song'])),
     hidden: state.getIn(['editInfo', 'hidden']),
     newValues: state.getIn(['editInfo', 'newValues'])
