@@ -16,7 +16,7 @@ const encodeArtistAlbum = (artist, album) => Buffer
     )
     .toString('base64');
 
-const getArtworkSrc = song => `${API_PREFIX}/artwork/${encodeArtistAlbum(
+export const getArtworkSrc = song => `${API_PREFIX}/artwork/${encodeArtistAlbum(
     song.get('artist') || '', song.get('album') || ''
 )}`;
 

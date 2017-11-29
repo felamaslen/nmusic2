@@ -1,7 +1,7 @@
 import { List as list, Map as map } from 'immutable';
 
 import { formatSeconds } from '../helpers/format';
-import { getNewlySelectedKeys, orderListItems } from '../helpers';
+import { getNewlySelectedKeys, orderListItems, trackNo } from '../helpers';
 
 export const startSongListRequest = state => state
     .setIn(['songList', 'loading'], true);
@@ -40,7 +40,7 @@ export function getNewOrderKeys(oldOrderKeys, orderKey) {
     return list([map({ key: orderKey, order: 1 })]);
 }
 
-export function getOrderedSongList(songs, orderKeys) {
+export function getOrderedSongList(state, songs, orderKeys = state.getIn(['songList', 'orderKeys'])) {
     return orderKeys.reduce((songsList, item) => songsList.sort((prev, next) => {
         const nextSorted = next.get(item.get('key')) < prev.get(item.get('key'));
         if (nextSorted) {
@@ -62,8 +62,8 @@ export const sortSongList = (state, orderKey) => {
 
     return state
         .setIn(['songList', 'songs'], getOrderedSongList(
-            state.getIn(['songList', 'songs']), newOrderKeys
-        ))
+            state, state.getIn(['songList', 'songs']), newOrderKeys)
+        )
         .setIn(['songList', 'orderKeys'], newOrderKeys);
 }
 
@@ -80,13 +80,11 @@ export function insertSongList(state, { err, data }) {
             duration: item[5],
             durationFormatted: formatSeconds(item[5]),
             track: item[6],
-            trackNo: item[6] > 0
-                ? item[6].toString()
-                : ''
+            trackNo: trackNo(item[6])
         }));
     }
 
-    const sortedSongs = getOrderedSongList(songs, state.getIn(['songList', 'orderKeys']));
+    const sortedSongs = getOrderedSongList(state, songs);
 
     return state
         .setIn(['songList', 'loading'], false)
