@@ -37,7 +37,7 @@ export class FilterList extends ImmutableComponent {
             const itemVisible = itemBottom <= listBottom && itemTop >= listTop;
 
             if (!itemVisible) {
-                this.itemList.scrollTo(0, itemTop - 10);
+                this.itemList.scrollTop = itemTop - 10;
             }
         }
     }
