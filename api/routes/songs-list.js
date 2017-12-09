@@ -2,7 +2,7 @@ const config = require('../../common/config');
 
 const { getInfoFilterQuery } = require('../helpers');
 
-async function routeSongsList(req, res) {
+async function routeSongsList(req, res, next) {
     const query = ['artist', 'album'].reduce((filter, item) => {
         if (req.query[item]) {
             if (!filter.$and) {
@@ -39,9 +39,8 @@ async function routeSongsList(req, res) {
             .status(500)
             .json({ error: true, status: 'Database error' });
     }
-    finally {
-        req.db.close();
-    }
+
+    return next();
 }
 
 module.exports = {
