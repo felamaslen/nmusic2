@@ -1,8 +1,8 @@
 /* eslint-disable no-undefined */
 import { expect } from 'chai';
 
-import * as A from '../../../src/actions/edit-info.actions';
-import * as S from '../../../src/constants/actions';
+import * as A from '../../src/actions/edit-info.actions';
+import * as S from '../../src/constants/actions';
 
 describe('Edit actions', () => {
     describe('editInfoOpened', () => {
@@ -17,6 +17,15 @@ describe('Edit actions', () => {
 
             expect(A.editInfoClosed(false))
                 .to.deep.equal({ type: S.EDIT_INFO_CLOSED, payload: { cancel: false } });
+        });
+    });
+    describe('editInfoNavigated', () => {
+        it('should return EDIT_INFO_NAVIGATED with direction parameter', () => {
+            expect(A.editInfoNavigated(-1))
+                .to.deep.equal({ type: S.EDIT_INFO_NAVIGATED, payload: { direction: -1 } });
+
+            expect(A.editInfoNavigated(1))
+                .to.deep.equal({ type: S.EDIT_INFO_NAVIGATED, payload: { direction: 1 } });
         });
     });
     describe('editInfoValueChanged', () => {

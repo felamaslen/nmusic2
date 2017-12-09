@@ -103,28 +103,16 @@
             display: flex;
             justify-content: flex-end;
 
-            .button-cancel, .button-ok {
-                margin: 0 0.3em;
-                outline: none;
-                border: 2px solid $color-slightly-dark;
-                font-weight: bold;
-                color: $color-dark;
-                background: $color-white;
-                border-radius: 3px;
-                cursor: pointer;
+            .button-previous, .button-next, .button-cancel {
+                @include round-button(
+                    $color-ultra-light, $color-dark, $color-very-light, $color-dark, $color-medium-dark
+                );
             }
-            .button-cancel:active {
-                background: $color-very-light;
-            }
-            .button-ok {
-                background: $color-selected;
-                border-color: $color-selected;
-                color: $color-white;
 
-                &:active {
-                    background: $color-light-selected-active;
-                    border-color: $color-light-selected-active;
-                }
+            .button-ok {
+                @include round-button(
+                    $color-selected, $color-white, $color-light-selected-active, $color-white, $color-very-light
+                );
             }
         }
     }

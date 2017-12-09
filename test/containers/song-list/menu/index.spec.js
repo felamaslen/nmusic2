@@ -1,11 +1,11 @@
 /* eslint-disable newline-per-chained-call, no-undefined */
 import { fromJS } from 'immutable';
-import '../../../../browser';
+import '../../../browser';
 import { expect } from 'chai';
 import React from 'react';
-import shallow from '../../../../shallow-with-store';
+import shallow from '../../../shallow-with-store';
 import { createMockStore } from 'redux-test-utils';
-import SongListMenu from '../../../../../src/containers/song-list/menu';
+import SongListMenu from '../../../../src/containers/song-list/menu';
 
 describe('<SongListMenu />', () => {
     it('should render its basic structure', () => {

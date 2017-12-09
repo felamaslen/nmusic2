@@ -1,9 +1,9 @@
 import { expect } from 'chai';
-import '../../../browser';
+import '../../browser';
 import { shallow } from 'enzyme';
 import React from 'react';
-import StatusBar from '../../../../src/components/status-bar';
-import ShuffleToggleButton from '../../../../src/containers/shuffle-toggle-button';
+import StatusBar from '../../../src/components/status-bar';
+import ShuffleToggleButton from '../../../src/containers/shuffle-toggle-button';
 
 describe('<StatusBar />', () => {
     it('should render its basic structure', () => {

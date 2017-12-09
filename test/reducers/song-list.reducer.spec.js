@@ -1,9 +1,9 @@
 import { fromJS, List as list, Map as map } from 'immutable';
 import { expect } from 'chai';
 
-import state from '../../../src/initialState';
+import state from '../../src/initialState';
 
-import * as R from '../../../src/reducers/song-list.reducer';
+import * as R from '../../src/reducers/song-list.reducer';
 
 describe('Song list reducer', () => {
     describe('getNewlySelectedIds', () => {

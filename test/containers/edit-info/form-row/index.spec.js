@@ -1,10 +1,10 @@
 /* eslint-disable newline-per-chained-call */
 import { Map as map } from 'immutable';
-import '../../../../browser';
+import '../../../browser';
 import { expect } from 'chai';
 import React from 'react';
 import { shallow } from 'enzyme';
-import EditInfoFormRow from '../../../../../src/containers/edit-info/form-row';
+import EditInfoFormRow from '../../../../src/containers/edit-info/form-row';
 
 describe('<EditInfoFormRow />', () => {
     const changeValue = {};
@@ -16,7 +16,7 @@ describe('<EditInfoFormRow />', () => {
         label: 'Title',
         field: 'title',
         values: map({
-            title: 'foo'
+            title: map({ active: true, value: 'foo' })
         }),
         onChange
     };
@@ -53,6 +53,19 @@ describe('<EditInfoFormRow />', () => {
 
         expect(input.props()).to.have.property('type', 'number');
         expect(input.props()).to.have.property('step', 1);
+    });
+
+    it('should render a disabled field', () => {
+        const disabledProps = {
+            ...props,
+            values: props.values.setIn(['title', 'active'], false)
+        };
+
+        const wrapper = shallow(<EditInfoFormRow {...disabledProps} />);
+
+        expect(wrapper.hasClass('disabled')).to.equal(true);
+        expect(wrapper.childAt(1).childAt(0).props()).to.have.property('disabled', true);
+        expect(wrapper.childAt(1).childAt(0).props()).to.have.property('value', '<multiple values>');
     });
 });
 

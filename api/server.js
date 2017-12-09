@@ -24,7 +24,7 @@ function setupClient(app) {
         }
     }));
 
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' && process.env.SKIP_CLIENT !== 'true') {
         const conf = webpackConfig();
 
         const compiler = webpack(conf);

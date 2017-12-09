@@ -22,8 +22,7 @@ export function SongListItem(props) {
         openMenu
     } = props;
 
-    const className = classNames({
-        song: true,
+    const className = classNames('song', {
         selected,
         current,
         paused

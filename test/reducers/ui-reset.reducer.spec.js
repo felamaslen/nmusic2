@@ -2,7 +2,7 @@ import { fromJS } from 'immutable'
 import { expect } from 'chai'
 import itEach from 'it-each'
 itEach();
-import * as R from '../../../src/reducers/ui-reset.reducer'
+import * as R from '../../src/reducers/ui-reset.reducer'
 
 describe('UIReset reducer', () => {
     describe('reset', () => {
