@@ -36,12 +36,10 @@ function apiRoutes() {
 
     router.patch('/edit/:id', routeEdit);
 
-    router.use((req, res, next) => {
+    router.use(req => {
         if (req.db) {
             req.db.close();
         }
-
-        return next();
     });
 
     return router;
