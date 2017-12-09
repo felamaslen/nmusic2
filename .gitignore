@@ -60,8 +60,6 @@ typings/
 test/api/scripts/test-music/**/*.ogg
 test/api/scripts/test-music/**/*.mp3
 
-TODO
-
 static
 .artwork/**
 src/images/sprite
