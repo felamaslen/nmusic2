@@ -4,8 +4,14 @@ import { editInfoClosed, editInfoValuesUpdated } from '../actions/edit-info.acti
 import axios from 'axios';
 
 export const selectEditValues = state => ({
-    id: state.getIn(['editInfo', 'song', 'id']),
-    ...state.getIn(['editInfo', 'newValues'])
+    ids: state
+        .getIn(['editInfo', 'songs'])
+        .map(song => song.get('id'))
+        .toJS(),
+    fields: state
+        .getIn(['editInfo', 'newValues'])
+        .filter(item => item.get('active'))
+        .map(item => item.get('value'))
         .toJS()
 });
 
@@ -16,7 +22,7 @@ export function *updateSongInfo({ payload }) {
         return;
     }
 
-    const { id, ...fields } = yield select(selectEditValues);
+    const { ids, fields } = yield select(selectEditValues);
 
     const fieldTypes = {
         track: 'number',
@@ -25,19 +31,27 @@ export function *updateSongInfo({ payload }) {
         title: 'string'
     };
 
-    const data = Object.keys(fieldTypes)
-        .reduce((next, key) => {
-            const type = fieldTypes[key];
+    const data = {
+        ids,
+        ...Object.keys(fieldTypes)
+            .reduce((next, key) => {
+                if (!(key in fields)) {
+                    return next;
+                }
 
-            if (type === 'number') {
-                return { ...next, [key]: Number(fields[key]) };
-            }
+                const type = fieldTypes[key];
 
-            return { ...next, [key]: String(fields[key]) };
-        }, {});
+                if (type === 'number') {
+                    return { ...next, [key]: Number(fields[key]) };
+                }
+
+                return { ...next, [key]: String(fields[key]) };
+
+            }, {})
+    };
 
     try {
-        const response = yield call(axios.patch, `${API_PREFIX}/edit/${id}`, data);
+        const response = yield call(axios.patch, `${API_PREFIX}/edit`, data);
 
         yield put(editInfoValuesUpdated(response));
     }

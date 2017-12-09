@@ -3,7 +3,7 @@ const config = require('../../common/config');
 const { getInfoFilterQuery, sortCaseInsensitiveIgnorePrefix } = require('../helpers');
 
 function routeFilterList(key, subKey = null) {
-    return async (req, res) => {
+    return async (req, res, next) => {
         let query = {};
         if (subKey && req.params[subKey]) {
             query = getInfoFilterQuery(req.params[subKey], subKey);
@@ -25,9 +25,8 @@ function routeFilterList(key, subKey = null) {
                 .status(500)
                 .json({ error: true, status: 'Database error' });
         }
-        finally {
-            req.db.close();
-        }
+
+        return next();
     };
 }
 

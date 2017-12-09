@@ -226,3 +226,27 @@
     }
 }
 
+@mixin round-button($bg, $fg, $active-bg, $active-fg, $disabled-color) {
+    margin: 0 0.3em;
+    outline: none;
+    border: none;
+    font-weight: bold;
+    color: $fg;
+    background: $bg;
+    border-radius: 3px;
+    transition: all 0.2s ease;
+   
+    &:not(:disabled) {
+        cursor: pointer;
+    }
+
+    &:disabled {
+        color: $disabled-color;
+    }
+
+    &:active {
+        color: $active-fg;
+        background: $active-bg;
+    }
+}
+

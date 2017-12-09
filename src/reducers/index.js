@@ -66,6 +66,7 @@ export default createReducer(initialState, createReducerObject([
 
     [AC.EDIT_INFO_OPENED, edit.open],
     [AC.EDIT_INFO_CLOSED, edit.close],
+    [AC.EDIT_INFO_NAVIGATED, edit.navigate],
     [AC.EDIT_INFO_VALUE_CHANGED, edit.changeEditValue],
     [AC.EDIT_INFO_VALUES_UPDATED, edit.receiveUpdatedEditValues]
 ]));

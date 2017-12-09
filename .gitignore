@@ -62,5 +62,4 @@ test/api/scripts/test-music/**/*.mp3
 
 static
 .artwork/**
-!.artwork/unknown-artwork.png
 src/images/sprite

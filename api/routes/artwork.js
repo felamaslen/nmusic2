@@ -1,14 +1,17 @@
 const path = require('path');
 const fs = require('fs');
 const request = require('request');
+const logger = require('../../common/logger');
 const DiscogsClient = require('disconnect').Client;
 
 const config = require('../../common/config');
 
-const ARTWORK_PATH = path.join(__dirname, '../../.artwork');
-const ARTWORK_UNKNOWN_FILE = `${ARTWORK_PATH}/unknown-artwork.png`;
+const ARTWORK_PATH = process.env.ARTWORK_PATH || path.join(__dirname, '../../.artwork');
+const ARTWORK_UNKNOWN_FILE = path.join(__dirname, '../unknown-artwork.png');
 
 const { getContentTypeFromFile, getBufferFromFile } = require('../../common/buffer-from-file');
+
+const __DEV__ = process.env.NODE_ENV === 'development';
 
 function encodeArtistAlbum(artist, album) {
     return Buffer.from(`${artist}/${album}`).toString('base64');
@@ -86,12 +89,20 @@ async function getDiscogsReleaseId(discogs, artist, album) {
 
     const data = await discogs.database().search(searchString);
 
-    if (!data || !data.results) {
+    if (!(data && data.results)) {
+        if (__DEV__) {
+            logger('ERROR', 'Bad artwork data from Discogs, for:', { artist, album });
+        }
+
         throw new Error('Bad result data from Discogs');
     }
 
     const releases = data.results.filter(result => result.id && result.type && result.type === 'release');
     if (!releases.length) {
+        if (__DEV__) {
+            logger('ERROR', 'No Discogs artwork results, for:', { artist, album });
+        }
+
         throw new Error('No results');
     }
 
@@ -103,13 +114,21 @@ async function getDiscogsReleaseId(discogs, artist, album) {
 async function getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album) {
     const data = await discogs.database().getRelease(releaseId);
 
-    if (!data || !data.images || !Array.isArray(data.images)) {
+    if (!(data && data.images && Array.isArray(data.images))) {
+        if (__DEV__) {
+            logger('ERROR', 'No artwork on Discogs result, for:', { artist, album });
+        }
+
         throw new Error('Bad result data from Discogs');
     }
 
     const validImages = data.images.filter(image => image.resource_url);
 
     if (!validImages.length) {
+        if (__DEV__) {
+            logger('ERROR', 'No artwork results have a resource ID, for:', { artist, album });
+        }
+
         throw new Error('No artwork image');
     }
     const imageUrl = validImages[0].resource_url;
@@ -120,6 +139,10 @@ async function getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album)
         return file;
     }
     catch (err) {
+        if (__DEV__) {
+            logger('ERROR', 'Error downloading artwork image, for:', { artist, album });
+        }
+
         throw new Error('Error downloading artwork image');
     }
 }
@@ -225,7 +248,7 @@ async function serveArtworkFile(res, file) {
         .send(buffer);
 }
 
-async function routeArtwork(req, res) {
+async function routeArtwork(req, res, next) {
     const encoded = req.params.encoded;
 
     let decoded = null;
@@ -233,9 +256,9 @@ async function routeArtwork(req, res) {
         decoded = decodeArtistAlbum(encoded);
     }
     catch (err) {
-        req.db.close();
+        serveArtworkFile(res, ARTWORK_UNKNOWN_FILE);
 
-        return serveArtworkFile(res, ARTWORK_UNKNOWN_FILE);
+        return next();
     }
 
     const { artist, album } = decoded;
@@ -250,17 +273,25 @@ async function routeArtwork(req, res) {
             .toArray();
 
         if (!existsInDatabaseResult.length) {
-            return res
+            res
                 .status(400)
-                .json({ existsInDatabaseResult, artist, album, error: true, status: 'File not found in database' });
+                .json({
+                    existsInDatabaseResult,
+                    artist,
+                    album,
+                    error: true,
+                    status: 'File not found in database'
+                });
+
+            return next();
         }
     }
     catch (err) {
-        req.db.close();
-
-        return res
+        res
             .status(500)
             .json({ error: true, status: 'Unknown error' });
+
+        return next();
     }
 
     try {
@@ -279,16 +310,14 @@ async function routeArtwork(req, res) {
                 throw fileErr;
             }
         }
-
-        req.db.close();
     }
     catch (err) {
-        return res
+        res
             .status(404)
             .json({ error: true, status: 'Not found' });
     }
 
-    return null;
+    return next();
 }
 
 module.exports = {

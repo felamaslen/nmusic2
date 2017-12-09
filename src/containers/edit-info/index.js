@@ -1,9 +1,7 @@
 import { Map as map } from 'immutable';
 import { connect } from 'react-redux';
 
-import {
-    editInfoClosed, editInfoValueChanged
-} from '../../actions/edit-info.actions';
+import * as actions from '../../actions/edit-info.actions';
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -12,15 +10,24 @@ import classNames from 'classnames';
 import EditInfoFormRow from './form-row';
 import { Artwork } from '../artwork';
 
-export function EditInfo({ newValues, active, hidden, artworkSrc, onClose, onChange, onChangeNumber }) {
+export function EditInfo({ active, ...props }) {
     if (!active) {
         return null;
     }
 
-    const className = classNames({
-        'edit-info-outer': true,
-        hidden
-    });
+    const {
+        newValues,
+        hidden,
+        artworkSrc,
+        nextAvailable,
+        prevAvailable,
+        onNavigate,
+        onClose,
+        onChange,
+        onChangeNumber
+    } = props;
+
+    const className = classNames('edit-info-outer', { hidden });
 
     return <div className={className}>
         <div className="edit-info">
@@ -36,6 +43,10 @@ export function EditInfo({ newValues, active, hidden, artworkSrc, onClose, onCha
                     </div>
                 </div>
                 <div className="buttons">
+                    <button className="button-previous" onClick={() => onNavigate(-1)}
+                        disabled={!prevAvailable}>{'Previous'}</button>
+                    <button className="button-next" onClick={() => onNavigate(1)}
+                        disabled={!nextAvailable}>{'Next'}</button>
                     <button className="button-cancel" onClick={() => onClose(true)}>{'Cancel'}</button>
                     <button className="button-ok" onClick={() => onClose(false)}>{'OK'}</button>
                 </div>
@@ -49,6 +60,9 @@ EditInfo.propTypes = {
     active: PropTypes.bool.isRequired,
     hidden: PropTypes.bool.isRequired,
     newValues: PropTypes.instanceOf(map),
+    nextAvailable: PropTypes.bool.isRequired,
+    prevAvailable: PropTypes.bool.isRequired,
+    onNavigate: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
     onChangeNumber: PropTypes.func.isRequired
@@ -56,15 +70,18 @@ EditInfo.propTypes = {
 
 const mapStateToProps = state => ({
     artworkSrc: state.getIn(['editInfo', 'artwork']),
-    active: Boolean(state.getIn(['editInfo', 'song'])),
+    active: Boolean(state.getIn(['editInfo', 'songs'])),
     hidden: state.getIn(['editInfo', 'hidden']),
-    newValues: state.getIn(['editInfo', 'newValues'])
+    newValues: state.getIn(['editInfo', 'newValues']),
+    nextAvailable: state.getIn(['editInfo', 'nextAvailable']),
+    prevAvailable: state.getIn(['editInfo', 'prevAvailable'])
 });
 
 const mapDispatchToProps = dispatch => ({
-    onClose: cancel => dispatch(editInfoClosed(cancel)),
-    onChange: key => evt => dispatch(editInfoValueChanged(key, evt.target.value)),
-    onChangeNumber: key => evt => dispatch(editInfoValueChanged(key, Number(evt.target.value)))
+    onNavigate: direction => dispatch(actions.editInfoNavigated(direction)),
+    onClose: cancel => dispatch(actions.editInfoClosed(cancel)),
+    onChange: key => evt => dispatch(actions.editInfoValueChanged(key, evt.target.value)),
+    onChangeNumber: key => evt => dispatch(actions.editInfoValueChanged(key, Number(evt.target.value)))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(EditInfo);

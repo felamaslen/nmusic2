@@ -66,9 +66,11 @@ export default fromJS({
     editInfo: {
         hidden: false,
         loading: false,
-        song: null,
+        songs: null,
         artwork: null,
-        newValues: {}
+        newValues: {},
+        nextAvailable: false,
+        prevAvailable: false
     },
     audioSource: null,
     audioContext: getAudioContext(),

@@ -99,7 +99,7 @@ async function getSortedSongs(db, keyword) {
         .map(row => ({ id: row._id, ...row.info }));
 }
 
-async function routeSearch(req, res) {
+async function routeSearch(req, res, next) {
     const keyword = req.params.keyword;
 
     try {
@@ -115,6 +115,8 @@ async function routeSearch(req, res) {
             .status(500)
             .json({ err: err.message, error: true, status: 'Unknown error' });
     }
+
+    return next();
 }
 
 module.exports = { routeSearch };
