@@ -4,9 +4,7 @@ import { getOrderedSongList } from './song-list.reducer';
 import { getArtworkSrc } from './audio-player.reducer';
 import { EDIT_KEYS } from '../constants/misc';
 
-export function open(state) {
-    const selectedIds = state.getIn(['songList', 'selectedIds']);
-
+export function open(state, selectedIds = state.getIn(['songList', 'selectedIds'])) {
     const songs = state.getIn(['songList', 'songs'])
         .filter(song => selectedIds.includes(song.get('id')));
 
@@ -19,11 +17,20 @@ export function open(state) {
         value: songs.getIn([0, key])
     })), map.of());
 
+    const selectedIndex = state.getIn(['songList', 'songs'])
+        .findIndex(song => song.get('id') === selectedIds.first());
+
+    const prevAvailable = selectedIds.size === 1 && selectedIndex > 0;
+    const nextAvailable = selectedIds.size === 1 &&
+        selectedIndex < state.getIn(['songList', 'songs']).size - 1;
+
     return state
         .setIn(['editInfo', 'songs'], songs)
         .setIn(['editInfo', 'artwork'], getArtworkSrc(songs.first()))
         .setIn(['editInfo', 'newValues'], newValues)
         .setIn(['editInfo', 'hidden'], false)
+        .setIn(['editInfo', 'prevAvailable'], prevAvailable)
+        .setIn(['editInfo', 'nextAvailable'], nextAvailable)
         .setIn(['songList', 'menu', 'hidden'], true);
 }
 
@@ -35,6 +42,29 @@ export function close(state, { cancel }) {
 
     return state
         .setIn(['editInfo', 'loading'], true);
+}
+
+export function navigate(state, { direction }) {
+    const editOpen = state.getIn(['editInfo', 'songs']).size === 1;
+    if (!editOpen) {
+        return state;
+    }
+
+    const songs = state.getIn(['songList', 'songs']);
+    const currentIndex = songs
+        .findIndex(song => song.get('id') === state
+            .getIn(['editInfo', 'songs', 0, 'id'])
+        );
+
+    const nextIndex = currentIndex + direction;
+
+    if (currentIndex === -1 || nextIndex < 0 || nextIndex > songs.size - 1) {
+        return state;
+    }
+
+    const selectedIds = list.of(songs.getIn([nextIndex, 'id']));
+
+    return open(state, selectedIds);
 }
 
 export function changeEditValue(state, { key, value }) {

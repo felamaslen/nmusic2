@@ -19,6 +19,15 @@ describe('Edit actions', () => {
                 .to.deep.equal({ type: S.EDIT_INFO_CLOSED, payload: { cancel: false } });
         });
     });
+    describe('editInfoNavigated', () => {
+        it('should return EDIT_INFO_NAVIGATED with direction parameter', () => {
+            expect(A.editInfoNavigated(-1))
+                .to.deep.equal({ type: S.EDIT_INFO_NAVIGATED, payload: { direction: -1 } });
+
+            expect(A.editInfoNavigated(1))
+                .to.deep.equal({ type: S.EDIT_INFO_NAVIGATED, payload: { direction: 1 } });
+        });
+    });
     describe('editInfoValueChanged', () => {
         it('should return EDIT_INFO_VALUE_CHANGED with key and value', () => {
             expect(A.editInfoValueChanged('foo', 'bar')).to.deep.equal({

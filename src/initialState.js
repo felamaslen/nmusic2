@@ -68,7 +68,9 @@ export default fromJS({
         loading: false,
         songs: null,
         artwork: null,
-        newValues: {}
+        newValues: {},
+        nextAvailable: false,
+        prevAvailable: false
     },
     audioSource: null,
     audioContext: getAudioContext(),

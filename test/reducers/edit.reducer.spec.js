@@ -75,6 +75,11 @@ describe('Edit reducer', () => {
             it('should hide the context menu', () => {
                 expect(nextState.songList.menu.hidden).to.equal(true);
             });
+
+            it('should set nextAvailable / prevAvailable', () => {
+                expect(nextState.editInfo.prevAvailable).to.equal(false);
+                expect(nextState.editInfo.nextAvailable).to.equal(true);
+            });
         });
 
         describe('if editing multiple songs', () => {
@@ -119,6 +124,11 @@ describe('Edit reducer', () => {
                     track: { active: true, value: undefined }
                 });
             });
+
+            it('should set nextAvailable / prevAvailable', () => {
+                expect(nextState.editInfo.prevAvailable).to.equal(false);
+                expect(nextState.editInfo.nextAvailable).to.equal(false);
+            });
         });
     });
 
@@ -134,6 +144,49 @@ describe('Edit reducer', () => {
                 expect(R.close(fromJS({ editInfo: { loading: false } }), { cancel: false }).toJS())
                     .to.deep.equal({ editInfo: { loading: true } });
             });
+        });
+    });
+
+    describe('navigate', () => {
+        const state = fromJS({
+            editInfo: {
+                songs: [
+                    { id: 2 }
+                ]
+            },
+            songList: {
+                songs: [
+                    { id: 1 },
+                    { id: 2 },
+                    { id: 3 }
+                ]
+            }
+        });
+
+        it('should set the edit window to the previous / next song', () => {
+            const resultPrev = R.navigate(state, { direction: -1 }).toJS();
+            expect(resultPrev.editInfo.songs).to.deep.equal([{ id: 1 }]);
+
+            const resultNext = R.navigate(state, { direction: 1 }).toJS();
+            expect(resultNext.editInfo.songs).to.deep.equal([{ id: 3 }]);
+        });
+
+        it('should set prevAvailable / nextAvailable', () => {
+            const resultPrev = R.navigate(state, { direction: -1 }).toJS();
+            expect(resultPrev.editInfo.prevAvailable).to.equal(false);
+            expect(resultPrev.editInfo.nextAvailable).to.equal(true);
+
+            const resultNext = R.navigate(state, { direction: 1 }).toJS();
+            expect(resultNext.editInfo.prevAvailable).to.equal(true);
+            expect(resultNext.editInfo.nextAvailable).to.equal(false);
+        });
+
+        it('shouldn\'t do anything if multiple items are being edited', () => {
+            const stateMultiple = state.setIn(['editInfo', 'songs'], fromJS([{ id: 1 }, { id: 2 }]));
+
+            const resultMultiple = R.navigate(stateMultiple, { direction: 1 });
+
+            expect(resultMultiple.toJS()).to.deep.equal(stateMultiple.toJS());
         });
     });
 

@@ -7,6 +7,7 @@ itEach();
 import React from 'react';
 import shallow from '../../shallow-with-store';
 import { createMockStore } from 'redux-test-utils';
+import * as actions from '../../../src/actions/edit-info.actions';
 import EditInfo from '../../../src/containers/edit-info';
 import EditInfoFormRow from '../../../src/containers/edit-info/form-row';
 import { Artwork } from '../../../src/containers/artwork';
@@ -17,7 +18,9 @@ describe('<EditInfo />', () => {
             songs: { id: 'foo' },
             hidden: false,
             newValues: {},
-            artwork: 'artwork-test'
+            artwork: 'artwork-test',
+            nextAvailable: false,
+            prevAvailable: false
         }
     };
 
@@ -64,13 +67,40 @@ describe('<EditInfo />', () => {
         expect(infoOuter.childAt(1).children()).to.have.length(4);
 
         expect(buttons.is('div.buttons')).to.equal(true);
-        expect(buttons.children()).to.have.length(2);
+        expect(buttons.children()).to.have.length(4);
+    });
 
-        expect(buttons.childAt(0).is('button.button-cancel')).to.equal(true);
-        expect(buttons.childAt(0).text()).to.equal('Cancel');
+    it('should render previous and next buttons', () => {
+        const wrapper = shallow(<EditInfo />, createMockStore(fromJS(state))).dive();
+        const buttons = wrapper.childAt(0).childAt(0).childAt(1);
 
-        expect(buttons.childAt(1).is('button.button-ok')).to.equal(true);
-        expect(buttons.childAt(1).text()).to.equal('OK');
+        expect(buttons.childAt(0).is('button.button-previous')).to.equal(true);
+        expect(buttons.childAt(0).text()).to.equal('Previous');
+
+        expect(buttons.childAt(1).is('button.button-next')).to.equal(true);
+        expect(buttons.childAt(1).text()).to.equal('Next');
+    });
+
+    it('should render cancel and ok buttons', () => {
+        const wrapper = shallow(<EditInfo />, createMockStore(fromJS(state))).dive();
+        const buttons = wrapper.childAt(0).childAt(0).childAt(1);
+
+        expect(buttons.childAt(2).is('button.button-cancel')).to.equal(true);
+        expect(buttons.childAt(2).text()).to.equal('Cancel');
+
+        expect(buttons.childAt(3).is('button.button-ok')).to.equal(true);
+        expect(buttons.childAt(3).text()).to.equal('OK');
+    });
+
+    it('should cancel when pressing cancel', () => {
+        const store = createMockStore(fromJS(state));
+        const wrapper = shallow(<EditInfo />, store).dive();
+        const buttons = wrapper.childAt(0).childAt(0).childAt(1);
+
+        expect(store.isActionDispatched(actions.editInfoClosed(true))).to.equal(false);
+
+        buttons.childAt(2).simulate('click');
+        expect(store.isActionDispatched(actions.editInfoClosed(true))).to.equal(true);
     });
 
     describe('form fields', () => {
