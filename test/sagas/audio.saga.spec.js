@@ -4,9 +4,9 @@ import { expect } from 'chai';
 import axios from 'axios';
 import { testSaga } from 'redux-saga-test-plan';
 
-import * as S from '../../../src/sagas/audio.saga.js';
-import * as A from '../../../src/actions/audio-player.actions';
-import * as M from '../../../src/constants/misc';
+import * as S from '../../src/sagas/audio.saga.js';
+import * as A from '../../src/actions/audio-player.actions';
+import * as M from '../../src/constants/misc';
 
 describe('Audio saga', () => {
     describe('selectSongLoaded', () => {

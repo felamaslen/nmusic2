@@ -1,7 +1,7 @@
 import { List as list } from 'immutable';
 import { expect } from 'chai';
 
-import * as R from '../../../src/helpers';
+import * as R from '../../src/helpers';
 
 describe('Generic helper functions', () => {
     describe('getNewlySelectedKeys', () => {

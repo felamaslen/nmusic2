@@ -1,8 +1,8 @@
 /* eslint-disable no-undefined */
 import { expect } from 'chai';
 
-import * as A from '../../../src/actions/edit-info.actions';
-import * as S from '../../../src/constants/actions';
+import * as A from '../../src/actions/edit-info.actions';
+import * as S from '../../src/constants/actions';
 
 describe('Edit actions', () => {
     describe('editInfoOpened', () => {

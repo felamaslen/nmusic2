@@ -3,8 +3,8 @@
 import { fromJS } from 'immutable';
 import { expect } from 'chai';
 
-import * as R from '../../../src/reducers/audio-player.reducer';
-import * as M from '../../../src/constants/misc';
+import * as R from '../../src/reducers/audio-player.reducer';
+import * as M from '../../src/constants/misc';
 
 describe('Audio player reducer', () => {
     it('should be tested further (for queueing bug fixes)');

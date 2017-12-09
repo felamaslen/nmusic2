@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { fromJS } from 'immutable';
 
-import * as R from '../../../src/reducers/sidebar.reducer';
+import * as R from '../../src/reducers/sidebar.reducer';
 
 describe('Sidebar reducer', () => {
     describe('toggleHidden', () => {

@@ -4,7 +4,7 @@ import itEach from 'it-each';
 
 itEach();
 
-import * as R from '../../../src/reducers/search.reducer';
+import * as R from '../../src/reducers/search.reducer';
 
 describe('Search reducer', () => {
     describe('getSearchKeyCategory', () => {

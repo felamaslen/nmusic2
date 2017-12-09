@@ -1,14 +1,14 @@
 /* eslint-disable no-undefined */
 import { fromJS } from 'immutable';
 import { expect } from 'chai';
-import '../../../browser';
-import shallow from '../../../shallow-with-store';
+import '../../browser';
+import shallow from '../../shallow-with-store';
 import { createMockStore } from 'redux-test-utils';
 import React from 'react';
 
-import ShuffleToggleButton from '../../../../src/containers/shuffle-toggle-button';
-import { SHUFFLE_ALL, SHUFFLE_NONE } from '../../../../src/constants/misc';
-import { AUDIO_MODE_SHUFFLE_SET } from '../../../../src/constants/actions';
+import ShuffleToggleButton from '../../../src/containers/shuffle-toggle-button';
+import { SHUFFLE_ALL, SHUFFLE_NONE } from '../../../src/constants/misc';
+import { AUDIO_MODE_SHUFFLE_SET } from '../../../src/constants/actions';
 
 describe('<ShuffleToggleButton />', () => {
     it('should render its basic structure', () => {

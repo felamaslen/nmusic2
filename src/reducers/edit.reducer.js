@@ -1,24 +1,28 @@
-import { Map as map } from 'immutable';
+import { Map as map, List as list } from 'immutable';
 import { trackNo } from '../helpers';
 import { getOrderedSongList } from './song-list.reducer';
 import { getArtworkSrc } from './audio-player.reducer';
+import { EDIT_KEYS } from '../constants/misc';
 
 export function open(state) {
-    const id = state.getIn(['songList', 'lastClickedId']);
-    if (!id) {
+    const selectedIds = state.getIn(['songList', 'selectedIds']);
+
+    const songs = state.getIn(['songList', 'songs'])
+        .filter(song => selectedIds.includes(song.get('id')));
+
+    if (!songs.size) {
         return state;
     }
 
-    const song = state.getIn(['songList', 'songs'])
-        .find(item => item.get('id') === id);
-    if (!song) {
-        return state;
-    }
+    const newValues = list(EDIT_KEYS).reduce((items, key) => items.set(key, map({
+        active: songs.every(song => song.get(key) === songs.getIn([0, key])),
+        value: songs.getIn([0, key])
+    })), map.of());
 
     return state
-        .setIn(['editInfo', 'song'], song)
-        .setIn(['editInfo', 'artwork'], getArtworkSrc(song))
-        .setIn(['editInfo', 'newValues'], song)
+        .setIn(['editInfo', 'songs'], songs)
+        .setIn(['editInfo', 'artwork'], getArtworkSrc(songs.first()))
+        .setIn(['editInfo', 'newValues'], newValues)
         .setIn(['editInfo', 'hidden'], false)
         .setIn(['songList', 'menu', 'hidden'], true);
 }
@@ -35,13 +39,13 @@ export function close(state, { cancel }) {
 
 export function changeEditValue(state, { key, value }) {
     return state
-        .setIn(['editInfo', 'newValues', key], value);
+        .setIn(['editInfo', 'newValues', key, 'value'], value);
 }
 
 export function receiveUpdatedEditValues(state, { data }) {
     const nextState = state
         .setIn(['editInfo', 'loading'], false)
-        .setIn(['editInfo', 'song'], null)
+        .setIn(['editInfo', 'songs'], null)
         .setIn(['editInfo', 'newValues'], map.of())
         .setIn(['editInfo', 'hidden'], true);
 
@@ -49,14 +53,30 @@ export function receiveUpdatedEditValues(state, { data }) {
         return nextState;
     }
 
-    const updated = state
+    const updatedValues = state
         .getIn(['editInfo', 'newValues'])
-        .set('trackNo', trackNo(state.getIn(['editInfo', 'newValues', 'track'])));
+        .filter(item => item.get('active'))
+        .map(item => item.get('value'));
+
+    const updated = state
+        .getIn(['editInfo', 'songs'])
+        .reduce((items, song) => {
+            let updatedTrackNo = song.get('trackNo');
+            if (updatedValues.has('track')) {
+                updatedTrackNo = trackNo(updatedValues.get('track'));
+            }
+
+            return items.set(song.get('id'), song
+                .mergeDeep(updatedValues)
+                .set('trackNo', updatedTrackNo)
+            );
+
+        }, map.of());
 
     const newSongs = state.getIn(['songList', 'songs'])
         .map(song => {
-            if (song.get('id') === updated.get('id')) {
-                return song.mergeDeep(updated);
+            if (updated.has(song.get('id'))) {
+                return updated.get(song.get('id'));
             }
 
             return song;

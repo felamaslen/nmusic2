@@ -17,10 +17,7 @@ export function EditInfo({ newValues, active, hidden, artworkSrc, onClose, onCha
         return null;
     }
 
-    const className = classNames({
-        'edit-info-outer': true,
-        hidden
-    });
+    const className = classNames('edit-info-outer', { hidden });
 
     return <div className={className}>
         <div className="edit-info">
@@ -56,7 +53,7 @@ EditInfo.propTypes = {
 
 const mapStateToProps = state => ({
     artworkSrc: state.getIn(['editInfo', 'artwork']),
-    active: Boolean(state.getIn(['editInfo', 'song'])),
+    active: Boolean(state.getIn(['editInfo', 'songs'])),
     hidden: state.getIn(['editInfo', 'hidden']),
     newValues: state.getIn(['editInfo', 'newValues'])
 });

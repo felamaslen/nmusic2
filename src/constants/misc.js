@@ -12,3 +12,10 @@ export const REWIND_START_TIME = 1.5;
 export const VISUALISER_FPS_CAP = 60;
 export const VISUALISER_FFT_SIZE = 128;
 
+export const EDIT_KEYS = [
+    'track',
+    'title',
+    'artist',
+    'album'
+];
+

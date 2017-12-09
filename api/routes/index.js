@@ -34,7 +34,7 @@ function apiRoutes() {
 
     router.get('/artwork/:encoded', routeArtwork);
 
-    router.patch('/edit/:id', routeEdit);
+    router.patch('/edit', routeEdit);
 
     router.use(req => {
         if (req.db) {

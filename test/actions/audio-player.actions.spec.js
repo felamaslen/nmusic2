@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import * as C from '../../../src/constants/actions';
-import * as A from '../../../src/actions/audio-player.actions';
+import * as C from '../../src/constants/actions';
+import * as A from '../../src/actions/audio-player.actions';
 
 describe('Audio player actions', () => {
     describe('audioShuffleSet', () => {

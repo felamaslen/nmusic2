@@ -1,35 +1,50 @@
 /* eslint-disable newline-per-chained-call */
 import { fromJS } from 'immutable';
-import '../../../browser';
+import '../../browser';
 import { expect } from 'chai';
 import itEach from 'it-each';
 itEach();
 import React from 'react';
-import shallow from '../../../shallow-with-store';
+import shallow from '../../shallow-with-store';
 import { createMockStore } from 'redux-test-utils';
-import EditInfo from '../../../../src/containers/edit-info';
-import EditInfoFormRow from '../../../../src/containers/edit-info/form-row';
+import EditInfo from '../../../src/containers/edit-info';
+import EditInfoFormRow from '../../../src/containers/edit-info/form-row';
+import { Artwork } from '../../../src/containers/artwork';
 
 describe('<EditInfo />', () => {
+    const state = {
+        editInfo: {
+            songs: { id: 'foo' },
+            hidden: false,
+            newValues: {},
+            artwork: 'artwork-test'
+        }
+    };
+
     it('should render null if inactive', () => {
         const wrapper = shallow(<EditInfo />, createMockStore(fromJS({
             editInfo: {
-                song: null,
-                hidden: false
+                ...state.editInfo,
+                songs: null
             }
         }))).dive();
 
         expect(wrapper.get(0)).to.equal(null);
     });
 
-    it('should render its basic structure', () => {
+    it('should render a hidden class', () => {
         const wrapper = shallow(<EditInfo />, createMockStore(fromJS({
             editInfo: {
-                song: { id: 'foo' },
-                hidden: false,
-                newValues: {}
+                ...state.editInfo,
+                hidden: true
             }
         }))).dive();
+
+        expect(wrapper.hasClass('hidden')).to.equal(true);
+    });
+
+    it('should render its basic structure', () => {
+        const wrapper = shallow(<EditInfo />, createMockStore(fromJS(state))).dive();
 
         expect(wrapper.is('div.edit-info-outer')).to.equal(true);
         expect(wrapper.children()).to.have.length(1);
@@ -43,7 +58,8 @@ describe('<EditInfo />', () => {
 
         expect(infoOuter.is('div.info-outer')).to.equal(true);
         expect(infoOuter.children()).to.have.length(2);
-        expect(infoOuter.childAt(0).is('div.artwork-outer')).to.equal(true);
+        expect(infoOuter.childAt(0).is(Artwork)).to.equal(true);
+        expect(infoOuter.childAt(0).props()).to.have.property('src', 'artwork-test');
         expect(infoOuter.childAt(1).is('div.info')).to.equal(true);
         expect(infoOuter.childAt(1).children()).to.have.length(4);
 
@@ -58,13 +74,7 @@ describe('<EditInfo />', () => {
     });
 
     describe('form fields', () => {
-        const wrapper = shallow(<EditInfo />, createMockStore(fromJS({
-            editInfo: {
-                song: { id: 'foo' },
-                hidden: false,
-                newValues: {}
-            }
-        }))).dive();
+        const wrapper = shallow(<EditInfo />, createMockStore(fromJS(state))).dive();
 
         const info = wrapper.childAt(0).childAt(0).childAt(0).childAt(1);
 

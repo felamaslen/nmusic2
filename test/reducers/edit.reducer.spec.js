@@ -1,17 +1,26 @@
+/* eslint-disable no-undefined */
 import { fromJS } from 'immutable';
 import { expect } from 'chai';
-import * as R from '../../../src/reducers/edit.reducer';
+import * as R from '../../src/reducers/edit.reducer';
 
 describe('Edit reducer', () => {
     describe('open', () => {
-        it('should do nothing if there is no clicked id', () => {
-            expect(R.open(fromJS({ foo: 'bar' })).toJS()).to.deep.equal({ foo: 'bar' });
+        it('should do nothing if there are no selected ids', () => {
+            const stateNoneSelected = {
+                songList: {
+                    selectedIds: [],
+                    songs: []
+                }
+            };
+
+            expect(R.open(fromJS(stateNoneSelected)).toJS())
+                .to.deep.equal(stateNoneSelected);
         });
 
         it('should do nothing if there is no song matching the clicked id', () => {
             const state = {
                 songList: {
-                    lastClickedId: 'foo',
+                    selectedIds: ['foo'],
                     songs: [
                         {
                             id: 'bar',
@@ -27,16 +36,16 @@ describe('Edit reducer', () => {
         describe('for valid states', () => {
             const prevState = {
                 songList: {
-                    lastClickedId: 'foo',
+                    selectedIds: ['foo'],
                     songs: [
                         {
                             id: 'foo',
-                            field1: 'f1',
-                            field2: 'f2'
+                            artist: 'f1',
+                            album: 'f2'
                         },
                         {
                             id: 'bar',
-                            field1: 'no'
+                            artist: 'no'
                         }
                     ]
                 },
@@ -46,15 +55,16 @@ describe('Edit reducer', () => {
             const nextState = R.open(fromJS(prevState)).toJS();
 
             it('should set the correct info in the editInfo map', () => {
-                expect(nextState.editInfo.song).to.deep.equal({
+                expect(nextState.editInfo.songs).to.deep.equal([{
                     id: 'foo',
-                    field1: 'f1',
-                    field2: 'f2'
-                });
+                    artist: 'f1',
+                    album: 'f2'
+                }]);
                 expect(nextState.editInfo.newValues).to.deep.equal({
-                    id: 'foo',
-                    field1: 'f1',
-                    field2: 'f2'
+                    artist: { active: true, value: 'f1' },
+                    album: { active: true, value: 'f2' },
+                    title: { active: true, value: undefined },
+                    track: { active: true, value: undefined }
                 });
             });
 
@@ -64,6 +74,50 @@ describe('Edit reducer', () => {
 
             it('should hide the context menu', () => {
                 expect(nextState.songList.menu.hidden).to.equal(true);
+            });
+        });
+
+        describe('if editing multiple songs', () => {
+            const prevState = {
+                songList: {
+                    selectedIds: ['foo', 'bar'],
+                    songs: [
+                        {
+                            id: 'foo',
+                            artist: 'f1',
+                            album: 'f2'
+                        },
+                        {
+                            id: 'bar',
+                            artist: 'not f1',
+                            album: 'f2'
+                        }
+                    ]
+                },
+                editInfo: {}
+            };
+
+            const nextState = R.open(fromJS(prevState)).toJS();
+
+            it('should set fields to inactive if their values differ', () => {
+                expect(nextState.editInfo.songs).to.deep.equal([
+                    {
+                        id: 'foo',
+                        artist: 'f1',
+                        album: 'f2'
+                    },
+                    {
+                        id: 'bar',
+                        artist: 'not f1',
+                        album: 'f2'
+                    }
+                ]);
+                expect(nextState.editInfo.newValues).to.deep.equal({
+                    artist: { active: false, value: 'f1' },
+                    album: { active: true, value: 'f2' },
+                    title: { active: true, value: undefined },
+                    track: { active: true, value: undefined }
+                });
             });
         });
     });
@@ -85,9 +139,15 @@ describe('Edit reducer', () => {
 
     describe('changeEditValue', () => {
         it('should set edit values in the state', () => {
-            expect(R.changeEditValue(fromJS({ editInfo: { newValues: {} } }), { key: 'foo', value: 'bar' }).toJS())
+            expect(R.changeEditValue(fromJS({
+                editInfo: {
+                    newValues: {
+                        foo: { value: 'not bar' }
+                    }
+                }
+            }), { key: 'foo', value: 'bar' }).toJS())
                 .to.deep.equal({
-                    editInfo: { newValues: { foo: 'bar' } }
+                    editInfo: { newValues: { foo: { value: 'bar' } } }
                 });
         });
     });
@@ -96,13 +156,19 @@ describe('Edit reducer', () => {
         const prevState = {
             editInfo: {
                 hidden: false,
-                song: { id: 'foo', field1: 'f1', field2: 'f2' },
-                newValues: { id: 'foo', field1: 'f1', field2: 'f2new' }
+                songs: [
+                    { id: 'foo', artist: 'f1', album: 'f2' }
+                ],
+                newValues: {
+                    artist: { active: true, value: 'f1' },
+                    album: { active: true, value: 'f2new' },
+                    track: { active: true, value: 3 }
+                }
             },
             songList: {
                 songs: [
-                    { id: 'foo', field1: 'f1', field2: 'f2' },
-                    { id: 'bar', field1: 'g1', field2: 'g2' }
+                    { id: 'foo', artist: 'f1', album: 'f2' },
+                    { id: 'bar', artist: 'g1', album: 'g2' }
                 ],
                 orderKeys: []
             }
@@ -116,7 +182,7 @@ describe('Edit reducer', () => {
                         editInfo: {
                             loading: false,
                             hidden: true,
-                            song: null,
+                            songs: null,
                             newValues: {}
                         }
                     });
@@ -129,13 +195,13 @@ describe('Edit reducer', () => {
                         editInfo: {
                             loading: false,
                             hidden: true,
-                            song: null,
+                            songs: null,
                             newValues: {}
                         },
                         songList: {
                             songs: [
-                                { id: 'foo', field1: 'f1', field2: 'f2new', trackNo: '' },
-                                { id: 'bar', field1: 'g1', field2: 'g2' }
+                                { id: 'foo', artist: 'f1', album: 'f2new', track: 3, trackNo: '3' },
+                                { id: 'bar', artist: 'g1', album: 'g2' }
                             ],
                             orderKeys: []
                         }

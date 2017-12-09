@@ -3,13 +3,20 @@ const { ObjectID } = require('mongodb');
 
 async function routeEdit(req, res, next) {
     const schema = joi.object().keys({
+        ids: joi.array()
+            .items(joi.string())
+            .min(1)
+            .unique()
+            .required(),
         track: joi.number(),
         title: joi.string(),
         artist: joi.string(),
         album: joi.string()
     });
 
-    const { error, value: fields } = joi.validate(req.body, schema);
+    const { error, value } = joi.validate(req.body, schema);
+
+    const { ids, ...fields } = value;
 
     if (error || Object.keys(fields).length === 0) {
         res.status(400)
@@ -18,14 +25,14 @@ async function routeEdit(req, res, next) {
         return next();
     }
 
-    const _id = new ObjectID(req.params.id);
+    const _ids = ids.map(id => new ObjectID(id));
 
     const fieldsDeep = Object.keys(fields)
         .reduce((fieldsObj, key) => ({ ...fieldsObj, [`info.${key}`]: fields[key] }), {});
 
     try {
         await req.db.collection('music')
-            .updateOne({ _id }, { $set: fieldsDeep });
+            .updateMany({ _id: { $in: _ids } }, { $set: fieldsDeep });
 
         res.json({ success: true });
     }
