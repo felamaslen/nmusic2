@@ -6,8 +6,8 @@ const DiscogsClient = require('disconnect').Client;
 
 const config = require('../../common/config');
 
-const ARTWORK_PATH = path.join(__dirname, '../../.artwork');
-const ARTWORK_UNKNOWN_FILE = `${ARTWORK_PATH}/unknown-artwork.png`;
+const ARTWORK_PATH = process.env.ARTWORK_PATH || path.join(__dirname, '../../.artwork');
+const ARTWORK_UNKNOWN_FILE = path.join(__dirname, '../unknown-artwork.png');
 
 const { getContentTypeFromFile, getBufferFromFile } = require('../../common/buffer-from-file');
 
