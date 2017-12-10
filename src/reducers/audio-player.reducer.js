@@ -105,6 +105,9 @@ export function setModeShuffle(state, status) {
     return state.setIn(['player', 'shuffle'], status);
 }
 
+export const setVolume = (state, { volume }) => state
+    .setIn(['player', 'volume'], Math.max(0, Math.min(1, volume)));
+
 export function playFirstSong(state) {
     if (state.getIn(['queue', 'songs']).size > 0) {
         return loadAudioFile(state, state.getIn(['queue', 'songs']).first())

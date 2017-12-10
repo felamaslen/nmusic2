@@ -1,0 +1,31 @@
+.volume-control-outer {
+    width: 100px;
+    height: 8px;
+
+    .gutter {
+        display: flex;
+        padding: 0 4px;
+        justify-content: left;
+        width: inherit;
+        height: inherit;
+        border: 1px solid $color-light;
+        background: $color-ultra-light;
+        border-radius: 8px;
+    }
+    .inner {
+        flex: 0 0 0;
+    }
+    .head {
+        margin-left: -4px;
+        flex: 0 0 8px;
+        height: 8px;
+        background: $color-medium-ultra-light;
+        border-radius: 100%;
+        cursor: pointer;
+
+        &:active {
+            background: $color-medium-light;
+        }
+    }
+}
+

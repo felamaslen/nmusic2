@@ -1,8 +1,6 @@
 import { connect } from 'react-redux';
 
-import {
-    audioPlayPaused, audioTrackChanged
-} from '../../actions/audio-player.actions';
+import { audioPlayPaused, audioTrackChanged } from '../../actions/audio-player.actions';
 
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -10,10 +8,10 @@ import classNames from 'classnames';
 
 import AudioScrubber from '../audio-scrubber';
 import AudioVisualisation from '../audio-visualisation';
+import VolumeControl from '../volume-control';
 
 export function AudioControls({ paused, previous, playPause, next, visualisationEnabled }) {
-    const playPauseButtonClasses = classNames({
-        'button button-playpause': true,
+    const playPauseButtonClasses = classNames('button', 'button-playpause', {
         paused,
         playing: !paused
     });
@@ -34,6 +32,7 @@ export function AudioControls({ paused, previous, playPause, next, visualisation
             <button className="button button-next"
                 onClick={() => next()} />
         </div>
+        <VolumeControl />
         <AudioScrubber />
         {visualisation}
     </div>;

@@ -48,6 +48,7 @@ export default createReducer(initialState, createReducerObject([
 
     [AC.AUDIO_FILE_LOADED, audio.loadAudioFile],
     [AC.AUDIO_MODE_SHUFFLE_SET, audio.setModeShuffle],
+    [AC.AUDIO_VOLUME_SET, audio.setVolume],
     [AC.AUDIO_ENDED, audio.handleAudioEnded],
     [AC.AUDIO_PLAY_PAUSED, audio.playPauseAudio],
 
