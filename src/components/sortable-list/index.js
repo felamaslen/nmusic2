@@ -24,7 +24,7 @@ export default class SortableList extends PureComponent {
             dragItem: null
         };
 
-        this.dragListener = debounce(({ clientX, clientY }) => this.onDrag(clientX, clientY), 5, true);
+        this.dragListener = debounce(({ clientX, clientY }) => this.onDrag(clientX, clientY), 1, true);
 
         this.childRefs = {};
     }
