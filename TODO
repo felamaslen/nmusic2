@@ -3,5 +3,6 @@
 - [DONE] multiple files tag editing in UI
 - [DONE] change currently editing song from edit dialog box
 - change document title to current song
-- fix buggy shuffle behaviour
+- [DONE] fix buggy shuffle behaviour
 - reload filters when editing songs
+- smoother dragging of queue items

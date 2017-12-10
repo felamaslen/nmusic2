@@ -55,6 +55,7 @@ export default fromJS({
         loading: false,
         menu: { hidden: true },
         selectedIds: [],
+        shuffledIds: [],
         lastClickedId: -1,
         orderKeys: [
             { key: 'title', order: 1 },

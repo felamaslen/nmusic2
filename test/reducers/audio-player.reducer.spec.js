@@ -18,7 +18,8 @@ describe('Audio player reducer', () => {
                 shuffle: M.SHUFFLE_NONE
             },
             songList: {
-                songs: [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }]
+                songs: [{ id: 'foo' }, { id: 'bar' }, { id: 'baz' }],
+                shuffledIds: []
             },
             queue: {
                 songs: [],
