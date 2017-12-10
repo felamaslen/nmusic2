@@ -1,5 +1,7 @@
 export const API_PREFIX = 'api/v1';
 
+export const APP_TITLE = 'nMusic2';
+
 export const REPEAT_NONE = 0x100;
 export const REPEAT_LIST = 0x101;
 export const REPEAT_TRACK = 0x102;
