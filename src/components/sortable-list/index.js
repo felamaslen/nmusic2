@@ -11,7 +11,7 @@ export default class SortableList extends PureComponent {
         super(props);
 
         this.state = {
-            dragging: -1,
+            draggingIndex: -1,
             draggingKey: null,
             startX: 0,
             startY: 0,
@@ -41,7 +41,7 @@ export default class SortableList extends PureComponent {
         const offsetY = posY - top;
 
         this.setState({
-            dragging: index,
+            draggingIndex: index,
             draggingKey: key,
             startX: posX,
             startY: posY,
@@ -56,11 +56,11 @@ export default class SortableList extends PureComponent {
     }
     onDragEnd() {
         if (this.state.deltaY) {
-            this.props.onOrder(this.state.dragging, this.state.deltaY);
+            this.props.onOrder(this.state.draggingIndex, this.state.deltaY);
         }
 
         this.setState({
-            dragging: -1,
+            draggingIndex: -1,
             draggingKey: null,
             dragItem: null,
             deltaY: 0
@@ -73,7 +73,9 @@ export default class SortableList extends PureComponent {
 
         const deltaYFloat = (posY - this.state.startY) / this.state.dragItemHeight;
         const deltaYAbs = Math.abs(deltaYFloat);
-        const deltaY = Math.round(Math.floor(deltaYAbs) * deltaYAbs / deltaYFloat);
+        const deltaY = deltaYFloat
+            ? Math.round(Math.floor(deltaYAbs) * deltaYAbs / deltaYFloat)
+            : 0;
 
         this.setState({
             posX, posY, deltaY
@@ -92,16 +94,13 @@ export default class SortableList extends PureComponent {
             this.setState({
                 children: this.props.children,
                 deltaY: 0,
-                dragging: -1,
+                draggingIndex: -1,
                 draggingKey: null
             });
         }
     }
     render() {
-        const className = classNames({
-            ...this.props.className,
-            'sortable-list': true
-        });
+        const className = classNames('sortable-list', this.props.className);
 
         const onDragStart = (index, key) => ({ clientX, clientY }) =>
             this.onDragStart(index, key, clientX, clientY);
@@ -119,19 +118,19 @@ export default class SortableList extends PureComponent {
         let children = this.state.children.slice();
 
         if (this.state.draggingKey) {
-            children = orderListItems(children, this.state.dragging, this.state.deltaY);
+            children = orderListItems(children, this.state.draggingIndex, this.state.deltaY);
         }
 
         children = children
-            .map((item, itemKey) => {
-                const key = this.props.childKey(item, itemKey);
+            .map((item, index) => {
+                const key = this.props.childKey(item, index);
 
                 const itemRef = childRef(key);
 
-                const onItemDragStart = onDragStart(itemKey, key);
+                const onItemDragStart = onDragStart(index, key);
 
                 const props = {
-                    ...this.props.childProps(item, itemKey, Boolean(this.state.draggingKey)),
+                    ...this.props.childProps(item, index, Boolean(this.state.draggingKey)),
                     itemRef,
                     className: childClass(key),
                     onMouseDown: onItemDragStart,
@@ -142,9 +141,9 @@ export default class SortableList extends PureComponent {
             });
 
         let dragItem = null;
-        if (this.state.dragging > -1) {
+        if (this.state.draggingIndex > -1) {
             const dragItemProps = this.props.childProps(
-                this.props.children.get(this.state.dragging), this.state.dragging
+                this.props.children.get(this.state.draggingIndex), this.state.draggingIndex
             );
 
             const dragItemStyle = {
@@ -167,7 +166,10 @@ export default class SortableList extends PureComponent {
 }
 
 SortableList.propTypes = {
-    className: PropTypes.object.isRequired,
+    className: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.object
+    ]),
     children: PropTypes.instanceOf(list).isRequired,
     childProps: PropTypes.func.isRequired,
     childKey: PropTypes.func.isRequired,
