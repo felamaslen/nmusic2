@@ -5,4 +5,4 @@
 - change document title to current song
 - [DONE] fix buggy shuffle behaviour
 - reload filters when editing songs
-- smoother dragging of queue items
+- [DONE] smoother dragging of queue items
