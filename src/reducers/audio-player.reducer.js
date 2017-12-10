@@ -80,13 +80,35 @@ function getNextQueue(queue, queueActive) {
     return queue;
 }
 
-function nextTrackShuffle(state, songs, currentListIndex) {
-    let nextIndex = null;
-    do {
-        nextIndex = Math.floor(Math.random() * songs.size);
-    } while (nextIndex === currentListIndex);
+function nextTrackShuffle(
+    state,
+    songs = state.getIn(['songList', 'songs']),
+    currentId = state.getIn(['player', 'current'])
+) {
+    const invalidIds = state
+        .getIn(['songList', 'shuffledIds'])
+        .push(currentId);
 
-    return loadAudioFile(state, songs.get(nextIndex));
+    const allIds = songs.map(song => song.get('id'));
+
+    let validIds = allIds.filterNot(id => invalidIds.includes(id));
+    if (!validIds.size) {
+        if (state.getIn(['player', 'repeat']) !== REPEAT_LIST) {
+            return audioStop(state)
+                .setIn(['songList', 'shuffledIds'], list.of());
+        }
+
+        validIds = allIds;
+    }
+
+    const nextId = validIds.get(Math.floor(Math.random() * validIds.size));
+    const nextSong = songs.find(song => song.get('id') === nextId);
+
+    return loadAudioFile(state, nextSong)
+        .setIn(['songList', 'shuffledIds'], state
+            .getIn(['songList', 'shuffledIds'])
+            .push(nextId)
+        );
 }
 
 function nextTrackFromNone(state, queue, songs) {
@@ -237,6 +259,10 @@ function playFirstSong(state) {
                 .getIn(['songList', 'songs'])
                 .find(song => song.get('id') === firstId)
             );
+        }
+
+        if (state.getIn(['player', 'shuffle']) === SHUFFLE_ALL) {
+            return nextTrackShuffle(state);
         }
 
         return loadAudioFile(state, state.getIn(['songList', 'songs']).first());
