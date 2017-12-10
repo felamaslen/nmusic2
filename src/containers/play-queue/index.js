@@ -22,7 +22,7 @@ export function PlayQueue({ queue, active, onOrderQueue }) {
     return <div className="play-queue-outer">
         <h3 className="sidebar-title play-queue-title">{'Play queue'}</h3>
         <SortableList
-            className={{ 'play-queue': true }}
+            className="play-queue"
             ListItem={QueueItem}
             childProps={itemProps}
             childKey={itemKey}

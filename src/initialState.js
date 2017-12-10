@@ -1,6 +1,6 @@
 import { fromJS } from 'immutable';
 
-import { REPEAT_NONE, SHUFFLE_NONE } from './constants/misc';
+import { APP_TITLE, REPEAT_NONE, SHUFFLE_NONE } from './constants/misc';
 
 function getAudioContext() {
     if (typeof AudioContext !== 'undefined') {
@@ -12,6 +12,7 @@ function getAudioContext() {
 
 export default fromJS({
     settingsLoaded: false,
+    title: [APP_TITLE],
     cloud: {
         error: null,
         clients: {},
@@ -55,6 +56,7 @@ export default fromJS({
         loading: false,
         menu: { hidden: true },
         selectedIds: [],
+        shuffledIds: [],
         lastClickedId: -1,
         orderKeys: [
             { key: 'title', order: 1 },

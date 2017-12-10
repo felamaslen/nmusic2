@@ -2,6 +2,7 @@
 - [DONE] (fork of music-metadata)] utf-8 tags
 - [DONE] multiple files tag editing in UI
 - [DONE] change currently editing song from edit dialog box
-- change document title to current song
-- fix buggy shuffle behaviour
+- [DONE] change document title to current song
+- [DONE] fix buggy shuffle behaviour
 - reload filters when editing songs
+- [DONE] smoother dragging of queue items
