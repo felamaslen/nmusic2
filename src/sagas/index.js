@@ -34,6 +34,8 @@ export function *watchSearchSelected() {
 
 export function *watchAudioPlayed() {
     yield takeEvery(actions.AUDIO_PLAY_PAUSED, audio.playRandomSong);
+
+    yield takeEvery(actions.AUDIO_TRACK_CHANGED, audio.playRandomSong);
 }
 
 export function *watchEdit() {
