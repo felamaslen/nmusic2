@@ -89,6 +89,7 @@ export default fromJS({
         url: null,
         audioSource: false,
         audioContext: getAudioContext(),
+        volume: 1,
         seekTime: 0,
         dragTime: null,
         playTime: 0,

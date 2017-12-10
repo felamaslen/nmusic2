@@ -1,6 +1,7 @@
 export const PERSISTENT_SETTINGS = [
     ['sidebar', 'hidden'],
-    ['sidebar', 'displayOver']
+    ['sidebar', 'displayOver'],
+    ['player', 'volume']
 ];
 
 export const keyFromStore = storeKey => storeKey.join('_');

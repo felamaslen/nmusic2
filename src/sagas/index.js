@@ -14,6 +14,7 @@ export function *watchSettings() {
 
     yield takeEvery(actions.SIDEBAR_HIDDEN, app.setSettings, 'sidebar_hidden');
     yield takeEvery(actions.SIDEBAR_DISPLAY_OVER_TOGGLED, app.setSettings, 'sidebar_displayOver');
+    yield takeEvery(actions.AUDIO_VOLUME_SET, audio.rememberVolume);
 }
 
 export function *watchFilterListRequested() {

@@ -21,45 +21,24 @@ export class AudioPlayerCore extends ImmutableComponent {
     play() {
         this.audio.play();
     }
-    playPauseSeek(prevProps, nextProps, updated = false) {
-        if (this.audio) {
-            if ((updated || !prevProps.paused) && nextProps.paused) {
-                this.pause();
-
-                return true;
-            }
-            if ((updated || prevProps.paused) && !nextProps.paused) {
-                this.play();
-
-                return true;
-            }
-            if (prevProps.seekTime !== nextProps.seekTime) {
-                this.audio.currentTime = nextProps.seekTime;
-
-                return true;
-            }
-            if (nextProps.seekTime < 0) {
-                this.props.seekToStart();
-            }
+    playPauseSeek(prevProps, updated = false) {
+        if ((updated || !prevProps.paused) && this.props.paused) {
+            this.pause();
         }
-
-        return false;
+        if ((updated || prevProps.paused) && !this.props.paused) {
+            this.play();
+        }
+        if (prevProps.seekTime !== this.props.seekTime) {
+            this.audio.currentTime = this.props.seekTime;
+        }
+        if (this.props.seekTime < 0) {
+            this.props.seekToStart();
+        }
     }
     setDuration() {
         if (this.audio) {
             setTimeout(() => this.props.setDuration(this.audio.duration), 0);
         }
-    }
-    shouldComponentUpdate(nextProps) {
-        const srcChanged = this.props.src !== nextProps.src;
-
-        if (srcChanged) {
-            return true;
-        }
-
-        this.playPauseSeek(this.props, nextProps);
-
-        return false;
     }
     getSource() {
         if (!this.source) {
@@ -70,16 +49,22 @@ export class AudioPlayerCore extends ImmutableComponent {
         setTimeout(() => this.props.updateAudioSource(this.source), 0);
     }
     componentDidUpdate(prevProps) {
-        if (this.audio) {
-            this.audio.onloadedmetadata = () => this.setDuration();
+        if (this.audio && this.props.src) {
+            if (this.props.src !== prevProps.src) {
+                this.audio.onloadedmetadata = () => this.setDuration();
 
-            this.getSource();
+                this.getSource();
+            }
+
+            if (this.props.volume !== prevProps.volume) {
+                this.audio.volume = this.props.volume;
+            }
+
+            this.playPauseSeek(prevProps, this.props, true);
         }
-        else if (!this.props.src) {
+        else {
             this.source = null;
         }
-
-        this.playPauseSeek(prevProps, this.props, true);
     }
     componentDidMount() {
         if (this.audio && !this.props.paused) {
@@ -121,6 +106,7 @@ export class AudioPlayerCore extends ImmutableComponent {
 AudioPlayerCore.propTypes = {
     src: PropTypes.string,
     paused: PropTypes.bool.isRequired,
+    volume: PropTypes.number.isRequired,
     seekTime: PropTypes.number.isRequired,
     audioContext: PropTypes.object,
     setDuration: PropTypes.func.isRequired,
@@ -134,6 +120,7 @@ AudioPlayerCore.propTypes = {
 const mapStateToProps = state => ({
     src: state.getIn(['player', 'url']),
     paused: state.getIn(['player', 'paused']),
+    volume: state.getIn(['player', 'volume']),
     seekTime: state.getIn(['player', 'seekTime']),
     audioContext: state.getIn(['player', 'audioContext'])
 });

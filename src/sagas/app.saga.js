@@ -28,18 +28,14 @@ export function *loadSettings() {
 
 const selectSetting = key => state => state.getIn(key.split('_'));
 
-function setSettingsInStorage(key, value) {
+export function *setSettings(key) {
+    const value = yield select(selectSetting(key));
+
     try {
-        localStorage.setItem(key, value);
+        yield call([localStorage, 'setItem'], key, value);
     }
     catch (err) {
         // do nothing
     }
-}
-
-export function *setSettings(key) {
-    const value = yield select(selectSetting(key));
-
-    yield call(setSettingsInStorage, key, value);
 }
 
