@@ -106,8 +106,8 @@ AudioVisualisation.propTypes = {
 };
 
 const mapStateToProps = state => ({
-    audioSource: state.get('audioSource'),
-    audioContext: state.get('audioContext')
+    audioSource: state.getIn(['player', 'audioSource']),
+    audioContext: state.getIn(['player', 'audioContext'])
 });
 
 export default connect(mapStateToProps)(AudioVisualisation);

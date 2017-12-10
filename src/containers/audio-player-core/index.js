@@ -135,7 +135,7 @@ const mapStateToProps = state => ({
     src: state.getIn(['player', 'url']),
     paused: state.getIn(['player', 'paused']),
     seekTime: state.getIn(['player', 'seekTime']),
-    audioContext: state.get('audioContext')
+    audioContext: state.getIn(['player', 'audioContext'])
 });
 
 const mapDispatchToProps = dispatch => ({

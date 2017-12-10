@@ -376,5 +376,5 @@ export const audioTimeUpdate = (state, time) => state
     .setIn(['player', 'playTime'], time);
 
 export const updateAudioSource = (state, audioSource) => state
-    .set('audioSource', audioSource);
+    .setIn(['player', 'audioSource'], audioSource);
 
