@@ -6,3 +6,6 @@
 - [DONE] fix buggy shuffle behaviour
 - reload filters when editing songs
 - [DONE] smoother dragging of queue items
+- resizable filters
+- persistent shuffle setting
+- repeat setting
