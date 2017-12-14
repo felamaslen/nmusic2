@@ -156,7 +156,7 @@ function getRemoteHostname(req) {
 
     return new Promise(resolve => {
         dns.reverse(ip, (err, hostnames) => {
-            if (err) {
+            if (err || !hostnames.length) {
                 return resolve(ip);
             }
 
