@@ -12,10 +12,12 @@ export class AudioVisualisation extends ImmutableComponent {
     constructor(props) {
         super(props);
 
-        this.analyser = this.props.audioContext.createAnalyser();
-        this.analyser.fftSize = VISUALISER_FFT_SIZE;
+        if (this.props.audioContext) {
+            this.analyser = this.props.audioContext.createAnalyser();
+            this.analyser.fftSize = VISUALISER_FFT_SIZE;
 
-        this.data = new Uint8Array(this.analyser.frequencyBinCount);
+            this.data = new Uint8Array(this.analyser.frequencyBinCount);
+        }
 
         this.animation = null;
         this.animationLastTime = 0;
@@ -77,8 +79,10 @@ export class AudioVisualisation extends ImmutableComponent {
             cancelAnimationFrame(this.animation);
         }
 
-        this.connectAnalyser();
-        this.animate();
+        if (this.props.audioContext) {
+            this.connectAnalyser();
+            this.animate();
+        }
     }
     render() {
         const canvasRef = canvas => {
@@ -102,7 +106,11 @@ if (typeof MediaElementSourceNode !== 'undefined') {
 }
 
 AudioVisualisation.propTypes = {
-    source: PropTypes.instanceOf(SourceType)
+    audioSource: PropTypes.oneOfType([
+        PropTypes.instanceOf(SourceType),
+        PropTypes.bool
+    ]).isRequired,
+    audioContext: PropTypes.object
 };
 
 const mapStateToProps = state => ({

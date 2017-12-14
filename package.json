@@ -85,6 +85,7 @@
     "webpack-hot-middleware": "^2.21.0"
   },
   "dependencies": {
+    "audio-context": "^1.0.1",
     "axios": "^0.16.2",
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",

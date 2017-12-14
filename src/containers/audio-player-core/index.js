@@ -28,11 +28,12 @@ export class AudioPlayerCore extends ImmutableComponent {
         if ((updated || prevProps.paused) && !this.props.paused) {
             this.play();
         }
-        if (prevProps.seekTime !== this.props.seekTime) {
-            this.audio.currentTime = this.props.seekTime;
-        }
+
         if (this.props.seekTime < 0) {
             this.props.seekToStart();
+        }
+        else if (prevProps.seekTime !== this.props.seekTime) {
+            this.audio.currentTime = this.props.seekTime;
         }
     }
     setDuration() {
@@ -50,7 +51,9 @@ export class AudioPlayerCore extends ImmutableComponent {
     }
     componentDidUpdate(prevProps) {
         if (this.audio && this.props.src) {
-            if (this.props.src !== prevProps.src) {
+            const updatedSrc = this.props.src !== prevProps.src;
+
+            if (updatedSrc) {
                 this.audio.onloadedmetadata = () => this.setDuration();
 
                 this.getSource();
@@ -60,7 +63,7 @@ export class AudioPlayerCore extends ImmutableComponent {
                 this.audio.volume = this.props.volume;
             }
 
-            this.playPauseSeek(prevProps, this.props, true);
+            this.playPauseSeek(prevProps, this.props, updatedSrc);
         }
         else {
             this.source = null;
@@ -95,7 +98,8 @@ export class AudioPlayerCore extends ImmutableComponent {
         return <audio ref={audioRef}
             controls={false}
             src={this.props.src}
-            autoPlay={false}
+            autoPlay={true}
+            preload="auto"
             onTimeUpdate={onTimeUpdate}
             onProgress={onProgress}
             onEnded={onEnded}
