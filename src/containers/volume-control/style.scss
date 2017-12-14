@@ -1,14 +1,18 @@
+$volume-control-height: 10px;
+$volume-control-width: 100px;
+
 .volume-control-outer {
-    width: 100px;
-    height: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     .gutter {
         display: flex;
-        padding: 0 4px;
+        margin: 4px 0;
+        padding: 0 $volume-control-height / 2;
         justify-content: left;
-        width: inherit;
-        height: inherit;
-        border: 1px solid $color-light;
+        width: $volume-control-width;
+        height: $volume-control-height;
         background: $color-ultra-light;
         border-radius: 8px;
     }
@@ -17,9 +21,9 @@
     }
     .head {
         margin-left: -4px;
-        flex: 0 0 8px;
-        height: 8px;
-        background: $color-medium-ultra-light;
+        flex: 0 0 $volume-control-height;
+        height: $volume-control-height;
+        background: $color-medium-dark;
         border-radius: 100%;
         cursor: pointer;
 

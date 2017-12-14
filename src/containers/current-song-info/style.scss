@@ -1,21 +1,40 @@
 .current-song-info-outer {
     display: flex;
-    white-space: nowrap;
+    flex: 1 2 0;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    @include noselect;
 
     .info {
         display: flex;
-        margin: 0 1em;
-        flex-flow: column;
-
-        & > span {
-            line-height: 24px;
-            max-width: 200px;
+        flex-flow: row wrap;
+        justify-content: center;
+            
+        &, span {
             overflow: hidden;
             text-overflow: ellipsis;
         }
     
         .title {
+            width: 100%;
+            text-align: center;
+            font-size: 12px;
             font-style: italic;
+            line-height: 20px;
+        }
+        .other {
+            display: flex;
+            justify-content: center;
+            white-space: nowrap;
+            font-size: 10px;
+            line-height: 16px;
+        }
+        .artist, .album {
+        }
+        .separator {
+            margin: 0 0.5em;
         }
     }
 }
