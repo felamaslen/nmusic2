@@ -9,30 +9,34 @@ export function leadingZeroes(number) {
 /**
  * format a number of seconds like 15:31 or 01:20:03
  */
-export function formatSeconds(secs) {
-    if (secs < 60) {
-        return `00:${leadingZeroes(secs)}`;
+export function formatSeconds(seconds) {
+    if (seconds < 60) {
+        return `00:${leadingZeroes(seconds)}`;
     }
 
     const abbr = [1, 60, 3600, 86400];
 
     return abbr
         .reverse()
-        .reduce((reduction, period) => {
-            if (reduction.secs >= period) {
-                const numThisPeriod = Math.floor(reduction.secs / period);
+        .reduce(({ secs, parts }, period) => {
+            if (secs >= period) {
+                const numThisPeriod = Math.floor(secs / period);
 
-                const remaining = reduction.secs % period;
+                const remaining = secs % period;
 
-                reduction.secs = remaining;
-                reduction.parts.push(numThisPeriod);
+                return {
+                    secs: remaining,
+                    parts: [...parts, numThisPeriod]
+                };
             }
-            else if (reduction.parts.length > 0) {
-                reduction.parts.push(0);
+
+            if (parts.length > 0) {
+                return { secs, parts: [...parts, 0] };
             }
 
-            return reduction;
-        }, { secs, parts: [] })
+            return { secs, parts };
+
+        }, { secs: seconds, parts: [] })
         .parts
         .map(part => leadingZeroes(part))
         .join(':');

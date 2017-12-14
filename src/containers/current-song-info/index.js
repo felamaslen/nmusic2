@@ -3,13 +3,26 @@ import { connect } from 'react-redux';
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import AudioVisualisation from '../audio-visualisation';
+import AudioScrubber from '../audio-scrubber';
+
 export function CurrentSongInfo({ title, artist, album }) {
+    let visualisation = null;
+    if (process.env.SKIP_VISUALISER !== 'true') {
+        visualisation = <AudioVisualisation />;
+    }
+
     return <div className="current-song-info-outer">
         <span className="info">
             <span className="title">{title}</span>
-            <span className="artist">{artist}</span>
-            <span className="album">{album}</span>
+            <span className="other">
+                <span className="artist">{artist}</span>
+                <span className="separator">{'-'}</span>
+                <span className="album">{album}</span>
+            </span>
         </span>
+        {visualisation}
+        <AudioScrubber />
     </div>;
 }
 

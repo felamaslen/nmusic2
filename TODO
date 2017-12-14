@@ -1,4 +1,4 @@
-- volume control
+- [DONE] volume control
 - [DONE] (fork of music-metadata)] utf-8 tags
 - [DONE] multiple files tag editing in UI
 - [DONE] change currently editing song from edit dialog box
@@ -6,3 +6,7 @@
 - [DONE] fix buggy shuffle behaviour
 - reload filters when editing songs
 - [DONE] smoother dragging of queue items
+- resizable filters
+- persistent shuffle setting
+- repeat setting
+- [DONE] current / remaining time on song

@@ -2,6 +2,7 @@
     flex: 0 0 $sidebar-width;
     z-index: 102;
     overflow: hidden;
+    @include noselect;
 
     .sidebar {
         width: $sidebar-width;

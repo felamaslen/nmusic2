@@ -148,6 +148,10 @@ async function getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album)
 }
 
 async function getDiscogsArtwork(artist, album) {
+    if (!(config.discogs.consumerKey && config.discogs.consumerSecret)) {
+        throw new Error('No Discogs API key configured');
+    }
+
     const discogs = new DiscogsClient({
         consumerKey: config.discogs.consumerKey,
         consumerSecret: config.discogs.consumerSecret

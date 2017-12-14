@@ -3,6 +3,7 @@ import { select, call, put } from 'redux-saga/effects';
 import axios from 'axios';
 import { API_PREFIX, SHUFFLE_ALL } from '../constants/misc';
 import { audioFileLoaded } from '../actions/audio-player.actions';
+import { setSettings } from './app.saga';
 
 export const selectSongLoaded = state =>
     Boolean(state.getIn(['player', 'current']));
@@ -26,5 +27,15 @@ export function *playRandomSong() {
             // do nothing
         }
     }
+}
+
+export function *rememberVolume({ payload }) {
+    const { remember } = payload;
+
+    if (!remember) {
+        return;
+    }
+
+    yield call(setSettings, 'player_volume');
 }
 
