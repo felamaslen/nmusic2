@@ -2,12 +2,14 @@ import { List as list } from 'immutable';
 import { connect } from 'react-redux';
 
 import { handleNaN } from '../../helpers';
+import { formatSeconds } from '../../helpers/format';
 
 import { audioSeeked } from '../../actions/audio-player.actions';
 
 import React from 'react';
 import ImmutableComponent from '../../ImmutableComponent';
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 export class AudioScrubber extends ImmutableComponent {
     constructor(props) {
@@ -16,32 +18,39 @@ export class AudioScrubber extends ImmutableComponent {
         this.seeking = false;
     }
     render() {
+        const {
+            isPlaying, bufferedRanges, progress, playTime, timeToEnd, onSeek
+        } = this.props;
+
         const onSeekStart = evt => {
             this.seeking = true;
-            this.props.onSeek(evt, true);
+            onSeek(evt, true);
         };
-        const onSeek = evt => this.seeking && this.props.onSeek(evt, true);
+        const onSeekIfSeeking = evt => this.seeking && onSeek(evt, true);
         const onSeekEnd = evt => {
             this.seeking = false;
-            this.props.onSeek(evt, false);
+            onSeek(evt, false);
         }
 
         const progressStyle = {
-            width: `${this.props.progress}%`
+            width: `${progress}%`
         };
 
-        const bufferedBars = this.props.bufferedRanges.map(({ left, width }, key) => {
+        const bufferedBars = bufferedRanges.map(({ left, width }, key) => {
             const style = { left, width };
 
             return <div key={key} className="buffered" style={style} />;
         });
 
-        return <div className="audio-scrubber">
+        const className = classNames('audio-scrubber', { playing: isPlaying });
+
+        return <div className={className}>
+            <span className="time-played">{playTime}</span>
             <div className="trough"
                 onMouseDown={onSeekStart}
                 onMouseUp={onSeekEnd}
-                onMouseMove={onSeek}
-                onTouchMove={onSeek}
+                onMouseMove={onSeekIfSeeking}
+                onTouchMove={onSeekIfSeeking}
                 onTouchEnd={onSeekEnd}>
 
                 {bufferedBars}
@@ -49,13 +58,18 @@ export class AudioScrubber extends ImmutableComponent {
                     <i className="play-head" />
                 </div>
             </div>
+            <span className="time-to-end">{'-'}{timeToEnd}</span>
         </div>;
     }
 }
 
 AudioScrubber.propTypes = {
+    isPlaying: PropTypes.bool.isRequired,
     bufferedRanges: PropTypes.instanceOf(list).isRequired,
-    progress: PropTypes.number.isRequired
+    progress: PropTypes.number.isRequired,
+    playTime: PropTypes.string.isRequired,
+    timeToEnd: PropTypes.string.isRequired,
+    onSeek: PropTypes.func.isRequired
 };
 
 const mapStateToProps = state => {
@@ -67,8 +81,12 @@ const mapStateToProps = state => {
         : dragTime;
 
     return {
+        isPlaying: Boolean(state.getIn(['player', 'current'])),
         bufferedRanges: state.getIn(['player', 'bufferedRanges']),
-        progress: 100 * handleNaN(progressTime / state.getIn(['player', 'duration']))
+        progress: 100 * handleNaN(progressTime / state.getIn(['player', 'duration'])),
+        playTime: formatSeconds(Math.round(state.getIn(['player', 'playTime']))),
+        timeToEnd: formatSeconds(Math.round(state.getIn(['player', 'duration']) -
+            state.getIn(['player', 'playTime'])))
     };
 };
 

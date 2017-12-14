@@ -6,13 +6,35 @@ $progress_height_outer: 24px;
 $progress_height: 10px;
 
 .audio-scrubber {
+    display: flex;
     margin: 6px 0;
-    flex-basis: $progress_height_outer;
+    flex: 0 0 $progress_height_outer;
+    align-items: center;
     width: 100%;
     max-width: 280px;
     z-index: 2;
 
+    .time-played, .time-to-end {
+        display: block;
+        visibility: hidden;
+    }
+
+    &.playing {
+        .time-played, .time-to-end {
+            visibility: visible;
+            flex: 0 0 40px;
+            font-size: 11px;
+        }
+        .time-played {
+            margin-right: 0.5em;
+        }
+        .time-to-end {
+            margin-left: 0.5em;
+        }
+    }
+
     .trough {
+        flex: 1 0 0;
         height: $progress_height;
         margin-top: $progress_height_outer - $progress_height;
         position: relative;
