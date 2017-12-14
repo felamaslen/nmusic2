@@ -2,10 +2,9 @@ $search-width: 280px;
 
 .search-outer {
     display: flex;
+    flex: 0 1 $search-width;
     justify-content: flex-end;
     align-items: center;
-    flex-basis: 0;
-    flex-grow: 1;
     padding-right: 1em;
 
     @include noselect;
@@ -15,7 +14,7 @@ $search-width: 280px;
 .search-inner {
     display: flex;
     flex-flow: column;
-    flex: 0 0 $search-width;
+    flex: 0 1 $search-width;
 }
 
 .search-box-outer {
@@ -47,12 +46,11 @@ $search-width: 280px;
     display: flex;
     position: absolute;
     top: 100%;
-    left: 0;
+    right: 0;
     padding-bottom: 1em;
-    width: 100%;
     flex: 0 0 auto;
     z-index: 100;
-    max-width: $search-width;
+    width: $search-width;
     flex-flow: row wrap;
     align-items: center;
     justify-content: center;

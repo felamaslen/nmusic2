@@ -1,0 +1,35 @@
+$volume-control-height: 10px;
+$volume-control-width: 100px;
+
+.volume-control-outer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .gutter {
+        display: flex;
+        margin: 4px 0;
+        padding: 0 $volume-control-height / 2;
+        justify-content: left;
+        width: $volume-control-width;
+        height: $volume-control-height;
+        background: $color-ultra-light;
+        border-radius: 8px;
+    }
+    .inner {
+        flex: 0 0 0;
+    }
+    .head {
+        margin-left: -4px;
+        flex: 0 0 $volume-control-height;
+        height: $volume-control-height;
+        background: $color-medium-dark;
+        border-radius: 100%;
+        cursor: pointer;
+
+        &:active {
+            background: $color-medium-light;
+        }
+    }
+}
+

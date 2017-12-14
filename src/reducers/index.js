@@ -8,6 +8,8 @@ import * as sidebar from './sidebar.reducer';
 import * as songList from './song-list.reducer';
 import * as filter from './filter.reducer';
 import * as audio from './audio-player.reducer';
+import * as audioProgress from './audio-progress.reducer';
+import * as audioTrackQueue from './audio-track-queue.reducer';
 import * as search from './search.reducer';
 import * as edit from './edit.reducer';
 
@@ -44,18 +46,19 @@ export default createReducer(initialState, createReducerObject([
     [AC.FILTER_LIST_RECEIVED, filter.receiveFilterList],
     [AC.FILTER_ITEM_CLICKED, filter.startFilterSongList],
 
-    [AC.AUDIO_SOURCE_UPDATED, audio.updateAudioSource],
     [AC.AUDIO_FILE_LOADED, audio.loadAudioFile],
-    [AC.AUDIO_DURATION_SET, audio.setAudioDuration],
     [AC.AUDIO_MODE_SHUFFLE_SET, audio.setModeShuffle],
-
-    [AC.AUDIO_TIME_UPDATED, audio.audioTimeUpdate],
-    [AC.AUDIO_BUFFERED, audio.audioProgressBuffer],
+    [AC.AUDIO_VOLUME_SET, audio.setVolume],
     [AC.AUDIO_ENDED, audio.handleAudioEnded],
-
     [AC.AUDIO_PLAY_PAUSED, audio.playPauseAudio],
-    [AC.AUDIO_TRACK_CHANGED, audio.changeTrack],
-    [AC.AUDIO_SEEKED, audio.audioSeek],
+
+    [AC.AUDIO_SOURCE_UPDATED, audioProgress.updateAudioSource],
+    [AC.AUDIO_DURATION_SET, audioProgress.setAudioDuration],
+    [AC.AUDIO_TIME_UPDATED, audioProgress.audioTimeUpdate],
+    [AC.AUDIO_BUFFERED, audioProgress.audioProgressBuffer],
+    [AC.AUDIO_SEEKED, audioProgress.audioSeek],
+
+    [AC.AUDIO_TRACK_CHANGED, audioTrackQueue.changeTrack],
 
     [AC.SEARCH_CHANGED, search.changeSearch],
     [AC.SEARCH_NAVIGATED, search.navigateSearch],

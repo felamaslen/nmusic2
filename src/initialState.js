@@ -74,8 +74,6 @@ export default fromJS({
         nextAvailable: false,
         prevAvailable: false
     },
-    audioSource: null,
-    audioContext: getAudioContext(),
     queue: {
         songs: [],
         active: -1
@@ -90,6 +88,8 @@ export default fromJS({
         paused: true,
         url: null,
         audioSource: false,
+        audioContext: getAudioContext(),
+        volume: 1,
         seekTime: 0,
         dragTime: null,
         playTime: 0,

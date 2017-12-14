@@ -2,17 +2,21 @@ $color_progress: rgba(200, 200, 200, 0.4);
 $color_buffered: rgb(56, 204, 29);
 $color_playhead: #111;
 
-$progress_height_outer: 22px;
-$progress_height: 8px;
+$progress_height_outer: 24px;
+$progress_height: 10px;
 
 .audio-scrubber {
+    margin: 6px 0;
     flex-basis: $progress_height_outer;
+    width: 100%;
+    max-width: 280px;
     z-index: 2;
 
     .trough {
         height: $progress_height;
-        padding-top: $progress_height_outer - $progress_height;
+        margin-top: $progress_height_outer - $progress_height;
         position: relative;
+        background: $color-ultra-light;
     }
     .buffered {
         background: $color_buffered;

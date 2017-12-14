@@ -12,5 +12,13 @@ describe('Audio player actions', () => {
             });
         });
     });
+    describe('audioVolumeSet', () => {
+        it('should return AUDIO_VOLUME_SET with volume, remember parameters', () => {
+            expect(A.audioVolumeSet(0.5, true)).to.deep.equal({
+                type: C.AUDIO_VOLUME_SET,
+                payload: { volume: 0.5, remember: true }
+            });
+        });
+    });
 });
 
