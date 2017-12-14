@@ -11,33 +11,38 @@ class VolumeControl extends PureComponent {
 
         this.state = {
             active: false,
-            clickedAt: null,
-            startOffset: null
+            clickedAt: null
         };
 
-        this.outer = null;
+        this.gutter = null;
         this.head = null;
 
-        const onChange = (clientX, remember = false) => this.props.onChange(
-            remember,
-            clientX - this.state.startOffset,
-            this.outer.offsetLeft,
-            this.outer.offsetWidth
-        );
+        this.gutterDim = () => {
+            const { left, width } = this.gutter.getBoundingClientRect();
+
+            const { width: headWidth } = this.head.getBoundingClientRect();
+
+            return { left, width, headWidth };
+        };
 
         this.mouseMoveListener = debounce(({ clientX }) => {
             if (this.state.active) {
-                onChange(clientX);
+                this.props.onChange(false, {
+                    clientX: clientX - this.state.clickedAt,
+                    ...this.gutterDim()
+                });
             }
         }, 1);
 
         this.mouseUpListener = ({ clientX }) => {
-            onChange(clientX, true);
+            this.props.onChange(true, {
+                clientX: clientX - this.state.clickedAt,
+                ...this.gutterDim()
+            });
 
             this.setState({
                 active: false,
-                clickedAt: null,
-                startOffset: null
+                clickedAt: null
             });
         };
     }
@@ -65,31 +70,27 @@ class VolumeControl extends PureComponent {
 
             const { clientX } = evt;
 
-            const clickedAt = clientX;
-            const startOffset = clientX - this.outer.offsetLeft - this.head.offsetLeft;
+            const clickedAt = clientX - this.head.getBoundingClientRect().left;
 
-            this.setState({ active: true, clickedAt, startOffset });
+            this.setState({ active: true, clickedAt });
         };
 
         const onVolumeSet = ({ clientX }) => {
-            this.props.onChange(
-                true,
-                clientX - this.head.offsetWidth / 2,
-                this.outer.getBoundingClientRect().left,
-                this.outer.offsetWidth
-            );
-        }
+            this.props.onChange(true, {
+                clientX: clientX - this.head.offsetWidth / 2, ...this.gutterDim()
+            });
+        };
 
-        const outerRef = outer => {
-            this.outer = outer;
+        const gutterRef = outer => {
+            this.gutter = outer;
         };
 
         const headRef = head => {
             this.head = head;
         };
 
-        return <div className="volume-control-outer" ref={outerRef}>
-            <div className="gutter" onMouseDown={onVolumeSet}>
+        return <div className="volume-control-outer">
+            <div className="gutter" onMouseDown={onVolumeSet} ref={gutterRef}>
                 <div className="inner" style={innerStyle} />
                 <div className="head" ref={headRef} onMouseDown={onDragStart} />
             </div>
@@ -107,8 +108,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    onChange: (remember, position, offset, width) =>
-        dispatch(audioVolumeSet((position - offset) / width, remember))
+    onChange: (remember, { clientX, left, width, headWidth }) =>
+        dispatch(audioVolumeSet((clientX - left) / (width - headWidth), remember))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(VolumeControl);
