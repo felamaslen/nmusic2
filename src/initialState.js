@@ -1,14 +1,7 @@
 import { fromJS } from 'immutable';
+import getAudioContext from 'audio-context';
 
 import { APP_TITLE, REPEAT_NONE, SHUFFLE_NONE } from './constants/misc';
-
-function getAudioContext() {
-    if (typeof AudioContext !== 'undefined') {
-        return new AudioContext();
-    }
-
-    return null;
-}
 
 export default fromJS({
     settingsLoaded: false,
