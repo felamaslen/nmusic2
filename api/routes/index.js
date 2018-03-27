@@ -1,10 +1,6 @@
 const { Router } = require('express');
 const bodyParser = require('body-parser');
 const sendSeekable = require('send-seekable');
-
-const config = require('../../common/config');
-const Database = require('../../common/db');
-
 const { routeSongsList } = require('./songs-list');
 const { routeFilterList } = require('./filter-list');
 const { routeSearch } = require('./search');
@@ -12,44 +8,31 @@ const { routePlay, routePlayRandom } = require('./play');
 const { routeArtwork } = require('./artwork');
 const { routeEdit } = require('./edit');
 
-async function dbMiddleware(req, res, next) {
-    req.db = await Database.dbConnect(config.dbUri);
-
-    next();
-}
-
-function apiRoutes() {
+function apiRoutes(config, db, logger) {
     const router = new Router();
 
-    router.use(dbMiddleware);
     router.use(sendSeekable);
 
-    router.get('/songs', routeSongsList);
-    router.get('/artists', routeFilterList('artist'));
-    router.get('/albums/:artist?', routeFilterList('album', 'artist'));
-    router.get('/search/:keyword', routeSearch);
+    router.get('/songs', routeSongsList(config, db, logger));
+    router.get('/artists', routeFilterList(config, db, logger, 'artist'));
+    router.get('/albums/:artist?', routeFilterList(config, db, logger, 'album', 'artist'));
+    router.get('/search/:keyword', routeSearch(config, db, logger));
 
-    router.get('/play/random', routePlayRandom);
-    router.get('/play/:id', routePlay);
+    router.get('/play/random', routePlayRandom(config, db, logger));
+    router.get('/play/:id', routePlay(config, db, logger));
 
-    router.get('/artwork/:encoded', routeArtwork);
+    router.get('/artwork/:encoded', routeArtwork(config, db, logger));
 
-    router.patch('/edit', routeEdit);
-
-    router.use(req => {
-        if (req.db) {
-            req.db.close();
-        }
-    });
+    router.patch('/edit', routeEdit(config, db, logger));
 
     return router;
 }
 
-function setup(app) {
+function setupApi(config, db, logger, app) {
     app.use(bodyParser.json());
 
-    app.use(`/api/v${config.apiVersion}`, apiRoutes());
+    app.use(`/api/v${config.apiVersion}`, apiRoutes(config, db, logger));
 }
 
-module.exports = setup;
+module.exports = { setupApi };
 

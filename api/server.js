@@ -1,18 +1,16 @@
 /* eslint-disable global-require */
-
 const path = require('path');
 const http = require('http');
 const express = require('express');
 const requestLogger = require('morgan');
-const webpack = require('webpack');
-const webpackConfig = require('../webpack.config');
-
-const logger = require('../common/logger');
-const setupApi = require('./routes');
-const setupClientInteraction = require('./client-interaction');
+const getLogger = require('../common/logger');
+const config = require('../common/config');
+const { dbConnect } = require('../common/db');
+const { setupApi } = require('./routes');
+const { setupWebSockets } = require('./client-interaction');
 const version = require('../package.json').version;
 
-function setupClient(app) {
+function setupClient(db, logger, app) {
     app.set('views', path.join(__dirname, '../src/templates'));
     app.set('view engine', 'ejs');
 
@@ -25,9 +23,9 @@ function setupClient(app) {
     }));
 
     if (process.env.NODE_ENV === 'development' && process.env.SKIP_CLIENT !== 'true') {
-        const conf = webpackConfig();
+        const conf = require('../webpack.config')();
 
-        const compiler = webpack(conf);
+        const compiler = require('webpack')(conf);
 
         app.use(require('webpack-dev-middleware')(compiler, {
             publicPath: conf.output.publicPath,
@@ -50,23 +48,20 @@ function setupClient(app) {
     app.use(express.static(path.join(__dirname, '../static')));
 }
 
-function init() {
+async function init() {
     const app = express();
+    const logger = getLogger();
+    const db = await dbConnect(config.dbUri);
 
     if (process.env.NODE_ENV === 'development') {
         app.use(requestLogger('dev'));
     }
 
-    setupApi(app);
-    setupClient(app);
+    setupApi(config, db, logger, app);
+    setupClient(db, logger, app);
 
     app.use((req, res) => {
-        if (req.db) {
-            req.db.close();
-        }
-
-        res
-            .status(404)
+        res.status(404)
             .json({
                 error: true,
                 status: 'Not found'
@@ -76,10 +71,10 @@ function init() {
     const port = process.env.PORT || 3000;
     const server = http.createServer(app);
 
-    setupClientInteraction.init(server);
+    setupWebSockets(config, db, logger, server);
 
     server.listen(port, () => {
-        logger('MSG', 'Server listening on port', port);
+        logger.info('Server listening on port', port);
     });
 }
 

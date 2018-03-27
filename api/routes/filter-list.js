@@ -1,8 +1,6 @@
-const config = require('../../common/config');
-
 const { getInfoFilterQuery, sortCaseInsensitiveIgnorePrefix } = require('../helpers');
 
-function routeFilterList(key, subKey = null) {
+function routeFilterList(config, db, logger, key, subKey = null) {
     return async (req, res, next) => {
         let query = {};
         if (subKey && req.params[subKey]) {
@@ -10,12 +8,10 @@ function routeFilterList(key, subKey = null) {
         }
 
         try {
-            const results = await req.db
-                .collection(config.collections.music)
+            const results = await db.collection(config.collections.music)
                 .distinct(`info.${key}`, query)
 
-            const items = results
-                .map(item => item || `Unknown ${key}`)
+            const items = results.map(item => item || `Unknown ${key}`)
                 .sort(sortCaseInsensitiveIgnorePrefix);
 
             res.json(items);

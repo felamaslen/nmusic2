@@ -1,7 +1,5 @@
 const { ObjectID } = require('mongodb');
 
-const config = require('../../common/config');
-
 const {
     getContentTypeFromFile, getBufferFromFile
 } = require('../../common/buffer-from-file');
@@ -33,60 +31,60 @@ async function serveSong(row, res) {
     }
 }
 
-async function routePlay(req, res, next) {
-    const id = req.params.id;
-    if (!(id && id.length)) {
-        res
-            .status(400)
-            .json({ error: true, status: 'Invalid ID' });
+function routePlay(config, db) {
+    return async (req, res, next) => {
+        const id = req.params.id;
+        if (!(id && id.length)) {
+            res
+                .status(400)
+                .json({ error: true, status: 'Invalid ID' });
+
+            return next();
+        }
+
+        const _id = new ObjectID(id);
+
+        try {
+            const row = await db.collection(config.collections.music)
+                .find({ _id })
+                .toArray();
+
+            serveSong(row, res);
+        }
+        catch (err) {
+            res
+                .status(500)
+                .json({ error: true, status: 'Unknown server error' });
+        }
 
         return next();
-    }
-
-    const _id = new ObjectID(id);
-
-    try {
-        const row = await req.db
-            .collection(config.collections.music)
-            .find({ _id })
-            .toArray();
-
-        serveSong(row, res);
-    }
-    catch (err) {
-        res
-            .status(500)
-            .json({ error: true, status: 'Unknown server error' });
-    }
-
-    return next();
+    };
 }
 
-async function routePlayRandom(req, res, next) {
-    try {
-        const row = await req.db
-            .collection(config.collections.music)
-            .aggregate([{ $sample: { size: 1 } }])
-            .toArray();
+function routePlayRandom(config, db) {
+    return async (req, res, next) => {
+        try {
+            const row = await db.collection(config.collections.music)
+                .aggregate([{ $sample: { size: 1 } }])
+                .toArray();
 
-        if (row.length === 1) {
-            const { _id, info } = row[0];
+            if (row.length === 1) {
+                const { _id, info } = row[0];
 
-            res.json({ id: _id, ...info });
+                res.json({ id: _id, ...info });
+            }
+            else {
+                res.status(404)
+                    .json({ error: true, status: 'No songs' });
+            }
         }
-        else {
-            res
-                .status(404)
-                .json({ error: true, status: 'No songs' });
+        catch (err) {
+            res.status(500)
+                .json({ error: true, status: 'Unknown server error' });
         }
-    }
-    catch (err) {
-        res
-            .status(500)
-            .json({ error: true, status: 'Unknown server error' });
-    }
 
-    return next();
+        return next();
+    };
 }
 
 module.exports = { routePlay, routePlayRandom };

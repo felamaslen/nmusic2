@@ -1,41 +1,31 @@
-const colors = require('colors');
-const dateformat = require('dateformat');
+const winston = require('winston');
 
-function formatNow() {
-    const now = new Date();
+const logLevels = {
+    production: 'info',
+    development: 'debug',
+    test: 'debug',
+    default: 'verbose'
+};
 
-    return dateformat(now, 'isoDateTime');
-}
-
-function logger(key, ...args) {
-    let pre = `[${key}@${formatNow()}]`;
-    let post = args.join(' ');
-
-    if (key === 'FATAL') {
-        pre = colors.red.underline(pre);
-        post = colors.red(post);
-    }
-    else if (key === 'ERROR') {
-        pre = colors.red(pre);
-        post = colors.red(post);
-    }
-    else if (key === 'WARN') {
-        pre = colors.yellow(pre);
-        post = colors.yellow(post);
-    }
-    else if (key === 'MSG') {
-        pre = colors.grey(pre);
-    }
-    else if (key === 'DEBUG') {
-        pre = colors.cyan(pre);
-        post = colors.cyan(post);
-    }
-    else if (key === 'SUCCESS') {
-        pre = colors.green(pre);
+const getLogger = (suppress = false) => {
+    if (suppress) {
+        return new winston.Logger({ transports: [] });
     }
 
-    console.log(pre, post);
-}
+    const level = process.env.LOG_LEVEL ||
+        logLevels[process.env.NODE_ENV || 'default'] ||
+        logLevels.default;
 
-module.exports = logger;
+    return new winston.Logger({
+        transports: [
+            new winston.transports.Console({
+                level,
+                json: false,
+                colorize: true
+            })
+        ]
+    });
+};
+
+module.exports = getLogger;
 
