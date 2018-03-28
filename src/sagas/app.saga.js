@@ -1,5 +1,6 @@
-import { select, call, put } from 'redux-saga/effects';
+import { select, takeEvery, call, put } from 'redux-saga/effects';
 import { settingsInserted } from '../actions/ui-reset.actions';
+import * as actions from '../constants/actions';
 import { PERSISTENT_SETTINGS, keyFromStore } from '../constants/settings';
 
 const getSettings = () => PERSISTENT_SETTINGS.reduce((object, storeKey) => {
@@ -37,5 +38,12 @@ export function *setSettings(key) {
     catch (err) {
         // do nothing
     }
+}
+
+export default function *appSaga() {
+    yield takeEvery(actions.SETTINGS_LOADED, loadSettings);
+
+    yield takeEvery(actions.SIDEBAR_HIDDEN, setSettings, 'sidebar_hidden');
+    yield takeEvery(actions.SIDEBAR_DISPLAY_OVER_TOGGLED, setSettings, 'sidebar_displayOver');
 }
 

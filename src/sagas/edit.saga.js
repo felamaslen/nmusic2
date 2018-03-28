@@ -1,5 +1,6 @@
-import { select, call, put } from 'redux-saga/effects';
+import { select, takeEvery, call, put } from 'redux-saga/effects';
 import { API_PREFIX } from '../constants/misc';
+import * as actions from '../constants/actions';
 import { editInfoClosed, editInfoValuesUpdated } from '../actions/edit-info.actions';
 import axios from 'axios';
 
@@ -58,5 +59,9 @@ export function *updateSongInfo({ payload }) {
     catch (err) {
         yield put(editInfoClosed(true));
     }
+}
+
+export default function *editSaga() {
+    yield takeEvery(actions.EDIT_INFO_CLOSED, updateSongInfo);
 }
 

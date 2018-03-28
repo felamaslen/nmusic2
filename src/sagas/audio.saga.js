@@ -1,7 +1,8 @@
 import { fromJS } from 'immutable';
-import { select, call, put } from 'redux-saga/effects';
+import { select, takeEvery, call, put } from 'redux-saga/effects';
 import axios from 'axios';
 import { API_PREFIX, SHUFFLE_ALL } from '../constants/misc';
+import * as actions from '../constants/actions';
 import { audioFileLoaded } from '../actions/audio-player.actions';
 import { setSettings } from './app.saga';
 
@@ -37,5 +38,11 @@ export function *rememberVolume({ payload }) {
     }
 
     yield call(setSettings, 'player_volume');
+}
+
+export default function *audioSaga() {
+    yield takeEvery(actions.AUDIO_VOLUME_SET, rememberVolume);
+    yield takeEvery(actions.AUDIO_PLAY_PAUSED, playRandomSong);
+    yield takeEvery(actions.AUDIO_TRACK_CHANGED, playRandomSong);
 }
 

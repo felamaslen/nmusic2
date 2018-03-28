@@ -1,13 +1,10 @@
+import { select, takeEvery, put, call } from 'redux-saga/effects';
 import axios from 'axios';
-
-import { select, put, call } from 'redux-saga/effects';
-
 import { API_PREFIX } from '../constants/misc';
-
+import * as actions from '../constants/actions';
 import { searchResultsReceived } from '../actions/search.actions';
 import { songListReceived } from '../actions/song-list.actions';
 import { filterItemClicked } from '../actions/filter.actions';
-
 import { selectArtistFilter } from './filter.saga';
 
 export const selectSearchTerm = state => state.getIn(['search', 'term']);
@@ -82,5 +79,10 @@ export function *selectSearchItem() {
     catch (err) {
         yield put(songListReceived({ err }));
     }
+}
+
+export default function *searchSaga() {
+    yield takeEvery(actions.SEARCH_CHANGED, fetchSearchResults);
+    yield takeEvery(actions.SEARCH_SELECTED, selectSearchItem);
 }
 
