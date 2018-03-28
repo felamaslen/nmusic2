@@ -3,7 +3,7 @@
  */
 
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
 const musicmetadata = require('music-metadata');
 const ProgressBar = require('progress');
 
@@ -20,13 +20,9 @@ async function getDirectoriesFromDirList(logger, directory, items, pattern) {
     const itemsWithDirInfo = await Promise.all(items.map(item => {
         const filename = path.join(directory, item);
 
-        return new Promise(resolve => {
-            fs.stat(filename, (fileErr, stats) => {
-                if (fileErr) {
-                    logger.error('Error reading file:', filename);
-
-                    return resolve(null);
-                }
+        return new Promise(async resolve => {
+            try {
+                const stats = await fs.stat(filename);
 
                 const isDir = stats.isDirectory();
 
@@ -35,7 +31,12 @@ async function getDirectoriesFromDirList(logger, directory, items, pattern) {
                 }
 
                 return resolve({ filename, isDir });
-            });
+            }
+            catch (fileErr) {
+                logger.error('Error reading file:', filename);
+
+                return resolve(null);
+            }
         });
     }));
 
@@ -54,33 +55,33 @@ async function getDirectoriesFromDirList(logger, directory, items, pattern) {
 }
 
 function getFilesList(logger, directory, pattern = null, counted = [], level = 0) {
-    return new Promise((resolve, reject) => {
-        fs.readdir(directory, async (err, items) => {
-            if (err) {
-                if (level === 0) {
-                    logger.error('Error reading top-level directory:', directory);
+    return new Promise(async (resolve, reject) => {
+        try {
+            const items = await fs.readdir(directory);
 
-                    return reject(err);
-                }
-
-                logger.error('Error reading directory:', directory);
-
-                return resolve(counted);
-            }
-
-            const { files, directories } = await getDirectoriesFromDirList(logger, directory, items, pattern);
+            const { files, directories } = await getDirectoriesFromDirList(
+                logger, directory, items, pattern);
 
             // run this function recursively to get all the files
             const directoryResults = await Promise.all(directories.map(
-                subDir => getFilesList(logger, subDir, pattern, counted, level + 1)
-            ));
+                subDir => getFilesList(logger, subDir, pattern, counted, level + 1)));
 
             const filesFromSubDirs = directoryResults.reduce(
-                (list, listItems) => list.concat(listItems), []
-            );
+                (list, listItems) => list.concat(listItems), []);
 
             return resolve(files.concat(filesFromSubDirs));
-        });
+        }
+        catch (err) {
+            if (level === 0) {
+                logger.error('Error reading top-level directory:', directory);
+
+                return reject(err);
+            }
+
+            logger.error('Error reading directory:', directory);
+
+            return resolve(counted);
+        }
     });
 }
 
@@ -96,8 +97,7 @@ function getMusicFilesInDatabase(logger, db) {
     const music = db.collection(config.collections.music);
 
     return new Promise((resolve, reject) => {
-        music
-            .find({}, { file: 1 })
+        music.find({}, { file: 1 })
             .toArray((err, docs) => {
                 if (err) {
                     return reject(err);

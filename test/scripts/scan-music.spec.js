@@ -6,30 +6,36 @@
 
 const { expect } = require('chai');
 const path = require('path');
-const fs = require('fs');
+const fs = require('fs-extra');
+const getLogger = require('../../common/logger');
 
 const TEST_DIRECTORY = path.join(__dirname, 'test-music');
 
 const S = require('../../scripts/scan-music');
 
 describe('Music scanner script', () => {
+    const logger = getLogger(true);
+
     let filesList = [];
 
-    before(done => {
-        fs.readdir(TEST_DIRECTORY, (err, files) => {
-            if (err || files.length === 0) {
-                throw new Error('No files in test directory');
+    before(async () => {
+        try {
+            const files = await fs.readdir(TEST_DIRECTORY);
+
+            if (!files.length) {
+                throw new Error();
             }
 
             filesList = filesList.concat(files);
-
-            done();
-        });
+        }
+        catch (err) {
+            throw new Error('No files in test directory');
+        }
     });
 
     describe('getFilesList', () => {
         it('should get a list of files', async () => {
-            const result = await S.getFilesList(path.join(__dirname));
+            const result = await S.getFilesList(logger, path.join(__dirname));
 
             expect(result).to.be.an('array');
 
@@ -39,7 +45,7 @@ describe('Music scanner script', () => {
             expect(files).to.include('test-file-2.txt');
         });
         it('should accept a pattern match parameter', async () => {
-            const result = await S.getFilesList(path.join(__dirname), /\.txt$/);
+            const result = await S.getFilesList(logger, path.join(__dirname), /\.txt$/);
 
             expect(result).to.be.an('array');
 
