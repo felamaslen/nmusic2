@@ -21,10 +21,10 @@ function getSearchRegex(keyword) {
     return new RegExp(`(^|\\s)${keyword}`, 'i');
 }
 
-async function getSortedArtists(db, keyword) {
+function *getSortedArtists(config, db, keyword) {
     const match = getSearchRegex(keyword);
 
-    const results = await db.collection(config.collections.music)
+    const results = yield db.collection(config.collections.music)
         .distinct('info.artist', { 'info.artist': match });
 
     return results
@@ -34,10 +34,10 @@ async function getSortedArtists(db, keyword) {
         .map(({ item }) => item);
 }
 
-async function getSortedAlbums(db, keyword) {
+function *getSortedAlbums(config, db, keyword) {
     const match = getSearchRegex(keyword);
 
-    const results = await db
+    const results = yield db
         .collection(config.collections.music)
         .aggregate([
             {
@@ -82,10 +82,10 @@ async function getSortedAlbums(db, keyword) {
         .map(row => ({ artist: row.artist, album: row.item }));
 }
 
-async function getSortedSongs(db, keyword) {
+function *getSortedSongs(config, db, keyword) {
     const match = getSearchRegex(keyword);
 
-    const results = await db
+    const results = yield db
         .collection(config.collections.music)
         .find({ 'info.title': match }, { file: 0 })
         .toArray();
@@ -97,25 +97,15 @@ async function getSortedSongs(db, keyword) {
         .map(row => ({ id: row._id, ...row.info }));
 }
 
-function routeSearch(config, db, logger) {
-    return async (req, res, next) => {
+function routeSearch(config, db) {
+    return function *getSearchResults(req, res) {
         const keyword = req.params.keyword;
 
-        try {
-            const artists = await getSortedArtists(db, keyword);
-            const albums = await getSortedAlbums(db, keyword);
-            const titles = await getSortedSongs(db, keyword);
+        const artists = yield getSortedArtists(config, db, keyword);
+        const albums = yield getSortedAlbums(config, db, keyword);
+        const titles = yield getSortedSongs(config, db, keyword);
 
-            res.json({ artists, albums, titles });
-        }
-        catch (err) {
-            logger.error('Error searching:', err.message);
-
-            res.status(500)
-                .json({ error: true, status: 'Unknown server error' });
-        }
-
-        return next();
+        res.json({ artists, albums, titles });
     };
 }
 

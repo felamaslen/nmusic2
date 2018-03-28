@@ -2,7 +2,7 @@ const joi = require('joi');
 const { ObjectID } = require('mongodb');
 
 function routeEdit(config, db) {
-    return async (req, res, next) => {
+    return function *editSongs(req, res) {
         const schema = joi.object().keys({
             ids: joi.array()
                 .items(joi.string())
@@ -20,10 +20,8 @@ function routeEdit(config, db) {
         const { ids, ...fields } = value;
 
         if (error || Object.keys(fields).length === 0) {
-            res.status(400)
-                .json({ error: true, status: 'Bad data input' });
-
-            return next();
+            return res.status(400)
+                .json({ status: 'Bad data input' });
         }
 
         const _ids = ids.map(id => new ObjectID(id));
@@ -31,18 +29,10 @@ function routeEdit(config, db) {
         const fieldsDeep = Object.keys(fields)
             .reduce((fieldsObj, key) => ({ ...fieldsObj, [`info.${key}`]: fields[key] }), {});
 
-        try {
-            await db.collection('music')
-                .updateMany({ _id: { $in: _ids } }, { $set: fieldsDeep });
+        yield db.collection('music')
+            .updateMany({ _id: { $in: _ids } }, { $set: fieldsDeep });
 
-            res.json({ success: true });
-        }
-        catch (err) {
-            res.status(500)
-                .json({ error: true, status: 'Server error' });
-        }
-
-        return next();
+        return res.json({ success: true });
     };
 }
 

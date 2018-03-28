@@ -2,13 +2,21 @@
 const path = require('path');
 const http = require('http');
 const express = require('express');
+const expressGenerators = require('./modules/wrap-generators');
+const bodyParser = require('body-parser');
+const helmet = require('helmet');
 const requestLogger = require('morgan');
 const getLogger = require('../common/logger');
 const config = require('../common/config');
 const { dbConnect } = require('../common/db');
-const { setupApi } = require('./routes');
+const { setupRoutes } = require('./routes');
 const { setupWebSockets } = require('./client-interaction');
 const version = require('../package.json').version;
+
+function setupMiddleware(app) {
+    app.use(helmet());
+    app.use(bodyParser.json());
+}
 
 function setupClient(db, logger, app) {
     app.set('views', path.join(__dirname, '../src/templates'));
@@ -49,7 +57,7 @@ function setupClient(db, logger, app) {
 }
 
 async function init() {
-    const app = express();
+    const app = expressGenerators(express)();
     const logger = getLogger();
     const db = await dbConnect(config.dbUri);
 
@@ -57,15 +65,17 @@ async function init() {
         app.use(requestLogger('dev'));
     }
 
-    setupApi(config, db, logger, app);
+    setupMiddleware(app);
+
+    setupRoutes(config, db, logger, app);
+
     setupClient(db, logger, app);
 
-    app.use((req, res) => {
-        res.status(404)
-            .json({
-                error: true,
-                status: 'Not found'
-            });
+    app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
+        logger.verbose('Request error:', err.message);
+
+        res.status(500)
+            .json({ status: 'Unknown error' });
     });
 
     const port = process.env.PORT || 3000;

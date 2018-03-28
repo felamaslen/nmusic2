@@ -74,10 +74,10 @@ function downloadArtwork(config, url, artist, album) {
     });
 }
 
-async function getDiscogsReleaseId(logger, discogs, artist, album) {
+function *getDiscogsReleaseId(logger, discogs, artist, album) {
     const searchString = `${artist} - ${album}`;
 
-    const data = await discogs.database().search(searchString);
+    const data = yield discogs.database().search(searchString);
 
     if (!(data && data.results)) {
         logger.warn('Bad artwork data from Discogs, for:', { artist, album });
@@ -95,8 +95,8 @@ async function getDiscogsReleaseId(logger, discogs, artist, album) {
     return releases[0].id;
 }
 
-async function getDiscogsArtworkFromReleaseId(logger, discogs, releaseId, artist, album) {
-    const data = await discogs.database().getRelease(releaseId);
+function *getDiscogsArtworkFromReleaseId(config, logger, discogs, releaseId, artist, album) {
+    const data = yield discogs.database().getRelease(releaseId);
 
     if (!(data && data.images && Array.isArray(data.images))) {
         logger.warn('No artwork on Discogs result, for:', { artist, album });
@@ -114,7 +114,7 @@ async function getDiscogsArtworkFromReleaseId(logger, discogs, releaseId, artist
     const imageUrl = validImages[0].resource_url;
 
     try {
-        const file = await downloadArtwork(imageUrl, artist, album);
+        const file = yield downloadArtwork(config, imageUrl, artist, album);
 
         return file;
     }
@@ -125,7 +125,7 @@ async function getDiscogsArtworkFromReleaseId(logger, discogs, releaseId, artist
     }
 }
 
-async function getDiscogsArtwork(config, logger, artist, album) {
+function *getDiscogsArtwork(config, logger, artist, album) {
     if (!(config.discogs.consumerKey && config.discogs.consumerSecret)) {
         throw new Error('No Discogs API key configured');
     }
@@ -135,24 +135,24 @@ async function getDiscogsArtwork(config, logger, artist, album) {
         consumerSecret: config.discogs.consumerSecret
     });
 
-    const releaseId = await getDiscogsReleaseId(logger, discogs, artist, album);
+    const releaseId = yield getDiscogsReleaseId(logger, discogs, artist, album);
 
-    const artwork = await getDiscogsArtworkFromReleaseId(logger, discogs, releaseId, artist, album);
+    const artwork = yield getDiscogsArtworkFromReleaseId(config, logger, discogs, releaseId, artist, album);
 
     return artwork;
 }
 
-async function fetchNewAlbumArtwork(config, logger, db, res, artist, album) {
+function *fetchNewAlbumArtwork(config, logger, db, res, artist, album) {
     let file = null;
     let dbFile = null;
     let cacheable = true;
     let errorResult = false;
 
-    await db.collection(config.collections.artwork)
+    yield db.collection(config.collections.artwork)
         .insertOne({ artist, album, loading: true });
 
     try {
-        file = await getDiscogsArtwork(config, logger, artist, album);
+        file = yield getDiscogsArtwork(config, logger, artist, album);
 
         dbFile = file;
     }
@@ -163,8 +163,7 @@ async function fetchNewAlbumArtwork(config, logger, db, res, artist, album) {
         errorResult = true;
     }
 
-    await db
-        .collection(config.collections.artwork)
+    yield db.collection(config.collections.artwork)
         .updateOne({ artist, album }, {
             $set: { loading: false, error: errorResult, file: dbFile }
         });
@@ -186,12 +185,11 @@ const fileExists = file => new Promise((resolve, reject) => {
     });
 });
 
-async function getAlbumArtwork(config, logger, db, res, artist, album) {
+function *getAlbumArtwork(config, logger, db, res, artist, album) {
     let file = null;
     let cacheable = true;
 
-    const localCopy = await db
-        .collection(config.collections.artwork)
+    const localCopy = yield db.collection(config.collections.artwork)
         .findOne({ artist, album });
 
     if (localCopy) {
@@ -201,7 +199,7 @@ async function getAlbumArtwork(config, logger, db, res, artist, album) {
         }
         else {
             // don't try to serve a file which doesn't exist
-            const localCopyExists = await fileExists(localCopy.file);
+            const localCopyExists = yield fileExists(localCopy.file);
 
             if (localCopyExists) {
                 file = localCopy.file;
@@ -210,7 +208,7 @@ async function getAlbumArtwork(config, logger, db, res, artist, album) {
     }
 
     if (!file) {
-        const result = await fetchNewAlbumArtwork(config, logger, db, res, artist, album);
+        const result = yield fetchNewAlbumArtwork(config, logger, db, res, artist, album);
 
         file = result.file;
         cacheable = result.cacheable;
@@ -219,34 +217,21 @@ async function getAlbumArtwork(config, logger, db, res, artist, album) {
     return { file, cacheable };
 }
 
-async function serveArtworkFile(res, file) {
+function *serveArtworkFile(res, file) {
     const contentType = getContentTypeFromFile(file);
 
-    const buffer = await getBufferFromFile(file);
+    const buffer = yield getBufferFromFile(file);
 
-    return res
-        .header('Content-Type', contentType)
+    return res.header('Content-Type', contentType)
         .send(buffer);
 }
 
 function routeArtwork(config, db, logger) {
-    return async (req, res, next) => {
-        const encoded = req.params.encoded;
-
-        let decoded = null;
+    return function *getArtwork(req, res) {
         try {
-            decoded = decodeArtistAlbum(encoded);
-        }
-        catch (err) {
-            serveArtworkFile(res, config.artwork.unknownFile);
+            const { artist, album } = decodeArtistAlbum(req.params.encoded);
 
-            return next();
-        }
-
-        const { artist, album } = decoded;
-
-        try {
-            const existsInDatabaseResult = await db.collection(config.collections.music)
+            const existsInDatabaseResult = yield db.collection(config.collections.music)
                 .find({
                     'info.artist': artist,
                     'info.album': album || null
@@ -254,48 +239,38 @@ function routeArtwork(config, db, logger) {
                 .toArray();
 
             if (!existsInDatabaseResult.length) {
-                res.status(400)
+                return res.status(400)
                     .json({
                         existsInDatabaseResult,
                         artist,
                         album,
-                        error: true,
                         status: 'File not found in database'
                     });
-
-                return next();
             }
-        }
-        catch (err) {
-            res.status(500)
-                .json({ error: true, status: 'Unknown error' });
 
-            return next();
-        }
+            const { file } = yield getAlbumArtwork(config, logger, db, res, artist, album);
 
-        try {
-            const { file } = await getAlbumArtwork(config, logger, db, res, artist, album);
+            const exists = yield fileExists(file);
 
-            if (file) {
-                try {
-                    await serveArtworkFile(res, file);
-                }
-                catch (fileErr) {
+            if (!(file && exists)) {
+                if (file) {
                     // the file was deleted, we should delete it in the database too
-                    await db.collection(config.collections.artwork)
-                        .deleteOne({ artist, album });
 
-                    throw fileErr;
+                    yield db.collection(config.collections.artwork)
+                        .deleteOne({ artist, album });
                 }
+
+                return res.status(404)
+                    .json({ error: true, status: 'Not found' });
             }
+
+            yield serveArtworkFile(res, file);
+
+            return null;
         }
         catch (err) {
-            res
-                .status(404)
-                .json({ error: true, status: 'Not found' });
+            return serveArtworkFile(res, config.artwork.unknownFile);
         }
-
-        return next();
     };
 }
 

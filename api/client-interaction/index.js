@@ -99,14 +99,14 @@ function onMessage(logger, clientId) {
             states.forEach(state => updateState(logger, state, clientId));
         }
         catch (err) {
-            winston.log('warn', `Error processing message from client #${clientId}:`, err.message);
+            logger.warn(`Error processing message from client #${clientId}:`, err.message);
         }
     };
 }
 
-function onClose(clientId) {
+function onClose(logger, clientId) {
     return () => {
-        winston.log('info', `Closing connection from #${clientId}`);
+        logger.verbose('Closing connection from', clientId);
 
         const clientKey = globalState.clients.findIndex(client => clientId === client.id);
 
@@ -199,7 +199,7 @@ function onConnection(logger) {
 
         socket.on('message', onMessage(logger, id, socket));
 
-        socket.on('close', onClose(id));
+        socket.on('close', onClose(logger, id));
     };
 }
 

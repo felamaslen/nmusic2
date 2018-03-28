@@ -4,86 +4,68 @@ const {
     getContentTypeFromFile, getBufferFromFile
 } = require('../../common/buffer-from-file');
 
-async function serveSong(row, res) {
+function *serveSong(row, res) {
     if (!(row && row.length === 1)) {
-        res
-            .status(404)
-            .json({ error: true, status: 'Not found' });
-
-        return;
+        return res.status(404)
+            .json({ status: 'Not found' });
     }
 
-    const file = row[0].file;
+    const [{ file }] = row;
 
-    try {
-        const contentType = getContentTypeFromFile(file);
+    const contentType = getContentTypeFromFile(file);
 
-        const buffer = await getBufferFromFile(file);
+    const buffer = yield getBufferFromFile(file);
 
-        res
-            .header('Content-Type', contentType)
-            .sendSeekable(buffer);
-    }
-    catch (err) {
-        res
-            .status(500)
-            .json({ error: true, status: 'Couldn\'t read file' });
-    }
+    res.header('Content-Type', contentType)
+        .sendSeekable(buffer);
+
+    res.seeking = true;
+
+    return null;
 }
 
 function routePlay(config, db) {
-    return async (req, res, next) => {
+    return function *playSong(req, res) {
         const id = req.params.id;
         if (!(id && id.length)) {
-            res
-                .status(400)
-                .json({ error: true, status: 'Invalid ID' });
-
-            return next();
+            return res.status(400)
+                .json({ status: 'Invalid ID' });
         }
 
-        const _id = new ObjectID(id);
-
+        let rowId = null;
         try {
-            const row = await db.collection(config.collections.music)
-                .find({ _id })
-                .toArray();
-
-            serveSong(row, res);
+            rowId = new ObjectID(id);
         }
         catch (err) {
-            res
-                .status(500)
-                .json({ error: true, status: 'Unknown server error' });
+            return res.status(400)
+                .json({ status: 'Invalid ID' });
         }
 
-        return next();
+        const row = yield db.collection(config.collections.music)
+            .find({ _id: rowId })
+            .toArray();
+
+        yield serveSong(row, res);
+
+        return null;
     };
 }
 
 function routePlayRandom(config, db) {
-    return async (req, res, next) => {
-        try {
-            const row = await db.collection(config.collections.music)
-                .aggregate([{ $sample: { size: 1 } }])
-                .toArray();
+    return function *getRandomSong(req, res) {
+        const row = yield db.collection(config.collections.music)
+            .aggregate([{ $sample: { size: 1 } }])
+            .toArray();
 
-            if (row.length === 1) {
-                const { _id, info } = row[0];
+        if (row.length === 1) {
+            const { _id, info } = row[0];
 
-                res.json({ id: _id, ...info });
-            }
-            else {
-                res.status(404)
-                    .json({ error: true, status: 'No songs' });
-            }
+            res.json({ id: _id, ...info });
         }
-        catch (err) {
-            res.status(500)
-                .json({ error: true, status: 'Unknown server error' });
+        else {
+            res.status(404)
+                .json({ status: 'No songs' });
         }
-
-        return next();
     };
 }
 
