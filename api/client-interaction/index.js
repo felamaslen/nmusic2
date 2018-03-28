@@ -1,13 +1,8 @@
 const WebSocketServer = require('websocket').server;
 const ShortUniqueId = require('short-unique-id');
 const uid = new ShortUniqueId();
-const winston = require('winston');
 const dns = require('dns');
 const joi = require('joi');
-
-if (process.env.NODE_ENV === 'production') {
-    winston.remove(winston.transports.Console);
-}
 
 if (process.env.DNS_SERVERS) {
     dns.setServers([process.env.DNS_SERVERS]);
@@ -35,26 +30,24 @@ const globalState = {
     clients: []
 };
 
-function notifyClients(clientId, clientState, type = 'update') {
+function notifyClients(logger, clientId, clientState, type = 'update') {
     // a client updated its state, notify all other clients
-    winston.log('info', `Notifying clients of ${type} client:`, { clientId, clientState });
+    logger.verbose(`Notifying clients of ${type} client:`, { clientId, clientState });
 
-    globalState.clients
-        .forEach(client => {
-            const clientUpdated = client.id === clientId;
+    globalState.clients.forEach(client => {
+        const clientUpdated = client.id === clientId;
 
-            if (clientUpdated) {
-                if (type === 'new') {
-                    return;
-                }
-
-                client.socket.send(JSON.stringify([{ type, clientState, local: true }]));
+        if (clientUpdated) {
+            if (type === 'new') {
+                return;
             }
-            else {
-                client.socket.send(JSON.stringify([{ type, clientId, clientState }]));
-            }
-        });
 
+            client.socket.send(JSON.stringify([{ type, clientState, local: true }]));
+        }
+        else {
+            client.socket.send(JSON.stringify([{ type, clientId, clientState }]));
+        }
+    });
 }
 
 function validateState(raw) {
@@ -86,24 +79,24 @@ function validateState(raw) {
     });
 }
 
-function updateState(newState, fromClientId) {
+function updateState(logger, newState, fromClientId) {
     const clientId = newState.clientId || fromClientId;
 
     const clientIndex = globalState.clients.findIndex(client => client.id === clientId);
 
     globalState.clients[clientIndex].setState(newState);
 
-    notifyClients(clientId, newState);
+    notifyClients(logger, clientId, newState);
 }
 
-function onMessage(clientId) {
+function onMessage(logger, clientId) {
     return async message => {
         try {
             const states = await validateState(JSON.parse(message.utf8Data), clientId);
 
-            winston.log('info', `Message from client #${clientId}:`, JSON.stringify(states));
+            logger.verbose(`Message from client #${clientId}:`, JSON.stringify(states));
 
-            states.forEach(state => updateState(state, clientId));
+            states.forEach(state => updateState(logger, state, clientId));
         }
         catch (err) {
             winston.log('warn', `Error processing message from client #${clientId}:`, err.message);
@@ -172,43 +165,46 @@ async function getOrigin(req) {
     return `${hostname} (${platform})`;
 }
 
-async function onConnection(req) {
-    if (!originIsAllowed(req.origin)) {
-        req.reject();
-        winston.log('warn', 'Rejected client due to bad origin');
+function onConnection(logger) {
+    return async req => {
+        if (!originIsAllowed(req.origin)) {
+            req.reject();
 
-        return;
-    }
+            logger.verbose('Rejected client due to bad origin');
 
-    const id = uuid();
-    const origin = await getOrigin(req);
+            return;
+        }
 
-    const socket = req.accept('echo-protocol', origin);
+        const id = uuid();
+        const origin = await getOrigin(req);
 
-    const newClient = new Client(id, origin, socket);
+        const socket = req.accept('echo-protocol', origin);
 
-    winston.log('info', 'New client', { id, origin });
+        const newClient = new Client(id, origin, socket);
 
-    // send list of connected clients to the new client
-    if (globalState.clients.length > 0) {
-        socket.send(JSON.stringify(globalState.clients.map(client => ({
-            type: 'new',
-            clientId: client.id,
-            clientState: client.state
-        }))));
-    }
+        logger.verbose('New client', { id, origin });
 
-    // add new client to the state and notify existing clients of the addition
-    globalState.clients.push(newClient);
-    notifyClients(id, newClient.state, 'new');
+        // send list of connected clients to the new client
+        if (globalState.clients.length > 0) {
+            socket.send(JSON.stringify(globalState.clients.map(client => ({
+                type: 'new',
+                clientId: client.id,
+                clientState: client.state
+            }))));
+        }
 
-    socket.on('message', onMessage(id, socket));
+        // add new client to the state and notify existing clients of the addition
+        globalState.clients.push(newClient);
+        notifyClients(id, newClient.state, 'new');
 
-    socket.on('close', onClose(id));
+        socket.on('message', onMessage(logger, id, socket));
+
+        socket.on('close', onClose(id));
+    };
 }
 
-function setupWebSockets(httpServer) {
-    const secure = (process.env.WEB_URI || '').indexOf('https://') === 0;
+function setupWebSockets(config, db, logger, httpServer) {
+    const secure = config.webUri.indexOf('https://') === 0;
 
     const wss = new WebSocketServer({
         httpServer,
@@ -216,14 +212,10 @@ function setupWebSockets(httpServer) {
         autoAcceptConnections: false
     });
 
-    wss.on('request', onConnection);
-}
-
-function init(app) {
-    setupWebSockets(app);
+    wss.on('request', onConnection(logger));
 }
 
 module.exports = {
-    init
+    setupWebSockets
 };
 

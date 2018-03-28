@@ -1,17 +1,8 @@
-const path = require('path');
 const fs = require('fs');
 const request = require('request');
-const logger = require('../../common/logger');
 const DiscogsClient = require('disconnect').Client;
 
-const config = require('../../common/config');
-
-const ARTWORK_PATH = process.env.ARTWORK_PATH || path.join(__dirname, '../../.artwork');
-const ARTWORK_UNKNOWN_FILE = path.join(__dirname, '../unknown-artwork.png');
-
 const { getContentTypeFromFile, getBufferFromFile } = require('../../common/buffer-from-file');
-
-const __DEV__ = process.env.NODE_ENV === 'development';
 
 function encodeArtistAlbum(artist, album) {
     return Buffer.from(`${artist}/${album}`).toString('base64');
@@ -42,8 +33,8 @@ function getExtension(filename) {
     return filename.substring(lastDotIndex + 1);
 }
 
-function downloadArtwork(url, artist, album) {
-    const dest = `${ARTWORK_PATH}/${encodeArtistAlbum(artist, album)}.${getExtension(url)}`;
+function downloadArtwork(config, url, artist, album) {
+    const dest = `${config.artwork.path}/${encodeArtistAlbum(artist, album)}.${getExtension(url)}`;
 
     const req = request.defaults({
         jar: true,
@@ -54,13 +45,12 @@ function downloadArtwork(url, artist, album) {
     return new Promise((resolve, reject) => {
         const file = fs.createWriteStream(dest);
 
-        req
-            .get({
-                url,
-                headers: {
-                    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36'
-                }
-            })
+        req.get({
+            url,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.113 Safari/537.36'
+            }
+        })
             .pipe(file);
 
         file
@@ -84,40 +74,32 @@ function downloadArtwork(url, artist, album) {
     });
 }
 
-async function getDiscogsReleaseId(discogs, artist, album) {
+async function getDiscogsReleaseId(logger, discogs, artist, album) {
     const searchString = `${artist} - ${album}`;
 
     const data = await discogs.database().search(searchString);
 
     if (!(data && data.results)) {
-        if (__DEV__) {
-            logger('ERROR', 'Bad artwork data from Discogs, for:', { artist, album });
-        }
+        logger.warn('Bad artwork data from Discogs, for:', { artist, album });
 
         throw new Error('Bad result data from Discogs');
     }
 
-    const releases = data.results.filter(result => result.id && result.type && result.type === 'release');
+    const releases = data.results.filter(({ id, type }) => id && type && type === 'release');
     if (!releases.length) {
-        if (__DEV__) {
-            logger('ERROR', 'No Discogs artwork results, for:', { artist, album });
-        }
+        logger.warn('No Discogs artwork results, for:', { artist, album });
 
         throw new Error('No results');
     }
 
-    const releaseId = releases[0].id;
-
-    return releaseId;
+    return releases[0].id;
 }
 
-async function getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album) {
+async function getDiscogsArtworkFromReleaseId(logger, discogs, releaseId, artist, album) {
     const data = await discogs.database().getRelease(releaseId);
 
     if (!(data && data.images && Array.isArray(data.images))) {
-        if (__DEV__) {
-            logger('ERROR', 'No artwork on Discogs result, for:', { artist, album });
-        }
+        logger.warn('No artwork on Discogs result, for:', { artist, album });
 
         throw new Error('Bad result data from Discogs');
     }
@@ -125,9 +107,7 @@ async function getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album)
     const validImages = data.images.filter(image => image.resource_url);
 
     if (!validImages.length) {
-        if (__DEV__) {
-            logger('ERROR', 'No artwork results have a resource ID, for:', { artist, album });
-        }
+        logger.warn('No artwork results have a resource ID, for:', { artist, album });
 
         throw new Error('No artwork image');
     }
@@ -139,15 +119,13 @@ async function getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album)
         return file;
     }
     catch (err) {
-        if (__DEV__) {
-            logger('ERROR', 'Error downloading artwork image, for:', { artist, album });
-        }
+        logger.error('Error downloading artwork image, for:', { artist, album });
 
         throw new Error('Error downloading artwork image');
     }
 }
 
-async function getDiscogsArtwork(artist, album) {
+async function getDiscogsArtwork(config, logger, artist, album) {
     if (!(config.discogs.consumerKey && config.discogs.consumerSecret)) {
         throw new Error('No Discogs API key configured');
     }
@@ -157,30 +135,29 @@ async function getDiscogsArtwork(artist, album) {
         consumerSecret: config.discogs.consumerSecret
     });
 
-    const releaseId = await getDiscogsReleaseId(discogs, artist, album);
+    const releaseId = await getDiscogsReleaseId(logger, discogs, artist, album);
 
-    const artwork = await getDiscogsArtworkFromReleaseId(discogs, releaseId, artist, album);
+    const artwork = await getDiscogsArtworkFromReleaseId(logger, discogs, releaseId, artist, album);
 
     return artwork;
 }
 
-async function fetchNewAlbumArtwork(db, res, artist, album) {
+async function fetchNewAlbumArtwork(config, logger, db, res, artist, album) {
     let file = null;
     let dbFile = null;
     let cacheable = true;
     let errorResult = false;
 
-    await db
-        .collection(config.collections.artwork)
+    await db.collection(config.collections.artwork)
         .insertOne({ artist, album, loading: true });
 
     try {
-        file = await getDiscogsArtwork(artist, album);
+        file = await getDiscogsArtwork(config, logger, artist, album);
 
         dbFile = file;
     }
     catch (err) {
-        file = ARTWORK_UNKNOWN_FILE;
+        file = config.artwork.unknownFile;
         cacheable = false;
 
         errorResult = true;
@@ -209,7 +186,7 @@ const fileExists = file => new Promise((resolve, reject) => {
     });
 });
 
-async function getAlbumArtwork(db, res, artist, album) {
+async function getAlbumArtwork(config, logger, db, res, artist, album) {
     let file = null;
     let cacheable = true;
 
@@ -219,7 +196,7 @@ async function getAlbumArtwork(db, res, artist, album) {
 
     if (localCopy) {
         if (localCopy.loading || localCopy.error) {
-            file = ARTWORK_UNKNOWN_FILE;
+            file = config.artwork.unknownFile;
             cacheable = false;
         }
         else {
@@ -233,7 +210,7 @@ async function getAlbumArtwork(db, res, artist, album) {
     }
 
     if (!file) {
-        const result = await fetchNewAlbumArtwork(db, res, artist, album);
+        const result = await fetchNewAlbumArtwork(config, logger, db, res, artist, album);
 
         file = result.file;
         cacheable = result.cacheable;
@@ -252,76 +229,74 @@ async function serveArtworkFile(res, file) {
         .send(buffer);
 }
 
-async function routeArtwork(req, res, next) {
-    const encoded = req.params.encoded;
+function routeArtwork(config, db, logger) {
+    return async (req, res, next) => {
+        const encoded = req.params.encoded;
 
-    let decoded = null;
-    try {
-        decoded = decodeArtistAlbum(encoded);
-    }
-    catch (err) {
-        serveArtworkFile(res, ARTWORK_UNKNOWN_FILE);
-
-        return next();
-    }
-
-    const { artist, album } = decoded;
-
-    try {
-        const existsInDatabaseResult = await req.db
-            .collection(config.collections.music)
-            .find({
-                'info.artist': artist,
-                'info.album': album || null
-            })
-            .toArray();
-
-        if (!existsInDatabaseResult.length) {
-            res
-                .status(400)
-                .json({
-                    existsInDatabaseResult,
-                    artist,
-                    album,
-                    error: true,
-                    status: 'File not found in database'
-                });
+        let decoded = null;
+        try {
+            decoded = decodeArtistAlbum(encoded);
+        }
+        catch (err) {
+            serveArtworkFile(res, config.artwork.unknownFile);
 
             return next();
         }
-    }
-    catch (err) {
-        res
-            .status(500)
-            .json({ error: true, status: 'Unknown error' });
 
-        return next();
-    }
+        const { artist, album } = decoded;
 
-    try {
-        const { file } = await getAlbumArtwork(req.db, res, artist, album);
+        try {
+            const existsInDatabaseResult = await db.collection(config.collections.music)
+                .find({
+                    'info.artist': artist,
+                    'info.album': album || null
+                })
+                .toArray();
 
-        if (file) {
-            try {
-                await serveArtworkFile(res, file);
-            }
-            catch (fileErr) {
-                // the file was deleted, we should delete it in the database too
-                await req.db
-                    .collection(config.collections.artwork)
-                    .deleteOne({ artist, album });
+            if (!existsInDatabaseResult.length) {
+                res.status(400)
+                    .json({
+                        existsInDatabaseResult,
+                        artist,
+                        album,
+                        error: true,
+                        status: 'File not found in database'
+                    });
 
-                throw fileErr;
+                return next();
             }
         }
-    }
-    catch (err) {
-        res
-            .status(404)
-            .json({ error: true, status: 'Not found' });
-    }
+        catch (err) {
+            res.status(500)
+                .json({ error: true, status: 'Unknown error' });
 
-    return next();
+            return next();
+        }
+
+        try {
+            const { file } = await getAlbumArtwork(config, logger, db, res, artist, album);
+
+            if (file) {
+                try {
+                    await serveArtworkFile(res, file);
+                }
+                catch (fileErr) {
+                    // the file was deleted, we should delete it in the database too
+                    await db.collection(config.collections.artwork)
+                        .deleteOne({ artist, album });
+
+                    throw fileErr;
+                }
+            }
+        }
+        catch (err) {
+            res
+                .status(404)
+                .json({ error: true, status: 'Not found' });
+        }
+
+        return next();
+    };
 }
 
 module.exports = {

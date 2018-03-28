@@ -1,5 +1,3 @@
-const config = require('../../common/config');
-
 const sortByMatchingFirst = keyword => {
     const match = new RegExp(`^${keyword}`, 'i');
 
@@ -99,24 +97,26 @@ async function getSortedSongs(db, keyword) {
         .map(row => ({ id: row._id, ...row.info }));
 }
 
-async function routeSearch(req, res, next) {
-    const keyword = req.params.keyword;
+function routeSearch(config, db, logger) {
+    return async (req, res, next) => {
+        const keyword = req.params.keyword;
 
-    try {
-        const artists = await getSortedArtists(req.db, keyword);
-        const albums = await getSortedAlbums(req.db, keyword);
-        const titles = await getSortedSongs(req.db, keyword);
+        try {
+            const artists = await getSortedArtists(db, keyword);
+            const albums = await getSortedAlbums(db, keyword);
+            const titles = await getSortedSongs(db, keyword);
 
-        res.json({ artists, albums, titles });
-    }
-    catch (err) {
-        console.log(err.stack);
-        res
-            .status(500)
-            .json({ err: err.message, error: true, status: 'Unknown error' });
-    }
+            res.json({ artists, albums, titles });
+        }
+        catch (err) {
+            logger.error('Error searching:', err.message);
 
-    return next();
+            res.status(500)
+                .json({ error: true, status: 'Unknown server error' });
+        }
+
+        return next();
+    };
 }
 
 module.exports = { routeSearch };
