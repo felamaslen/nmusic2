@@ -13,6 +13,6 @@
 - [DONE] generator routes
 - fix click and drag on seek bar
 - webpack 4
-- move websockets stuff to saga
+- [DONE] move websockets stuff to saga
 - fix client interaction
 - fix search for album

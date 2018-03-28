@@ -112,7 +112,7 @@ function onClose(logger, clientId) {
 
         globalState.clients.splice(clientKey, 1);
 
-        notifyClients(clientId, null, 'close');
+        notifyClients(logger, clientId, null, 'close');
     };
 }
 
@@ -195,7 +195,7 @@ function onConnection(logger) {
 
         // add new client to the state and notify existing clients of the addition
         globalState.clients.push(newClient);
-        notifyClients(id, newClient.state, 'new');
+        notifyClients(logger, id, newClient.state, 'new');
 
         socket.on('message', onMessage(logger, id, socket));
 

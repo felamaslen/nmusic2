@@ -1,5 +1,7 @@
 import { fromJS, List as list } from 'immutable';
 
+export const onOpenOrClose = (state, status) => state.setIn(['socket', 'open'], Boolean(status));
+
 export const onError = (state, err) => state
     .setIn(['cloud', 'error'], err);
 

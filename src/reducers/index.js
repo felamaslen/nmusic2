@@ -27,6 +27,7 @@ export default createReducer(initialState, createReducerObject([
     [AC.UI_RESET, uiReset.reset],
     [AC.SETTINGS_INSERTED, uiReset.loadSettings],
 
+    [AC.SOCKET_OPENED_CLOSED, socket.onOpenOrClose],
     [AC.SOCKET_ERROR_OCCURRED, socket.onError],
     [AC.SOCKET_STATE_UPDATED, socket.onUpdate],
     [AC.REMOTE_CLIENT_UPDATED, socket.sendUpdateToRemoteClient],

@@ -5,6 +5,9 @@ import { APP_TITLE, REPEAT_NONE, SHUFFLE_NONE } from './constants/misc';
 
 export default fromJS({
     settingsLoaded: false,
+    socket: {
+        open: false
+    },
     title: [APP_TITLE],
     cloud: {
         error: null,
